@@ -17,6 +17,9 @@ var tuft_options = Array()
 
 var tree_likelihood = 25
 var grass_likelihood = 40
+var rock_likelihood = 12
+
+onready var rock1 = load("res://Scenes/Rock1.tscn")
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -34,11 +37,11 @@ func _ready():
 	
 	noise.seed = rng.randi()
 	# Number of OpenSimplex noise layers that are sampled to get the fractal noise. Higher values result in more detailed noise but take more time to generate.
-	noise.octaves = 10
+	noise.octaves = 8
 	# Period of the base octave. A lower period results in a higher-frequency noise (more value changes across the same distance).
-	noise.period = 26.0
+	noise.period = 55.0
 	# Contribution factor of the different octaves. A persistence value of 1 means all the octaves have the same contribution, a value of 0.5 means each octave contributes half as much as the previous one.
-	noise.persistence = 0.25
+	noise.persistence = 0.125
 	
 	plane_mesh.subdivide_width = 64
 	plane_mesh.subdivide_depth = 64
@@ -70,6 +73,8 @@ func _ready():
 		# on every index, roll to create grass
 		roll_to_add_grass(vertex)
 		
+		roll_to_add_rock(vertex)
+		
 		# Check for house spawn
 		if i == 1000:
 			spawn_house(shack, vertex)
@@ -91,6 +96,23 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass
+
+func roll_to_add_rock(rock_location):
+	var roll = rng.randi_range(0, 2500)
+	if roll <= rock_likelihood:
+		var instance = rock1.instance()
+		var minor_offset_x = rng.randf_range(-0.15, 0.15)
+		var minor_offset_z = rng.randf_range(-0.15, 0.15)
+		var pos = Vector3(rock_location.x + minor_offset_x, rock_location.y - 0.15, rock_location.z + minor_offset_z)
+		instance.transform.origin = pos
+		
+		var random_rotation = rng.randf_range(0, 2*PI)
+		instance.transform.basis = instance.transform.basis.rotated(Vector3(1, 0, 0), transform.basis.get_euler().x + random_rotation)
+		random_rotation = rng.randf_range(0, 2*PI)
+		instance.transform.basis = instance.transform.basis.rotated(Vector3(0, 1, 0), transform.basis.get_euler().y + random_rotation)
+		random_rotation = rng.randf_range(0, 2*PI)
+		instance.transform.basis = instance.transform.basis.rotated(Vector3(0, 0, 1), transform.basis.get_euler().z + random_rotation)
+		add_child(instance)
 
 func roll_to_add_grass(grass_location):
 	var roll = rng.randi_range(0, 100)

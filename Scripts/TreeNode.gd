@@ -43,7 +43,6 @@ func _init(id, center_point, parent, packed_center_angle=0.0, branch_spread_x=0,
 	self.branch_skew_z = branch_skew_z
 	# + branch_spread_x
 	#  + branch_spread_z
-	print(packed_center_angle)
 	self.center_point = Vector3(center_point.x + branch_skew_x + branch_spread_x, center_point.y, center_point.z + branch_skew_z + branch_spread_z)
 	self.packed_center_angle = packed_center_angle
 	pass

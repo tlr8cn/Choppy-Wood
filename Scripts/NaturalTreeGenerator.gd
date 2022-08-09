@@ -4,9 +4,10 @@ extends ImmediateGeometry
 # var a = 2
 # var b = "text"
 var height_inc = 0.5
-var radius_dec = 0.0275
+var radius_dec = 0.025
 var radius_mod = 4 # amounts to the number of tree sections 
 var id = 1
+var initial_radius = 0.5
 # stores precalculated radii for n circles packed evenly within a unit circle
 # array indexed by n_1(-1), ..., n_6(-1)
 # values pulled from website dedicated to circle packing http://www.packomania.com/
@@ -14,9 +15,9 @@ var packing_radii = [1.0, 0.5, 0.464101615138, 0.414213562373, 0.370191908159, 0
 
 var rng = RandomNumberGenerator.new()
 
-var skew_min = 0.0075 # should be closer to zero
-var skew_max = 0.115 # should be further from zero
-var skew_widener = 0.00125
+var skew_min = 0.01 # should be closer to zero
+var skew_max = 0.125 # should be further from zero
+var skew_widener = 0.0015
 
 # limits the number of branch splits per tree
 var max_splits = 5
@@ -33,6 +34,10 @@ enum TriType {
 	PRE_NABLA_RIGHT
 	NABLA_LEFT,
 }
+
+#onready var leaves_med = preload("res://Scenes/Leaf Bunch.tscn")
+onready var leaves_trunk = preload("res://Scenes/Trunk Leaves.tscn")
+onready var leaf = get_child(0)
 
 # Called when the node enters the scene tree for the firsst time.
 func _ready():
@@ -56,7 +61,7 @@ func _ready():
 	# center_point for root is the outer center point; parent is null
 	var root = TreeNode.new(1, centerPointOuter, null)
 
-	buildTreeRecursively(root, 1, 0.5, currentHeight, numVertices, centerPointOuter)
+	buildTreeRecursively(root, 1, initial_radius, currentHeight, numVertices, centerPointOuter)
 	
 	var natural_tree = NaturalTree.new(root)
 	# branches is a 2D array of nodes representing branches of the tree
@@ -77,11 +82,12 @@ func _ready():
 # @param ring_counter - keeps track of how many rings we've laid
 # @param split_counter - keeps track of how many times we've split
 # @param branch_spread - keeps track of the spread for the current branch (spread is added when vertices are created)
-func buildTreeRecursively(current_node, n, current_radius, current_height, num_vertices, center_point_outer, ring_counter=0, split_chance=50, branch_skew_x=0, branch_skew_z=0, split_counter=0, branch_spread_x=0.0, branch_spread_z=0.0):
+func buildTreeRecursively(current_node, n, current_radius, current_height, num_vertices, center_point_outer, ring_counter=0, split_chance=35, branch_skew_x=0, branch_skew_z=0, split_counter=0, branch_spread_x=0.0, branch_spread_z=0.0):
 	var new_ring_counter = ring_counter
 	var new_split_counter = split_counter
 	var new_height = current_height + height_inc
 	var new_radius = current_radius
+	var do_spawn_leaves = false
 	
 	var should_shrink_radius = ring_counter % radius_mod == 0
 	if should_shrink_radius:
@@ -89,8 +95,23 @@ func buildTreeRecursively(current_node, n, current_radius, current_height, num_v
 	
 	# base case
 	if current_radius <= 0.0 || new_radius <= 0.0:
+		### Start copied code ###
+#		var packed_center_angle = 2*PI
+#		if packed_center_angle == 0 && current_node.get_packed_center_angle() > 0:
+#			packed_center_angle = current_node.get_packed_center_angle()
+		
+#		var packed_center_x = current_radius*cos(packed_center_angle) + center_point_outer.x
+#		var packed_center_z = current_radius*sin(packed_center_angle) + center_point_outer.z
+#		var packed_center_point = Vector3(packed_center_x, center_point_outer.y, packed_center_z)
+		### End copied code ###
+		
+#		var instance1 = leaves_med.instance()
+#		instance1.global_translate(Vector3(packed_center_point.x, packed_center_point.y + 0.35, packed_center_point.z))
+#		add_child(instance1)
 		current_node.set_is_leaf(true)
 		return
+	elif current_radius > 0.0 && current_radius <= 4*radius_dec:
+		do_spawn_leaves = true
 
 	# Create and add nodes using current parameter values
 	for i in range(n):
@@ -108,7 +129,7 @@ func buildTreeRecursively(current_node, n, current_radius, current_height, num_v
 		if n == 1:
 			packed_center_point = center_point_outer
 		
-		addVerticesToRing(current_ring, num_vertices, packed_center_point, packed_center_angle, center_point_outer, current_radius)
+		addVerticesToRing(current_ring, num_vertices, packed_center_point, packed_center_angle, center_point_outer, current_radius, do_spawn_leaves)
 		
 		new_ring_counter = new_ring_counter + 1
 		var new_id = id
@@ -133,7 +154,7 @@ func buildTreeRecursively(current_node, n, current_radius, current_height, num_v
 		# only check for a split if we haven't exceeded the max
 		if new_split_counter < max_splits:
 			# roll to see if n splits
-			var roll = rng.randi_range(0, 500)
+			var roll = rng.randi_range(0, 625)
 			# this percent chance of splitting will become more likely as we progress up the tree
 			if roll < split_chance:
 				# do a random split
@@ -142,7 +163,9 @@ func buildTreeRecursively(current_node, n, current_radius, current_height, num_v
 				new_n = rng.randi_range(2, 4)
 				if new_n > 1:
 					# TODO: Instead of splitting by the new_n evenly, we should randomly divide
-					radius_copy = (radius_copy/new_n)*1.75
+					# TODO (BUG): this is hacky -- when new_n = 2, the branches are too big -- should try using packing radii
+					#radius_copy = (radius_copy/new_n)*1.525
+					radius_copy = radius_copy*packing_radii[new_n]*1.25
 				new_split_counter += new_n
 		
 		var new_split_chance = split_chance
@@ -166,23 +189,25 @@ func calculate_spread(packed_center_angle):
 	var spread_x = 0.0
 	var spread_z = 0.0
 	
+	var spread_min = 0.005
+	
 	if packed_center_angle >= 0 && packed_center_angle < PI/2: # +x, +z
-		spread_x = spread_amount
-		spread_z = spread_amount/4
+		spread_x = rng.randf_range(spread_min, spread_amount)
+		spread_z = rng.randf_range(spread_min, spread_amount/4)
 	elif packed_center_angle >= PI/2 && packed_center_angle < PI: # -x, +z
-		spread_x = -spread_amount
-		spread_z = spread_amount/4
+		spread_x = rng.randf_range(-spread_amount, -spread_min)
+		spread_z =  rng.randf_range(spread_min, spread_amount/4)
 	elif packed_center_angle >= PI && packed_center_angle < 3*(PI/2): # -x, -z
-		spread_x = -spread_amount
-		spread_z = -spread_amount
+		spread_x = rng.randf_range(-spread_amount, -spread_min)
+		spread_z = rng.randf_range(-spread_amount, -spread_min)
 	elif packed_center_angle >= 3*(PI/2) && packed_center_angle < 2*PI: # +x, -z
-		spread_x = spread_amount
-		spread_z = -spread_amount
+		spread_x = rng.randf_range(spread_min, spread_amount)
+		spread_z = rng.randf_range(-spread_amount, -spread_min)
 		
 	return Vector2(spread_x, spread_z)
 
 # addVerticesToRing adds all vertices to current ring
-func addVerticesToRing(ring, num_vertices, packed_center_point, packed_center_angle, center_point_outer, radius):
+func addVerticesToRing(ring, num_vertices, packed_center_point, packed_center_angle, center_point_outer, radius, do_spawn_leaves):
 	for j in range(num_vertices):
 		var current_angle = (j*(360/num_vertices))*(PI/180)
 		
@@ -198,6 +223,46 @@ func addVerticesToRing(ring, num_vertices, packed_center_point, packed_center_an
 		
 		ring[0].append(ring_vertex_a)
 		ring[1].append(ring_vertex_b)
+		
+		var roll = rng.randi_range(0, 100)
+		if roll <= 35:
+			continue
+		
+		if do_spawn_leaves && j == 1:
+			var leaf_copy = leaf.duplicate()
+			leaf_copy.transform.origin = Vector3(ring_coord_a.x, ring_coord_a.y, ring_coord_a.z - 4*radius)
+			leaf_copy.transform.basis = leaf_copy.transform.basis.scaled(Vector3(8*radius, 8*radius, 8*radius))
+			#leaf_copy.transform.basis.rotated(Vector3(0, 1, 0), PI/2)
+			add_child(leaf_copy)
+		elif do_spawn_leaves && j == 4:
+			var leaf_copy = leaf.duplicate()
+			leaf_copy.transform.origin = Vector3(ring_coord_a.x, ring_coord_a.y + height_inc, ring_coord_a.z + 4*radius)
+			leaf_copy.transform.basis = leaf_copy.transform.basis.scaled(Vector3(8*radius, 8*radius, 8*radius))
+			leaf_copy.transform.basis = leaf_copy.transform.basis.rotated(Vector3(0, 1, 0), PI)
+			add_child(leaf_copy)
+		elif do_spawn_leaves && j == 2:
+			var leaf_copy = leaf.duplicate()
+			leaf_copy.transform.origin = Vector3(ring_coord_a.x - 3*radius, ring_coord_a.y, ring_coord_a.z)
+			leaf_copy.transform.basis = leaf_copy.transform.basis.scaled(Vector3(8*radius, 8*radius, 8*radius))
+			leaf_copy.transform.basis = leaf_copy.transform.basis.rotated(Vector3(0, 1, 0), PI/2)
+			add_child(leaf_copy)
+		elif do_spawn_leaves && j == 5:
+			var leaf_copy = leaf.duplicate()
+			leaf_copy.transform.origin = Vector3(ring_coord_a.x + 3*radius, ring_coord_a.y + height_inc, ring_coord_a.z)
+			leaf_copy.transform.basis = leaf_copy.transform.basis.scaled(Vector3(8*radius, 8*radius, 8*radius))
+			leaf_copy.transform.basis = leaf_copy.transform.basis.rotated(Vector3(0, 1, 0), 3*(PI/2))
+			add_child(leaf_copy)
+		elif !do_spawn_leaves && radius <= initial_radius && radius >= initial_radius - initial_radius*0.90:
+			
+			var roll2 = rng.randi_range(0, 250)
+			if roll2 <= 10:
+				var instance1 = leaves_trunk.instance()
+				instance1.global_translate(ring_coord_a)
+				#var relative_normal = instance1.transform.origin + ring_normal_a
+				#instance1.look_at(relative_normal, Vector3.UP)
+				# TODO: rotate to orient with trunk normal
+				add_child(instance1)
+			
 
 func drawTree(branches):
 	var sectionHeight = 2

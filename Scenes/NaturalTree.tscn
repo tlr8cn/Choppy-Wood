@@ -1,6 +1,10 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://scripts/NaturalTreeGenerator.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Models/Leaf/Single/leaf.glb" type="PackedScene" id=2]
 
 [node name="NaturalTreeGenerator" type="ImmediateGeometry"]
 script = ExtResource( 1 )
+
+[node name="Leaf" parent="." instance=ExtResource( 2 )]
+transform = Transform( -1.31134e-08, -0.3, 3.61048e-16, 0.270712, -1.18332e-08, -0.129286, 0.129286, -5.65125e-09, 0.270712, 0, 0, -0.0834974 )

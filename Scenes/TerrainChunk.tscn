@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Scenes/GrassTuftLarge.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Scenes/GrassTuftSmall.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Scripts/TerrainChunk.gd" type="Script" id=3]
+
+[node name="Terrain" type="Spatial"]
+script = ExtResource( 3 )
+
+[node name="GrassField" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.527851, 0, -1.898 )
+visible = false
+
+[node name="GrassTuftSmall" parent="GrassField" instance=ExtResource( 2 )]
+visible = false
+
+[node name="GrassTuftLarge" parent="GrassField" instance=ExtResource( 1 )]
+visible = false

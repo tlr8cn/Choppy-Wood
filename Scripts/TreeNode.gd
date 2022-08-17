@@ -30,9 +30,16 @@ var branch_spread_z
 
 var packed_center_angle
 
-func _init(id, center_point, parent, packed_center_angle=0.0, branch_spread_x=0, branch_spread_z=0, branch_skew_x=0, branch_skew_z=0, ring=[], children=[]):
+var radius
+
+func _init(id, center_point, radius, parent, packed_center_angle=0.0, branch_spread_x=0, branch_spread_z=0, branch_skew_x=0, branch_skew_z=0, ring=[], children=[]):
 	self.id = id
 	self.ring = ring
+#	if ring.size() < 2:
+#		print("ID: ")
+#		print(self.id)
+#		print(self.ring)
+#		print(radius)
 	self.parent = parent
 	self.children = children.duplicate() #copy(children)
 	self.visited = false
@@ -45,6 +52,7 @@ func _init(id, center_point, parent, packed_center_angle=0.0, branch_spread_x=0,
 	#  + branch_spread_z
 	self.center_point = Vector3(center_point.x + branch_skew_x + branch_spread_x, center_point.y, center_point.z + branch_skew_z + branch_spread_z)
 	self.packed_center_angle = packed_center_angle
+	self.radius = radius
 	pass
 
 func get_id():
@@ -78,6 +86,8 @@ func set_is_leaf(is_leaf):
 	self.is_leaf = is_leaf
 
 func is_leaf():
+	#print("set to leaf: ")
+	#print(self.get_id())
 	return self.is_leaf
 
 func get_branch_skew_x():
@@ -95,10 +105,11 @@ func get_branch_spread_z():
 func get_packed_center_angle():
 	return self.packed_center_angle
 
+func get_first_ring_vertex():
+	return self.ring[0][0].get_coord()
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
+func get_radius():
+	return self.radius
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

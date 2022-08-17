@@ -4,6 +4,9 @@ class_name NaturalTree
 
 # root is a TreeNode
 var root = null
+var leaves = []
+# key is treeNode ID; value is distance from closest leaf to that leaf with that ID
+var closest_leaf_neighbors = {}
 
 func _init(root):
 	self.root = root
@@ -37,7 +40,23 @@ func search_recursively(id, node):
 	# no children
 	return null
 
-# TODO: write dfs that returns 2d array of TreeNodes representing contiguous drawing routes
+func add_leaf(leaf):
+	self.leaves.push_back(leaf)
+	for i in leaves.size():
+		var current_leaf = leaves[i]
+		var min_distance = 999999999
+		for j in range(i+1, leaves.size()):
+			var comparison_leaf = leaves[j]
+			var distance = current_leaf.get_center_point().distance_to(comparison_leaf.get_center_point())
+			if distance < min_distance:
+				min_distance = distance
+				self.closest_leaf_neighbors[current_leaf.get_id()] = distance
+	pass
+
+func get_closest_leaf_neighbors():
+	return self.closest_leaf_neighbors
+
+# dfs that returns 2d array of TreeNodes representing contiguous drawing routes
 # the caller will loop through the array - cutting off drawing at the end of each inner array
 func dfs_for_branches():
 	var ret = [] # will be a 2d array of branches
@@ -96,6 +115,8 @@ func print(node):
 	# no children
 	return
 
+func get_leaves():
+	return self.leaves
 
 # Called when the node enters the scene tree for the first time.
 func _ready():

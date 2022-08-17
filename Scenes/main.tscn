@@ -1,12 +1,11 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://Scripts/PlayerController.gd" type="Script" id=1]
 [ext_resource path="res://Scripts/MainCamera.gd" type="Script" id=2]
 [ext_resource path="res://Assets/Models/splitting-maul.glb" type="PackedScene" id=3]
-[ext_resource path="res://Scenes/GrassTuftSmall.tscn" type="PackedScene" id=6]
-[ext_resource path="res://Scenes/GrassTuftLarge.tscn" type="PackedScene" id=7]
+[ext_resource path="res://Scripts/TerrainOrchestrator.gd" type="Script" id=4]
+[ext_resource path="res://Assets/Environment.tres" type="Environment" id=5]
 [ext_resource path="res://Scenes/Log.tscn" type="PackedScene" id=8]
-[ext_resource path="res://Scripts/TerrainGenerator.gd" type="Script" id=9]
 [ext_resource path="res://Scripts/MaulCollisions.gd" type="Script" id=12]
 
 [sub_resource type="CylinderShape" id=1]
@@ -73,7 +72,7 @@ tracks/1/keys = {
 [node name="Spatial" type="Spatial"]
 
 [node name="Player" type="KinematicBody" parent="."]
-transform = Transform( -0.0797292, 0, -0.996817, 0, 0.75, 0, 0.996817, 0, -0.0797292, 2.14703, 4.20761, 0 )
+transform = Transform( -0.0797292, 0, -0.996817, 0, 0.75, 0, 0.996817, 0, -0.0797292, -3.02048, 4.20761, 0 )
 script = ExtResource( 1 )
 speed = 6
 
@@ -102,8 +101,9 @@ shape = SubResource( 2 )
 disabled = true
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
-transform = Transform( 1, 0, 0, 0, 0.61628, 0.787527, 0, -0.787527, 0.61628, 0, 5.79335, 3.86169 )
+transform = Transform( 0.481736, 0.0467511, -0.875069, 0.875808, 0.00833493, 0.482588, 0.0298552, -0.998872, -0.0369298, -175.271, 68.115, 0.136545 )
 shadow_enabled = true
+shadow_color = Color( 0.00392157, 0.00784314, 0.117647, 1 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/maul_chop = SubResource( 3 )
@@ -122,15 +122,8 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 7.52407, 5.56635, -0.767947 )
 [node name="Log2" parent="." instance=ExtResource( 8 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 7.52407, 5.56635, 2.96267 )
 
-[node name="Terrain" type="Spatial" parent="."]
-script = ExtResource( 9 )
+[node name="TerrainOrchestrator" type="Spatial" parent="."]
+script = ExtResource( 4 )
 
-[node name="GrassField" type="Spatial" parent="Terrain"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.527851, 0, -1.898 )
-visible = false
-
-[node name="GrassTuftSmall" parent="Terrain/GrassField" instance=ExtResource( 6 )]
-visible = false
-
-[node name="GrassTuftLarge" parent="Terrain/GrassField" instance=ExtResource( 7 )]
-visible = false
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource( 5 )

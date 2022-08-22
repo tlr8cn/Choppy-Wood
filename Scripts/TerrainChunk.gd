@@ -14,6 +14,7 @@ var shack
 var rock1 
 var tuft_options = []
 var mushroom
+var mushroom_man
 
 var tree_likelihood
 var grass_likelihood
@@ -45,6 +46,7 @@ func _init(noise_seed, plane_width=64, plane_depth=64, height_factor=10, tree_li
 	rock1 = load("res://Scenes/Rock1.tscn")
 	dirt_material = load("res://Assets/Materials/dirt_material.tres")
 	mushroom = load("res://Scenes/Mushroom.tscn")
+	mushroom_man = load("res://Scenes/MushroomMan.tscn")
 	
 	noise = OpenSimplexNoise.new()
 	noise.seed = noise_seed
@@ -174,10 +176,9 @@ func roll_to_add_tree(tree_generator, tree_location, vertex_index, mdt):
 		
 		# Roll again for mushrooms
 		roll = rng.randi_range(0, 100)
-		if roll <= 95:
+		if roll <= 25:
 			var nearby_vertices = []
 			for i in 4:
-				# TODO (BUG): some mushrooms are floating -- are we not resetting y on the vertex when we apply noise?
 				if vertex_index - i >= 0:
 					nearby_vertices.push_back(mdt.get_vertex(vertex_index - i))
 				if vertex_index + i <= mdt.get_vertex_count() - 1:
@@ -187,8 +188,10 @@ func roll_to_add_tree(tree_generator, tree_location, vertex_index, mdt):
 				if vertex_index - i*plane_width >= 0:
 					nearby_vertices.push_back(mdt.get_vertex(vertex_index - i*plane_width))
 			
-			var num_mushrooms = rng.randi_range(0, (nearby_vertices.size() - 1)/4)
+			var num_mushrooms_cap = (nearby_vertices.size() - 1)/4
+			var num_mushrooms = rng.randi_range(0, num_mushrooms_cap)
 			var visited = {}
+			var mushroom_man_was_spawned = false
 			for i in num_mushrooms:
 				var mush_index = 0
 				var found_open_vertex = false
@@ -199,8 +202,17 @@ func roll_to_add_tree(tree_generator, tree_location, vertex_index, mdt):
 						found_open_vertex = true
 						mush_index = vertex_roll
 				var mushroom_location = nearby_vertices[mush_index]
-				var new_mushroom = mushroom.instance()
-				new_mushroom.translate(Vector3(mushroom_location.x, mushroom_location.y + 0.05, mushroom_location.z))
+				
+				var new_mushroom
+				var mushroom_man_roll = rng.randi_range(0, 1000)
+				var now_dats_alota_mushrooms = num_mushrooms >= num_mushrooms_cap - 2 && num_mushrooms <= num_mushrooms_cap
+				if mushroom_man_roll < 60 && !mushroom_man_was_spawned && now_dats_alota_mushrooms:
+					mushroom_man_was_spawned = true
+					new_mushroom = mushroom_man.instance()
+					new_mushroom.transform.origin = Vector3(mushroom_location.x, mushroom_location.y - 0.5, mushroom_location.z)
+				else:
+					new_mushroom = mushroom.instance()
+					new_mushroom.translate(Vector3(mushroom_location.x, mushroom_location.y, mushroom_location.z))
 				add_child(new_mushroom)
 	pass
 

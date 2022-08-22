@@ -9,10 +9,9 @@ onready var player = get_tree().get_root().get_node("Spatial").get_node("Player"
 # TODO: might also need to send unique ID of node
 signal was_chopped
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
 	connect("body_entered", self, "callback")
-	pass # Replace with function body.
+	pass
 
 func callback(body):
 	var body_name = body.get_name()

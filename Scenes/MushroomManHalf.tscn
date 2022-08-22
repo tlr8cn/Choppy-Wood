@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Assets/Models/Mushroom Man/Half/mushroom-man-half.glb" type="PackedScene" id=1]
+
+[sub_resource type="CapsuleShape" id=1]
+radius = 0.291985
+height = 0.860045
+
+[node name="MushroomManHalf" type="RigidBody"]
+
+[node name="CollisionShape" type="CollisionShape" parent="."]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0.697567, -3.04916e-08 )
+shape = SubResource( 1 )
+
+[node name="mushroom-man-half" parent="." instance=ExtResource( 1 )]
+transform = Transform( 0.464, 0, 0, 0, 0.464, 0, 0, 0, 0.464, 0, 0, 0 )

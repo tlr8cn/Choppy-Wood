@@ -21,7 +21,7 @@ xfade_time = 0.2
 states/Idle-loop/node = SubResource( 2 )
 states/Idle-loop/position = Vector2( 317, 91 )
 states/Run-loop/node = SubResource( 3 )
-states/Run-loop/position = Vector2( 592, 91 )
+states/Run-loop/position = Vector2( 738, 91 )
 transitions = [ "Idle-loop", "Run-loop", SubResource( 4 ) ]
 start_node = "Idle-loop"
 
@@ -31,11 +31,14 @@ start_node = "Idle-loop"
 radius = 31.7552
 
 [node name="MushroomMan" type="KinematicBody"]
-transform = Transform( 0.464045, 0, 0, 0, 0.464045, 0, 0, 0, 0.464045, 0, -0.602906, 0 )
+transform = Transform( 0.464045, 0, 0, 0, 0.464045, 0, 0, 0, 0.464045, 0, -0.80719, 0 )
 script = ExtResource( 2 )
 
 [node name="mushroom-man" parent="." instance=ExtResource( 1 )]
 transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0 )
+
+[node name="metarig" parent="mushroom-man" index="0"]
+transform = Transform( 0.0761861, 0, 0.997094, 0, 1, 0, -0.997094, 0, 0.0761861, 0, -0.0289186, 0 )
 
 [node name="CollisionShape" type="CollisionShape" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.08139, 0 )

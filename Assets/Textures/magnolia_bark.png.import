@@ -2,8 +2,8 @@
 
 importer="texture"
 type="StreamTexture"
-path.s3tc="res://.import/bark.png-5943d83150af2f97d569c1a092ffbcb5.s3tc.stex"
-path.etc2="res://.import/bark.png-5943d83150af2f97d569c1a092ffbcb5.etc2.stex"
+path.s3tc="res://.import/magnolia_bark.png-c6de25a23f2f7ab9b696f76d55d62afc.s3tc.stex"
+path.etc2="res://.import/magnolia_bark.png-c6de25a23f2f7ab9b696f76d55d62afc.etc2.stex"
 metadata={
 "imported_formats": [ "s3tc", "etc2" ],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://Assets/Textures/bark.png"
-dest_files=[ "res://.import/bark.png-5943d83150af2f97d569c1a092ffbcb5.s3tc.stex", "res://.import/bark.png-5943d83150af2f97d569c1a092ffbcb5.etc2.stex" ]
+source_file="res://Assets/Textures/magnolia_bark.png"
+dest_files=[ "res://.import/magnolia_bark.png-c6de25a23f2f7ab9b696f76d55d62afc.s3tc.stex", "res://.import/magnolia_bark.png-c6de25a23f2f7ab9b696f76d55d62afc.etc2.stex" ]
 
 [params]
 

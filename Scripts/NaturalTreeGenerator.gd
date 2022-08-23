@@ -42,6 +42,8 @@ enum TriType {
 onready var canopy = preload("res://Scenes/Canopy.tscn")
 onready var canopy_material = preload("res://Assets/Materials/tree_material.tres")
 
+export var bark_material:SpatialMaterial
+
 # Called when the node enters the scene tree for the firsst time.
 func _ready():
 	var Vertex = load("res://Scripts/Vertex.gd")
@@ -49,10 +51,10 @@ func _ready():
 	
 	self.begin(Mesh.PRIMITIVE_TRIANGLES, null) # Add vertices in counter clockwise order
 	var texture = load("res://Assets/Textures/bark.png")
-	var material = SpatialMaterial.new()
-	material.albedo_texture = texture
+	#var material = SpatialMaterial.new()
+	#material.albedo_texture = texture
 	#material.albedo_color = Color("#463A2E")
-	self.set_material_override(material)
+	self.set_material_override(bark_material)
 
 	#var currentRadius = 1.0
 	var currentHeight = 0

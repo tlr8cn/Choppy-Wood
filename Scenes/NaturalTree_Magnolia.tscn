@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://Scripts/NaturalTreeGenerator.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Materials/magnolia_bark.tres" type="Material" id=2]
 
 [node name="NaturalTreeGenerator" type="ImmediateGeometry"]
 script = ExtResource( 1 )
@@ -13,3 +14,4 @@ skew_widener = 0.004
 max_splits = 8
 spread_amount = 0.175
 initial_split_chance = 150
+bark_material = ExtResource( 2 )

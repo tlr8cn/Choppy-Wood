@@ -9,7 +9,6 @@ var st:SurfaceTool
 var plane_mesh:PlaneMesh
 
 var dirt_material:ShaderMaterial
-var tree_generator
 var shack 
 var rock1 
 var tuft_options = []
@@ -24,6 +23,8 @@ var height_factor
 var array_plane
 
 var plane_width
+
+var tree_generators = []
 
 func _init(noise_seed, plane_width=64, plane_depth=64, height_factor=10, tree_likelihood=25, grass_likelihood=40, rock_likelihood=10, noise_octaves=8.0, noise_period=55.0, noise_persistence=0.125):
 	rng = RandomNumberGenerator.new()
@@ -41,7 +42,11 @@ func _init(noise_seed, plane_width=64, plane_depth=64, height_factor=10, tree_li
 	var grass_small = load("res://Scenes/GrassTuftSmall.tscn")
 	var grass_large = load("res://Scenes/GrassTuftLarge.tscn")
 	tuft_options = [grass_small, grass_large]
-	tree_generator = load("res://Scenes/NaturalTree.tscn")
+	
+	var original_tree_generator = load("res://Scenes/NaturalTree.tscn")
+	var magnolia_tree_generator = load("res://Scenes/NaturalTree_Magnolia.tscn")
+	tree_generators = [original_tree_generator, magnolia_tree_generator]
+	
 	shack = load("res://Scenes/Shack.tscn")
 	rock1 = load("res://Scenes/Rock1.tscn")
 	dirt_material = load("res://Assets/Materials/dirt_material.tres")
@@ -113,8 +118,8 @@ func draw_terrain(plane_width, plane_depth):
 		var vertex = mdt.get_vertex(i)
 		
 		# on every nth vertex, roll to create a tree
-		if i % 75 == 0:
-			roll_to_add_tree(tree_generator, vertex, i, mdt)
+		if i % 50 == 0:
+			roll_to_add_tree(tree_generators, vertex, i, mdt)
 		
 		# on every index, roll to create grass
 		#roll_to_add_grass(vertex)
@@ -166,7 +171,14 @@ func roll_to_add_grass(grass_location):
 		add_child(instance)
 	pass
 
-func roll_to_add_tree(tree_generator, tree_location, vertex_index, mdt):
+func roll_to_add_tree(tree_generators, tree_location, vertex_index, mdt):
+	var tree_type_roll = rng.randi_range(0, 100)
+	var tree_generator = null
+	if tree_type_roll >= 65:
+		tree_generator = tree_generators[0]
+	else:
+		tree_generator = tree_generators[1]
+	
 	var roll = rng.randi_range(0, 100)
 	if roll <= self.tree_likelihood:
 		# Add tree
@@ -206,7 +218,7 @@ func roll_to_add_tree(tree_generator, tree_location, vertex_index, mdt):
 				var new_mushroom
 				var mushroom_man_roll = rng.randi_range(0, 1000)
 				var now_dats_alota_mushrooms = num_mushrooms >= num_mushrooms_cap - 2 && num_mushrooms <= num_mushrooms_cap
-				if mushroom_man_roll < 600 && !mushroom_man_was_spawned && now_dats_alota_mushrooms:
+				if mushroom_man_roll < 60 && !mushroom_man_was_spawned && now_dats_alota_mushrooms:
 					mushroom_man_was_spawned = true
 					new_mushroom = mushroom_man.instance()
 					new_mushroom.transform.origin = Vector3(mushroom_location.x, mushroom_location.y - 0.75, mushroom_location.z)

@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Scripts/NaturalTreeGenerator.gd" type="Script" id=1]
+
+[node name="NaturalTreeGenerator" type="ImmediateGeometry"]
+script = ExtResource( 1 )
+height_inc = 0.475
+radius_dec = 0.012
+initial_radius = 0.175
+skew_min = 0.02
+skew_max = 0.2
+skew_widener = 0.004
+max_splits = 8
+spread_amount = 0.175
+initial_split_chance = 150

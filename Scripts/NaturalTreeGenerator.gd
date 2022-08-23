@@ -3,11 +3,11 @@ extends ImmediateGeometry
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
-var height_inc = 0.5
-var radius_dec = 0.025
+export var height_inc = 0.5
+export var radius_dec = 0.025
 var radius_mod = 4 # amounts to the number of tree sections 
 var id = 1
-var initial_radius = 0.5
+export var initial_radius = 0.5
 # stores precalculated radii for n circles packed evenly within a unit circle
 # array indexed by n_1(-1), ..., n_6(-1)
 # values pulled from website dedicated to circle packing http://www.packomania.com/
@@ -15,13 +15,14 @@ var packing_radii = [1.0, 0.5, 0.464101615138, 0.414213562373, 0.370191908159, 0
 
 var rng = RandomNumberGenerator.new()
 
-var skew_min = 0.01 # should be closer to zero
-var skew_max = 0.125 # should be further from zero
-var skew_widener = 0.0015
+export var skew_min = 0.01 # should be closer to zero
+export var skew_max = 0.125 # should be further from zero
+export var skew_widener = 0.0015
 
 # limits the number of branch splits per tree
-var max_splits = 5
-var spread_amount = 0.125
+export var max_splits = 5
+export var spread_amount = 0.125
+export var initial_split_chance = 35
 
 #TODO: This can be compressed
 enum TriType {
@@ -86,7 +87,7 @@ func _ready():
 # @param ring_counter - keeps track of how many rings we've laid
 # @param split_counter - keeps track of how many times we've split
 # @param branch_spread - keeps track of the spread for the current branch (spread is added when vertices are created)
-func buildTreeRecursively(current_node, natural_tree, n, current_radius, current_height, num_vertices, center_point_outer, ring_counter=0, split_chance=35, branch_skew_x=0, branch_skew_z=0, split_counter=0, branch_spread_x=0.0, branch_spread_z=0.0):
+func buildTreeRecursively(current_node, natural_tree, n, current_radius, current_height, num_vertices, center_point_outer, ring_counter=0, split_chance=initial_split_chance, branch_skew_x=0, branch_skew_z=0, split_counter=0, branch_spread_x=0.0, branch_spread_z=0.0):
 	var new_ring_counter = ring_counter
 	var new_split_counter = split_counter
 	var new_height = current_height + height_inc

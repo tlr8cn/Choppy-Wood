@@ -21,6 +21,8 @@ var mushroom_half:Resource
 var rotation_offset1 = PI
 var rotation_offset2 = 0
 
+onready var do_apply_initial_torque
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	mushroom_half = load("res://Scenes/MushroomManHalf.tscn")
@@ -64,6 +66,7 @@ func _on_chop(body, split_dir):
 		instance1.global_translate(pos1)
 		instance1.transform.basis = instance1.transform.basis.rotated(Vector3(0, 1, 0), split_dir.get_euler().y + rotation_offset1)
 		get_tree().get_root().add_child(instance1)
+		# TODO: attach a script to the halves to apply initial impulse
 		
 		var instance2 = mushroom_half.instance()
 		instance1.set_meta("orientation", "right")

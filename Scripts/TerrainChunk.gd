@@ -206,7 +206,7 @@ func roll_to_add_tree(tree_generator, tree_location, vertex_index, mdt):
 				var new_mushroom
 				var mushroom_man_roll = rng.randi_range(0, 1000)
 				var now_dats_alota_mushrooms = num_mushrooms >= num_mushrooms_cap - 2 && num_mushrooms <= num_mushrooms_cap
-				if mushroom_man_roll < 60 && !mushroom_man_was_spawned && now_dats_alota_mushrooms:
+				if mushroom_man_roll < 600 && !mushroom_man_was_spawned && now_dats_alota_mushrooms:
 					mushroom_man_was_spawned = true
 					new_mushroom = mushroom_man.instance()
 					new_mushroom.transform.origin = Vector3(mushroom_location.x, mushroom_location.y - 0.75, mushroom_location.z)

@@ -75,5 +75,12 @@ func _physics_process(delta):
 		var intersection_map = space_state.intersect_ray(from, to)
 		if intersection_map:
 			if "Log" in intersection_map["collider"].name:
+				intersection_map["collider"].axis_lock_angular_x = false
+				intersection_map["collider"].axis_lock_angular_y = false
+				intersection_map["collider"].axis_lock_angular_z = false
 				intersection_map["collider"].transform.basis = Basis()
+				intersection_map["collider"].axis_lock_angular_x = true
+				intersection_map["collider"].axis_lock_angular_y = true
+				intersection_map["collider"].axis_lock_angular_z = true
+				
 		do_ray_cast = false

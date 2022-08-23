@@ -8,6 +8,7 @@
 extents = Vector3( 0.479221, 1.30753, 0.903815 )
 
 [node name="Half Log" type="RigidBody"]
+transform = Transform( 1.00263, 0, 0, 0, 1.00263, 0, 0, 0, 1.00263, 0, 0, 0 )
 mass = 100.0
 physics_material_override = ExtResource( 3 )
 gravity_scale = 1.4

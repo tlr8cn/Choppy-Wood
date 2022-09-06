@@ -26,12 +26,16 @@ var plane_width
 
 var tree_generators = []
 
+var plane_node_size
+
+var mdt_map = {}
+
 # TODO: split a large plane into many chunks (which are connected)
 # As the player progresses, a large area surrounding the player will intersect
 # with colliders placed at certain vertices
 # When the player area intersects with the collider, add that chunk to a queue on the TerrainOrchestrator
 # Pull that chunk off the queue, and generate terrain for all vertices surrounding it
-func _init(noise_seed, plane_width=64, plane_depth=64, height_factor=10, tree_likelihood=25, grass_likelihood=40, rock_likelihood=10, noise_octaves=8.0, noise_period=55.0, noise_persistence=0.125):
+func _init(noise_seed, plane_width=64, plane_depth=64, plane_divider=16, height_factor=10, tree_likelihood=25, grass_likelihood=40, rock_likelihood=10, noise_octaves=8.0, noise_period=55.0, noise_persistence=0.125):
 	rng = RandomNumberGenerator.new()
 	rng.randomize()
 	
@@ -43,6 +47,7 @@ func _init(noise_seed, plane_width=64, plane_depth=64, height_factor=10, tree_li
 	self.tree_likelihood = tree_likelihood
 	self.rock_likelihood = rock_likelihood
 	self.grass_likelihood = grass_likelihood
+	self.plane_node_size = plane_width/plane_divider
 	
 	var grass_small = load("res://Scenes/GrassTuftSmall.tscn")
 	var grass_large = load("res://Scenes/GrassTuftLarge.tscn")
@@ -77,8 +82,17 @@ func _init(noise_seed, plane_width=64, plane_depth=64, height_factor=10, tree_li
 	array_plane = st.commit()
 	mdt.create_from_surface(array_plane, 0)
 	
+	# TODO: generate TerrainNodes at center of each section
+	generate_terrain_nodes()
+	
+	# TODO: only do this when player enters the area (move to TerrainNode)
 	draw_terrain(plane_width, plane_depth)
 	pass
+
+func generate_terrain_nodes():
+	# TODO: somehow use self.plane_node_size to generate TerrainNodes
+	for i in range(mdt.get_vertex_count()):
+		var TerrainNode.new(mdt, mdt_map, plane_width, plane_depth, plane_divider)
 
 func draw_terrain(plane_width, plane_depth):
 	var uv_x = 0.0

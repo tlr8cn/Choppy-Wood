@@ -17,6 +17,18 @@ var plane_divider = 16
 
 var chunk_grid = []
 
+
+# TODO: the terrain orchestrator should store all variables that apply to the terrain as a whole
+# The mdt, scenes, array_plane, plane size, map of index to group of indices, etc
+#
+# TerrainNode should store any variables specific to that chunk of land like...
+# main vertex, biome information, was_generated, etc.
+#
+# Whenever the player enters a plane node's area, send a signal from that TerrainNode to the TerrainOrchestrator
+# This will add the TerrainNode's section to a queue to be generated (maybe partially) on the next process step
+#
+# With the above, the TerrainChunk script should be dissolved into TerrainNode and TerrainOrchestrator
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	rng.randomize()

@@ -28,7 +28,10 @@ var tree_generators = []
 
 var plane_node_size
 
-var mdt_map = {}
+# key: index with collision shape; value: array of indices in group
+var vertex_map = {}
+
+var terrain_nodes = []
 
 # TODO: split a large plane into many chunks (which are connected)
 # As the player progresses, a large area surrounding the player will intersect
@@ -48,20 +51,6 @@ func _init(noise_seed, plane_width=64, plane_depth=64, plane_divider=16, height_
 	self.rock_likelihood = rock_likelihood
 	self.grass_likelihood = grass_likelihood
 	self.plane_node_size = plane_width/plane_divider
-	
-	var grass_small = load("res://Scenes/GrassTuftSmall.tscn")
-	var grass_large = load("res://Scenes/GrassTuftLarge.tscn")
-	tuft_options = [grass_small, grass_large]
-	
-	var original_tree_generator = load("res://Scenes/NaturalTree.tscn")
-	var magnolia_tree_generator = load("res://Scenes/NaturalTree_Magnolia.tscn")
-	tree_generators = [original_tree_generator, magnolia_tree_generator]
-	
-	shack = load("res://Scenes/Shack.tscn")
-	rock1 = load("res://Scenes/Rock1.tscn")
-	dirt_material = load("res://Assets/Materials/dirt_material.tres")
-	mushroom = load("res://Scenes/Mushroom.tscn")
-	mushroom_man = load("res://Scenes/MushroomMan.tscn")
 	
 	noise = OpenSimplexNoise.new()
 	noise.seed = noise_seed
@@ -85,193 +74,44 @@ func _init(noise_seed, plane_width=64, plane_depth=64, plane_divider=16, height_
 	# TODO: generate TerrainNodes at center of each section
 	generate_terrain_nodes()
 	
+	for i in range(self.terrain_nodes.size()):
+		var node = self.terrain_nodes[i]
+		add_child(node)
 	# TODO: only do this when player enters the area (move to TerrainNode)
-	draw_terrain(plane_width, plane_depth)
+	#draw_terrain(plane_width, plane_depth)
 	pass
 
 func generate_terrain_nodes():
-	# TODO: somehow use self.plane_node_size to generate TerrainNodes
-	for i in range(mdt.get_vertex_count()):
-		var TerrainNode.new(mdt, mdt_map, plane_width, plane_depth, plane_divider)
-
-func draw_terrain(plane_width, plane_depth):
-	var uv_x = 0.0
-	var uv_y = 0.0
-	var uv_inc = 1.0/8.0
-	var old_z = mdt.get_vertex(0).z
-	# uvs should run from 0, 1/64, 2/64, .., 1
-	for i in range(mdt.get_vertex_count()):
-		var vertex = mdt.get_vertex(i)
-		var new_z = vertex.z
-		var noise_val = noise.get_noise_2d(float(vertex.x), float(vertex.z))
-		vertex.y = self.height_factor*noise_val
-		
-		mdt.set_vertex_uv(i, Vector2(uv_x, uv_y))
-		mdt.set_vertex(i, vertex)
-		
-		# on every nth vertex, roll to create a tree
-		#if i % 75 == 0:
-		#	roll_to_add_tree(tree_generator, vertex, i, mdt)
-		
-		# on every index, roll to create grass
-		#roll_to_add_grass(vertex)
-		
-		#roll_to_add_rock(vertex)
-		
-		# Check for house spawn
-		#if i == 1000:
-		#	spawn_house(shack, vertex)
-		
-		uv_x += uv_inc
-		if uv_x < 0:
-			uv_x = 0.0
-		
-		if old_z != new_z:
-			uv_y += uv_inc
-			uv_x = 0.0
-		
-		old_z = new_z
-	
-	# add features
-	for i in range(mdt.get_vertex_count()):
-		var vertex = mdt.get_vertex(i)
-		
-		# on every nth vertex, roll to create a tree
-		if i % 50 == 0:
-			roll_to_add_tree(tree_generators, vertex, i, mdt)
-		
-		# on every index, roll to create grass
-		#roll_to_add_grass(vertex)
-		
-		roll_to_add_rock(vertex)
-		
-		# Check for house spawn
-		#if i == 1000:
-		#	spawn_house(shack, vertex)
-	
-	add_tree_to_scene(array_plane)
-pass
-
-func roll_to_add_rock(rock_location):
-	var roll = rng.randi_range(0, 2500)
-	if roll <= self.rock_likelihood:
-		var instance = rock1.instance()
-		var minor_offset_x = rng.randf_range(-0.15, 0.15)
-		var minor_offset_z = rng.randf_range(-0.15, 0.15)
-		var pos = Vector3(rock_location.x + minor_offset_x, rock_location.y - 0.15, rock_location.z + minor_offset_z)
-		instance.transform.origin = pos
-		
-		var random_rotation = rng.randf_range(0, 2*PI)
-		instance.transform.basis = instance.transform.basis.rotated(Vector3(1, 0, 0), transform.basis.get_euler().x + random_rotation)
-		random_rotation = rng.randf_range(0, 2*PI)
-		instance.transform.basis = instance.transform.basis.rotated(Vector3(0, 1, 0), transform.basis.get_euler().y + random_rotation)
-		random_rotation = rng.randf_range(0, 2*PI)
-		instance.transform.basis = instance.transform.basis.rotated(Vector3(0, 0, 1), transform.basis.get_euler().z + random_rotation)
-		add_child(instance)
-	pass
-
-func roll_to_add_grass(grass_location):
-	var roll = rng.randi_range(0, 100)
-	if roll <= self.grass_likelihood:
-		var index = rng.randi_range(0, 1)
-		var instance = tuft_options[index].instance()
-		var minor_offset_x = rng.randf_range(-0.125, 0.125)
-		var minor_offset_z = rng.randf_range(-0.125, 0.125)
-		var pos = Vector3(grass_location.x + minor_offset_x, grass_location.y, grass_location.z + minor_offset_z)
-		instance.transform.origin = pos
-		
-		# Random, minor offsets in the x and z directions
-		#var pos = Vector3(current_x + minor_offset_x, transform.origin.y + instance_y_offset, current_z + minor_offset_z)
-		#instance.global_translate(pos)
-		var random_rotation = rng.randf_range(0, 2*PI)
-		instance.transform.basis = instance.transform.basis.rotated(Vector3(0, 1, 0), transform.basis.get_euler().y + random_rotation)
-		instance.scale = Vector3(0.35, 0.35, 0.35)
-		instance.visible = true
-		add_child(instance)
-	pass
-
-func roll_to_add_tree(tree_generators, tree_location, vertex_index, mdt):
-	var tree_type_roll = rng.randi_range(0, 100)
-	var tree_generator = null
-	if tree_type_roll >= 65:
-		tree_generator = tree_generators[0]
-	else:
-		tree_generator = tree_generators[1]
-	
-	var roll = rng.randi_range(0, 100)
-	if roll <= self.tree_likelihood:
-		# Add tree
-		var new_tree = tree_generator.instance()
-		new_tree.translate(Vector3(tree_location.x, tree_location.y, tree_location.z))
-		add_child(new_tree)
-		
-		# Roll again for mushrooms
-		roll = rng.randi_range(0, 100)
-		if roll <= 25:
-			var nearby_vertices = []
-			for i in 4:
-				if vertex_index - i >= 0:
-					nearby_vertices.push_back(mdt.get_vertex(vertex_index - i))
-				if vertex_index + i <= mdt.get_vertex_count() - 1:
-					nearby_vertices.push_back(mdt.get_vertex(vertex_index + i))
-				if vertex_index + i*plane_width <= mdt.get_vertex_count() - 1:
-					nearby_vertices.push_back(mdt.get_vertex(vertex_index + i*plane_width))
-				if vertex_index - i*plane_width >= 0:
-					nearby_vertices.push_back(mdt.get_vertex(vertex_index - i*plane_width))
+	var i = 0
+	var column_number = 1 # once this reaches plane_node_size - 1, increase by plane_node_size + plane_width*(plane_node_size - 2)
+	while i < mdt.get_vertex_count():
+		var row_number = 1
+		self.vertex_map[i] = []
+		var target = i
+		while(true):
+			# if we can add horizontal vertices, += 1 and add them 
+			if (target + 1) % (self.plane_width - 1) != 0:
+				target += 1
+				column_number += 1
+				self.vertex_map[i].push_back(target)
+			# else if we can add vertical vertices, += i + row*plane_width 
+			elif row_number + 1 < self.plane_node_size:
+				target = i + row_number*self.plane_width
+				row_number += 1
+				self.vertex_map[i].push_back(target)
+			# else, we create the terrain node and break
+			else:
+				break
 			
-			var num_mushrooms_cap = (nearby_vertices.size() - 1)/4
-			var num_mushrooms = rng.randi_range(0, num_mushrooms_cap)
-			var visited = {}
-			var mushroom_man_was_spawned = false
-			for i in num_mushrooms:
-				var mush_index = 0
-				var found_open_vertex = false
-				while !found_open_vertex:
-					var vertex_roll = rng.randi_range(0, nearby_vertices.size() - 1)
-					if !visited.has(vertex_roll):
-						visited[vertex_roll] = true
-						found_open_vertex = true
-						mush_index = vertex_roll
-				var mushroom_location = nearby_vertices[mush_index]
-				
-				var new_mushroom
-				var mushroom_man_roll = rng.randi_range(0, 1000)
-				var now_dats_alota_mushrooms = num_mushrooms >= num_mushrooms_cap - 2 && num_mushrooms <= num_mushrooms_cap
-				if mushroom_man_roll < 60 && !mushroom_man_was_spawned && now_dats_alota_mushrooms:
-					mushroom_man_was_spawned = true
-					new_mushroom = mushroom_man.instance()
-					new_mushroom.transform.origin = Vector3(mushroom_location.x, mushroom_location.y - 0.75, mushroom_location.z)
-				else:
-					new_mushroom = mushroom.instance()
-					new_mushroom.translate(Vector3(mushroom_location.x, mushroom_location.y, mushroom_location.z))
-				add_child(new_mushroom)
-	pass
-
-func add_tree_to_scene(array_plane):
-	for s in range(array_plane.get_surface_count()):
-		array_plane.surface_remove(s)
-		mdt.commit_to_surface(array_plane)
-		st.create_from(array_plane, 0)
-		st.generate_normals()
-		# TODO: this should be separated into chunks eventually
-		var meshInstance = MeshInstance.new()
-		meshInstance.set_mesh(st.commit())
-		meshInstance.global_transform.origin = Vector3(0, 0, 0)
-		#var ttg = TerrainTextureGenerator.new(plane_mesh.subdivide_width*128, plane_mesh.subdivide_depth*128)
-		#var terrain_texture = ttg.get_terrain_texture()
+		var node = TerrainNode.new(st, mdt, i, self.vertex_map[i], noise, array_plane, self.plane_width, self.plane_node_size, rng, self.height_factor, self.tree_likelihood, self.rock_likelihood)
+		terrain_nodes.push_back(node)
 		
-		#material.albedo_texture = terrain_texture
-		#material.albedo_color = Color("#3A2218")
-		
-		meshInstance.material_override = dirt_material
-		meshInstance.create_trimesh_collision()
-		add_child(meshInstance)
-	pass
-
-func spawn_house(house, location):
-	var new_house = house.instance()
-	new_house.translate(Vector3(location.x, location.y + 0.1, location.z + 1.0))
-	add_child(new_house)
+		if i == 0 || (self.plane_width - 2) % i == 0: # an edge
+			i += 1 + (plane_node_size - 1)*self.plane_width
+		else:
+			i += plane_node_size
+	
+	print(vertex_map)
 	pass
 
 func get_mdt():

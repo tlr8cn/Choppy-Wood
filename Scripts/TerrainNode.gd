@@ -34,6 +34,8 @@ var was_generated = false
 
 # TODO: I think, in addition to the mdt, we need a list of vertices that we can use to access this node
 func _init(st, mdt, mdt_index, group_indices, noise, array_plane, plane_width, plane_divider, rng, height_factor, tree_likelihood, rock_likelihood):
+	#connect("generate_terrain", self, "_on_generate")
+	
 	self.rng = rng
 	self.height_factor = height_factor
 	self.tree_likelihood = tree_likelihood
@@ -63,7 +65,7 @@ func _init(st, mdt, mdt_index, group_indices, noise, array_plane, plane_width, p
 	dirt_material = load("res://Assets/Materials/dirt_material.tres")
 	mushroom = load("res://Scenes/Mushroom.tscn")
 	mushroom_man = load("res://Scenes/MushroomMan.tscn")
-
+	
 	var collision_shape = SphereShape.new()
 	collision_shape.set_radius(2.0)
 	
@@ -72,7 +74,7 @@ func _init(st, mdt, mdt_index, group_indices, noise, array_plane, plane_width, p
 	self.transform.origin = vertex
 	var collision = CollisionShape.new()
 	collision.set_shape(collision_shape)
-
+	
 	add_child(collision)
 	
 	connect("body_entered", self, "callback")
@@ -80,8 +82,9 @@ func _init(st, mdt, mdt_index, group_indices, noise, array_plane, plane_width, p
 func callback(body):
 	var body_name = body.get_name()
 	if body_name == "Player" && !was_generated:
-		draw_terrain()
-		was_generated = true
+		print("emitting player_entered")
+		emit_signal("player_entered", self)
+		#draw_terrain()
 
 # Called when the node enters the scene tree for the first time.
 #func _ready():
@@ -93,6 +96,7 @@ func callback(body):
 #	pass
 
 func draw_terrain():
+	print("drawing node's terrain")
 	var uv_x = 0.0
 	var uv_y = 0.0
 	var uv_inc = 1.0/8.0
@@ -148,6 +152,7 @@ func draw_terrain():
 		#	spawn_house(shack, vertex)
 	
 	add_tree_to_scene()
+	# TODO: after drawing is complete, send a signal back to the orchestrator to let it know
 	pass
 
 func roll_to_add_rock(rock_location):
@@ -266,3 +271,11 @@ func spawn_house(house, location):
 	new_house.translate(Vector3(location.x, location.y + 0.1, location.z + 1.0))
 	add_child(new_house)
 	pass
+
+func _on_generate(body_name):
+	print("_on_generate")
+	if body_name != self.name || was_generated:
+		pass
+	print("----- a hit! -----")
+	draw_terrain()
+	was_generated = true

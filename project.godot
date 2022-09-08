@@ -14,15 +14,10 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Scripts/NaturalTree.gd"
 }, {
-"base": "Spatial",
-"class": "TerrainChunk",
-"language": "GDScript",
-"path": "res://Scripts/TerrainChunk.gd"
-}, {
 "base": "Area",
 "class": "TerrainNode",
 "language": "GDScript",
-"path": "res://Scenes/TerrainNode.gd"
+"path": "res://Scripts/TerrainNode.gd"
 }, {
 "base": "Node",
 "class": "TerrainTextureGenerator",
@@ -41,7 +36,6 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "NaturalTree": "",
-"TerrainChunk": "",
 "TerrainNode": "",
 "TerrainTextureGenerator": "",
 "TreeNode": "",
@@ -53,10 +47,6 @@ _global_script_class_icons={
 config/name="Choppy Wood"
 run/main_scene="res://Scenes/main.tscn"
 config/icon="res://icon.png"
-
-[display]
-
-window/size/fullscreen=true
 
 [global]
 

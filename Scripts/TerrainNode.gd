@@ -3,6 +3,7 @@ extends Area
 class_name TerrainNode
 
 signal player_entered
+signal terrain_generated(vertex_mapping)
 
 var noise:OpenSimplexNoise
 var rng:RandomNumberGenerator
@@ -82,7 +83,6 @@ func _init(st, mdt, mdt_index, group_indices, noise, array_plane, plane_width, p
 func callback(body):
 	var body_name = body.get_name()
 	if body_name == "Player" && !was_generated:
-		print("emitting player_entered")
 		emit_signal("player_entered", self)
 		#draw_terrain()
 
@@ -95,8 +95,11 @@ func callback(body):
 #func _process(delta):
 #	pass
 
+var vertex_mapping = {}
+
 func draw_terrain():
-	print("drawing node's terrain")
+	print("drawing terrain for")
+	print(self.name)
 	var uv_x = 0.0
 	var uv_y = 0.0
 	var uv_inc = 1.0/8.0
@@ -109,7 +112,7 @@ func draw_terrain():
 		vertex.y = self.height_factor*noise_val
 		
 		#mdt.set_vertex_uv(i, Vector2(uv_x, uv_y))
-		mdt.set_vertex(i, vertex)
+		vertex_mapping[self.group_indices[i]] = vertex
 		
 		# on every nth vertex, roll to create a tree
 		#if i % 75 == 0:
@@ -151,7 +154,8 @@ func draw_terrain():
 		#if i == 1000:
 		#	spawn_house(shack, vertex)
 	
-	add_tree_to_scene()
+	#add_tree_to_scene()
+	emit_signal("terrain_generated", vertex_mapping)
 	# TODO: after drawing is complete, send a signal back to the orchestrator to let it know
 	pass
 

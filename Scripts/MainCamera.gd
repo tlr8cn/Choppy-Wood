@@ -5,9 +5,13 @@ onready var do_ray_cast = false
 
 const ray_length = 1000
 
-var grab_event:InputEvent
+var cast_event:InputEvent
+
+onready var player = get_parent()
+#signal tree_detected
 
 func _ready():
+	#connect("tree_detected", player, "_on_tree_detected")
 	## Tell Godot that we want to handle input
 	set_process_input(true)
 
@@ -52,7 +56,10 @@ func _input(event):
 	if event is InputEventMouseMotion:
 		return mouse(event)
 	elif event is InputEventMouseButton and event.is_action_pressed("grab"):
-		grab_event = event
+		cast_event = event
+		do_ray_cast = true
+	elif event is InputEventMouseButton and event.is_action_pressed("chop"):
+		cast_event = event
 		do_ray_cast = true
 
 func _enter_tree():
@@ -70,10 +77,12 @@ func _leave_tree():
 func _physics_process(delta):
 	if do_ray_cast:
 		var space_state = get_world().direct_space_state
-		var from = self.project_ray_origin(grab_event.position)
-		var to = from + self.project_ray_normal(grab_event.position) * ray_length
+		var from = self.project_ray_origin(cast_event.position)
+		var to = from + self.project_ray_normal(cast_event.position) * ray_length
 		var intersection_map = space_state.intersect_ray(from, to)
 		if intersection_map:
+			print("ray cast hit:")
+			print(intersection_map["collider"])
 			if "Log" in intersection_map["collider"].name:
 				intersection_map["collider"].axis_lock_angular_x = false
 				intersection_map["collider"].axis_lock_angular_y = false
@@ -82,5 +91,10 @@ func _physics_process(delta):
 				intersection_map["collider"].axis_lock_angular_x = true
 				intersection_map["collider"].axis_lock_angular_y = true
 				intersection_map["collider"].axis_lock_angular_z = true
+				player.add_log_to_chop(intersection_map["collider"])
+			elif "Tree" in intersection_map["collider"].name:
+				print("chopping a tree")
+				player.add_tree_to_chop(intersection_map["collider"])
+				#emit_signal("tree_detected", player)
 				
 		do_ray_cast = false

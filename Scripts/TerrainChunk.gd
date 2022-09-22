@@ -31,7 +31,7 @@ var tree_generators = []
 # with colliders placed at certain vertices
 # When the player area intersects with the collider, add that chunk to a queue on the TerrainOrchestrator
 # Pull that chunk off the queue, and generate terrain for all vertices surrounding it
-func _init(noise_seed, plane_width=64, plane_depth=64, height_factor=10, tree_likelihood=25, grass_likelihood=40, rock_likelihood=10, noise_octaves=8.0, noise_period=55.0, noise_persistence=0.125):
+func _init(noise_seed, plane_width=64, plane_depth=64, height_factor=10, tree_likelihood=18, grass_likelihood=40, rock_likelihood=5, noise_octaves=8.0, noise_period=55.0, noise_persistence=0.125):
 	rng = RandomNumberGenerator.new()
 	rng.randomize()
 	

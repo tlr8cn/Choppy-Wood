@@ -66,11 +66,41 @@ func _ready():
 	# center_point for root is the outer center point; parent is null
 	var root = TreeNode.new(1, centerPointOuter, initial_radius, null)
 	var natural_tree = NaturalTree.new(root)
-
+	
+	# TODO: tree needs a name
+	# TODO: tree needs a simple cylinder collider at the trunk
+	
 	buildTreeRecursively(root, natural_tree, 1, initial_radius, currentHeight, numVertices, centerPointOuter)
 	
 	# branches is a 2D array of nodes representing branches of the tree
 	var branches = natural_tree.dfs_for_branches()
+	
+	var trunk = branches[0]
+	var trunk_bottom = trunk[0].get_center_point()
+	var trunk_top = trunk[trunk.size()-1].get_center_point()
+	
+	var collision_object = StaticBody.new()
+	var shape = CylinderShape.new()
+	shape.radius = initial_radius
+	shape.height = trunk_top.y - trunk_bottom.y
+	#collision_object.shape = shape
+	collision_object.create_shape_owner(self)
+	collision_object.set_ray_pickable(true)
+	collision_object.set_name("Tree")
+	
+	var owners = collision_object.get_shape_owners()
+	var this_owner = owners[0]
+	collision_object.shape_owner_add_shape(this_owner, shape)
+	add_child(collision_object)
+	
+	#var body = RigidBody.new()
+	#body.add_child(TestCube.new())
+	#var shape = CylinderShape.new()
+	#shape.radius = initial_radius
+	#shape.height = trunk_top.y - trunk_bottom.y
+	#body.add_shape(shape)
+	#body.set_translation(Vector3(0, shape.height/2.0, 0))
+	#add_child(body)
 	
 	draw_tree(branches)
 	

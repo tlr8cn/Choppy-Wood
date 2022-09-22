@@ -8,9 +8,15 @@ var velocity = Vector3.ZERO
 var maul_offset = 0.2
 
 onready var anim_player =  get_node("/root/Spatial/AnimationPlayer")
+onready var anim_tree =  get_node("/root/Spatial/AnimationTree")
 onready var splitting_maul = get_node("/root/Spatial/Player/MainCamera/SplittingMaul")
 var original_maul_position = Vector3()
 # Called when the node enters the scene tree for the first time.
+
+var tree_detected = false
+var chopping_tree = false
+var log_detected = false
+var chopping_log = false
 
 func _ready():
 	original_maul_position = splitting_maul.transform.origin
@@ -36,14 +42,42 @@ func get_input(delta):
 	velocity.y = vy
 	
 	if Input.is_action_just_pressed("chop"):
-		anim_player.queue("maul_windup")
+		if tree_detected:
+			anim_player.queue("maul_windup_side")
+			tree_detected = false
+			chopping_tree = true
+		else:
+			anim_player.queue("maul_windup")
+			log_detected = false
+			chopping_log = true
 	if Input.is_action_just_released("chop"):
-		anim_player.queue("maul_chop")
+		if chopping_log:
+			anim_player.queue("maul_chop")
+			chopping_log = false
+		elif chopping_tree:
+			anim_player.queue("maul_chop_side")
+			chopping_tree = false
+			
 		splitting_maul.get_node("RigidBody").get_node("CollisionShape").disabled = false
 		# TODO deactivate collider when animation finishes or when collision occurs
 		# TODO checking when animation finishes might require sending a signal from the maul script
 		# to be handled here
 		#splitting_maul.transform.origin.x = original_maul_position.x
+
+func add_tree_to_chop(body):
+	print("tree chop event received")
+	tree_detected = true
+	pass
+
+func add_log_to_chop(body):
+	print("log chop event received")
+	log_detected = true
+	pass
+
+#func _on_tree_detected():
+#	tree_detected = true
+#	print("tree about to be chopped")
+#	pass
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):

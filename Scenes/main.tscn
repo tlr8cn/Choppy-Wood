@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=28 format=2]
 
 [ext_resource path="res://Scripts/PlayerController.gd" type="Script" id=1]
 [ext_resource path="res://Scripts/MainCamera.gd" type="Script" id=2]
@@ -16,7 +16,7 @@ height = 3.36326
 extents = Vector3( 0.0615791, 0.212795, 0.0719457 )
 
 [sub_resource type="Animation" id=3]
-length = 0.6
+length = 0.3
 tracks/0/type = "value"
 tracks/0/path = NodePath("Player/MainCamera/SplittingMaul:rotation_degrees")
 tracks/0/interp = 1
@@ -43,6 +43,61 @@ tracks/1/keys = {
 }
 
 [sub_resource type="Animation" id=4]
+resource_name = "maul_chop_side"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/path = NodePath("Player/MainCamera/SplittingMaul:translation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2, 0.3 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector3( 0.731537, -0.269716, -0.282073 ), Vector3( 0.366966, -0.34431, -0.615516 ), Vector3( 0.233985, -0.268423, -0.3168 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Player/MainCamera/SplittingMaul:rotation_degrees")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.2, 0.3 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector3( 2.89516, -141.404, 86.5127 ), Vector3( 4.32538, -73.6841, 91.3517 ), Vector3( 69.6159, -178.722, 1.4577 ) ]
+}
+
+[sub_resource type="Animation" id=5]
+resource_name = "maul_idle"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Player/MainCamera/SplittingMaul:translation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector3( 0.236, -0.309, -0.295 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Player/MainCamera/SplittingMaul:rotation_degrees")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector3( 65, 180, 0 ) ]
+}
+
+[sub_resource type="Animation" id=6]
 length = 0.8
 tracks/0/type = "value"
 tracks/0/path = NodePath("Player/MainCamera/SplittingMaul:rotation_degrees")
@@ -69,6 +124,76 @@ tracks/1/keys = {
 "values": [ Vector3( 0.236, -0.309, -0.295 ), Vector3( -0.000702843, -0.309, -0.276068 ), Vector3( -0.000702852, 0.0479763, -0.276068 ), Vector3( -0.000702856, 0.301014, -0.276068 ) ]
 }
 
+[sub_resource type="Animation" id=7]
+resource_name = "maul_windup_side"
+length = 0.8
+tracks/0/type = "value"
+tracks/0/path = NodePath("Player/MainCamera/SplittingMaul:translation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector3( 0.236, -0.309, -0.295 ), Vector3( 0.660754, -0.28623, -0.293686 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Player/MainCamera/SplittingMaul:rotation_degrees")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.1, 0.5, 0.8 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector3( 65, 180, 0 ), Vector3( 3.09109, -91.4429, 90.9881 ), Vector3( 3.02931, -130.208, 88.8361 ), Vector3( 2.67116, -143.806, 88.1568 ) ]
+}
+
+[sub_resource type="AnimationNodeAnimation" id=8]
+animation = "maul_chop"
+
+[sub_resource type="AnimationNodeAnimation" id=9]
+animation = "maul_chop_side"
+
+[sub_resource type="AnimationNodeAnimation" id=10]
+animation = "maul_idle"
+
+[sub_resource type="AnimationNodeAnimation" id=11]
+animation = "maul_windup"
+
+[sub_resource type="AnimationNodeAnimation" id=12]
+animation = "maul_windup_side"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=13]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=14]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=15]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=16]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=17]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=18]
+
+[sub_resource type="AnimationNodeStateMachine" id=19]
+states/maul_chop/node = SubResource( 8 )
+states/maul_chop/position = Vector2( 772, 62 )
+states/maul_chop_side/node = SubResource( 9 )
+states/maul_chop_side/position = Vector2( 772, 174 )
+states/maul_idle/node = SubResource( 10 )
+states/maul_idle/position = Vector2( 261, 117 )
+states/maul_windup/node = SubResource( 11 )
+states/maul_windup/position = Vector2( 483, 45 )
+states/maul_windup_side/node = SubResource( 12 )
+states/maul_windup_side/position = Vector2( 483, 191 )
+transitions = [ "maul_idle", "maul_windup", SubResource( 13 ), "maul_windup", "maul_chop", SubResource( 14 ), "maul_chop", "maul_idle", SubResource( 15 ), "maul_idle", "maul_windup_side", SubResource( 16 ), "maul_windup_side", "maul_chop_side", SubResource( 17 ), "maul_chop_side", "maul_idle", SubResource( 18 ) ]
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=20]
+
 [node name="Spatial" type="Spatial"]
 
 [node name="Player" type="KinematicBody" parent="."]
@@ -87,7 +212,7 @@ far = 115.0
 script = ExtResource( 2 )
 
 [node name="SplittingMaul" parent="Player/MainCamera" instance=ExtResource( 3 )]
-transform = Transform( -0.350001, -3.1665e-08, -1.30385e-08, 0, 0.147917, -0.317208, 2.98023e-08, -0.317209, -0.147917, 0.249873, -0.309, -0.121551 )
+transform = Transform( -0.350002, -2.77314e-08, -1.29313e-08, 0, 0.147918, -0.317209, 3.05982e-08, -0.31721, -0.147917, 0.236, -0.309, -0.295 )
 
 [node name="RigidBody" type="RigidBody" parent="Player/MainCamera/SplittingMaul"]
 transform = Transform( 1, 0, 0, 2.98023e-08, 1, 1.16415e-09, 3.72529e-09, -1.60653e-08, 1, -0.00121927, 0.00917411, 0.0195608 )
@@ -107,7 +232,10 @@ shadow_color = Color( 0.00392157, 0.00784314, 0.117647, 1 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/maul_chop = SubResource( 3 )
-anims/maul_windup = SubResource( 4 )
+anims/maul_chop_side = SubResource( 4 )
+anims/maul_idle = SubResource( 5 )
+anims/maul_windup = SubResource( 6 )
+anims/maul_windup_side = SubResource( 7 )
 
 [node name="Log4" parent="." instance=ExtResource( 8 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 7.38185, 5.56635, -2.59782 )
@@ -127,3 +255,9 @@ script = ExtResource( 4 )
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource( 5 )
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+tree_root = SubResource( 19 )
+anim_player = NodePath("../AnimationPlayer")
+active = true
+parameters/playback = SubResource( 20 )

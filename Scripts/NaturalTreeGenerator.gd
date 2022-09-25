@@ -44,6 +44,11 @@ onready var canopy_material = preload("res://Assets/Materials/tree_material.tres
 
 export var bark_material:SpatialMaterial
 
+var initial_fell_rotation = 0.0
+var fell_rotation_step = 0.0005
+var is_falling = false
+var never_fall_again = false
+
 # Called when the node enters the scene tree for the firsst time.
 func _ready():
 	var Vertex = load("res://Scripts/Vertex.gd")
@@ -109,6 +114,17 @@ func _ready():
 	self.end()
 	pass # Replace with function body.
 
+func _process(delta):
+	# WIP
+	#if !never_fall_again:
+	#	if is_falling:
+	#		if transform.basis.get_euler().x >= self.initial_fell_rotation.get_euler().x + 43*(PI/180):
+	#			#transform.basis = transform.basis.rotated(Vector3(1, 0, 0), self.initial_fell_rotation.get_euler().x + 85*(PI/180))
+	#			self.is_falling = false
+	#			self.never_fall_again = true
+	#			pass
+	#		transform.basis = transform.basis.rotated(Vector3(1, 0, 0), transform.basis.get_euler().x + self.fell_rotation_step)
+	pass
 # TODO: change "current" to "parent"
 # buildTreeRecursively is a recursive helper function used to build a tree to be drawn later
 # @param current_node - the node we're building now
@@ -496,3 +512,12 @@ func get_xz_signs_from_angle(angle):
 		sign_x = sign_x
 		sign_z = -sign_z
 	return Vector2(sign_x, sign_z)
+
+
+func _on_chop(self_ref, split_dir):
+	if self_ref == self:
+		# WIP
+		#self.initial_fell_rotation = transform.basis
+		#self.is_falling = true
+		transform.basis = transform.basis.rotated(Vector3(1, 0, 0), transform.basis.get_euler().x + PI/2)
+	return

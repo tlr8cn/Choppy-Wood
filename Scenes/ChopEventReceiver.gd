@@ -64,7 +64,7 @@ func _process(delta):
 func _on_chop(body, split_dir):
 	if "Small Log" in name:
 		return
-
+	
 	if "Half Log" in name or "Quarter Log" in name:
 		# TODO: basis should maintain the y rotation of the body.transform
 		split_dir = Basis(Vector3(0, 1, 0), body.transform.basis.get_euler().y)

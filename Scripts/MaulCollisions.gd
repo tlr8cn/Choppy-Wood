@@ -15,11 +15,21 @@ func _ready():
 
 func callback(body):
 	var body_name = body.get_name()
-	print("hit " + body_name)
+	# DEBUG
+	# print("hit " + body_name)
 	if body_name == "Player" || body_name == "Ground":
 		return
-	#if body.get_meta("type") == "log":
-	if !is_connected("was_chopped", body, "_on_chop"):
-		connect("was_chopped", body, "_on_chop")
-	emit_signal("was_chopped", body, player.get_transform().basis)
+	
+	if body_name != "Tree":
+		connect_and_send_chopped_signal(body)
+	else:
+		var tree_generator = body.get_parent()
+		connect_and_send_chopped_signal(tree_generator)
+	
 	get_node("CollisionShape").disabled = true
+
+func connect_and_send_chopped_signal(node):
+	if !is_connected("was_chopped", node, "_on_chop"):
+		connect("was_chopped", node, "_on_chop")
+	emit_signal("was_chopped", node, player.get_transform().basis)
+	pass

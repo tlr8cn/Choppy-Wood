@@ -41,6 +41,7 @@ enum TriType {
 #onready var leaf = get_child(0)
 onready var canopy = preload("res://Scenes/Canopy.tscn")
 onready var canopy_material = preload("res://Assets/Materials/tree_material.tres")
+onready var big_log = preload("res://Scenes/BigLog.tscn")
 
 export var bark_material:SpatialMaterial
 
@@ -119,30 +120,27 @@ func _ready():
 
 func _process(delta):
 	self.fell_counter += delta
-	# WIP
+
 	if !never_fall_again:
 		if is_falling:
-			if transform.basis.get_euler().x >= self.initial_fell_rotation.get_euler().x + 90*(PI/180):
-				#transform.basis = transform.basis.rotated(Vector3(1, 0, 0), self.initial_fell_rotation.get_euler().x + 85*(PI/180))
+			if transform.basis.get_euler().x >= self.initial_fell_rotation.get_euler().x + 85*(PI/180):
 				self.is_falling = false
 				self.never_fall_again = true
+				
+				var big_log_instance = big_log.instance()
+				big_log_instance.global_translate(Vector3(self.transform.origin.x, self.transform.origin.y + 0.5, self.transform.origin.z))
+				big_log_instance.transform.basis = big_log_instance.transform.basis.rotated(Vector3(1, 0, 0), PI/2)
+				get_parent().add_child(big_log_instance)
+				queue_free()
 				pass
+			
 			transform.basis = transform.basis.rotated(Vector3(1, 0, 0), self.fell_rotation_step)
+			
 			if self.fell_counter >= 0.6125:
 				self.fell_rotation_step += 1.1*self.fell_rotation_step
 				self.fell_counter = 0.0
 	pass
 
-func _physics_process(delta):
-	# WIP
-	if is_falling && !never_fall_again:
-		for i in self.leaf_collisions.size():
-			var leaf_collision = leaf_collisions[i]
-			for j in leaf_collision.get_overlapping_bodies().size():
-				var colliding_body = self.leaf_collision.get_overlapping_bodies()[j]
-				print(colliding_body.name)
-	# -------
-	pass
 # TODO: change "current" to "parent"
 # buildTreeRecursively is a recursive helper function used to build a tree to be drawn later
 # @param current_node - the node we're building now
@@ -169,12 +167,6 @@ func buildTreeRecursively(current_node, natural_tree, n, current_radius, current
 	if current_radius <= 0.0 || new_radius <= 0.0:
 		current_node.set_is_leaf(true)
 		natural_tree.add_leaf(current_node)
-		# WIP
-		var leaf_collision = Area.new()
-		leaf_collision.transform.origin = current_node.get_center_point()
-		add_child(leaf_collision)
-		self.leaf_collisions.push_back(leaf_collision)
-		# -------
 		
 		var roll = rng.randi_range(0, 500)
 		if roll <= 50:

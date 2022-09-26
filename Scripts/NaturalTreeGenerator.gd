@@ -48,6 +48,9 @@ var initial_fell_rotation = 0.0
 var fell_rotation_step = 0.0005
 var is_falling = false
 var never_fall_again = false
+var fell_counter = 0.0
+
+var leaf_collisions = []
 
 # Called when the node enters the scene tree for the firsst time.
 func _ready():
@@ -115,15 +118,30 @@ func _ready():
 	pass # Replace with function body.
 
 func _process(delta):
+	self.fell_counter += delta
 	# WIP
-	#if !never_fall_again:
-	#	if is_falling:
-	#		if transform.basis.get_euler().x >= self.initial_fell_rotation.get_euler().x + 43*(PI/180):
-	#			#transform.basis = transform.basis.rotated(Vector3(1, 0, 0), self.initial_fell_rotation.get_euler().x + 85*(PI/180))
-	#			self.is_falling = false
-	#			self.never_fall_again = true
-	#			pass
-	#		transform.basis = transform.basis.rotated(Vector3(1, 0, 0), transform.basis.get_euler().x + self.fell_rotation_step)
+	if !never_fall_again:
+		if is_falling:
+			if transform.basis.get_euler().x >= self.initial_fell_rotation.get_euler().x + 90*(PI/180):
+				#transform.basis = transform.basis.rotated(Vector3(1, 0, 0), self.initial_fell_rotation.get_euler().x + 85*(PI/180))
+				self.is_falling = false
+				self.never_fall_again = true
+				pass
+			transform.basis = transform.basis.rotated(Vector3(1, 0, 0), self.fell_rotation_step)
+			if self.fell_counter >= 0.6125:
+				self.fell_rotation_step += 1.1*self.fell_rotation_step
+				self.fell_counter = 0.0
+	pass
+
+func _physics_process(delta):
+	# WIP
+	if is_falling && !never_fall_again:
+		for i in self.leaf_collisions.size():
+			var leaf_collision = leaf_collisions[i]
+			for j in leaf_collision.get_overlapping_bodies().size():
+				var colliding_body = self.leaf_collision.get_overlapping_bodies()[j]
+				print(colliding_body.name)
+	# -------
 	pass
 # TODO: change "current" to "parent"
 # buildTreeRecursively is a recursive helper function used to build a tree to be drawn later
@@ -151,6 +169,13 @@ func buildTreeRecursively(current_node, natural_tree, n, current_radius, current
 	if current_radius <= 0.0 || new_radius <= 0.0:
 		current_node.set_is_leaf(true)
 		natural_tree.add_leaf(current_node)
+		# WIP
+		var leaf_collision = Area.new()
+		leaf_collision.transform.origin = current_node.get_center_point()
+		add_child(leaf_collision)
+		self.leaf_collisions.push_back(leaf_collision)
+		# -------
+		
 		var roll = rng.randi_range(0, 500)
 		if roll <= 50:
 			var canopy_location = current_node.get_first_ring_vertex()
@@ -517,7 +542,7 @@ func get_xz_signs_from_angle(angle):
 func _on_chop(self_ref, split_dir):
 	if self_ref == self:
 		# WIP
-		#self.initial_fell_rotation = transform.basis
-		#self.is_falling = true
-		transform.basis = transform.basis.rotated(Vector3(1, 0, 0), transform.basis.get_euler().x + PI/2)
+		self.initial_fell_rotation = transform.basis
+		self.is_falling = true
+		#transform.basis = transform.basis.rotated(Vector3(1, 0, 0), transform.basis.get_euler().x + PI/2)
 	return

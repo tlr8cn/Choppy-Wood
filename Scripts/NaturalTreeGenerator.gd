@@ -52,6 +52,8 @@ var never_fall_again = false
 var fell_counter = 0.0
 
 var leaf_collisions = []
+var root = null
+var tree_height=0.0
 
 # Called when the node enters the scene tree for the firsst time.
 func _ready():
@@ -73,7 +75,7 @@ func _ready():
 	var numVertices = 6
 	
 	# center_point for root is the outer center point; parent is null
-	var root = TreeNode.new(1, centerPointOuter, initial_radius, null)
+	root = TreeNode.new(1, centerPointOuter, initial_radius, null)
 	var natural_tree = NaturalTree.new(root)
 	
 	# TODO: tree needs a name
@@ -120,17 +122,22 @@ func _ready():
 
 func _process(delta):
 	self.fell_counter += delta
-
+	
 	if !never_fall_again:
 		if is_falling:
 			if transform.basis.get_euler().x >= self.initial_fell_rotation.get_euler().x + 85*(PI/180):
 				self.is_falling = false
 				self.never_fall_again = true
 				
-				var big_log_instance = big_log.instance()
-				big_log_instance.global_translate(Vector3(self.transform.origin.x, self.transform.origin.y + 0.5, self.transform.origin.z))
-				big_log_instance.transform.basis = big_log_instance.transform.basis.rotated(Vector3(1, 0, 0), PI/2)
-				get_parent().add_child(big_log_instance)
+				var log_length = 5.5
+				var length_counter = 0.0
+				print(self.tree_height)
+				while length_counter < self.tree_height:
+					var big_log_instance = big_log.instance()
+					big_log_instance.global_translate(Vector3(self.transform.origin.x, self.transform.origin.y + 0.35, self.transform.origin.z + length_counter + 2.75))
+					big_log_instance.transform.basis = big_log_instance.transform.basis.rotated(Vector3(0, 1, 0), PI/2)
+					get_parent().add_child(big_log_instance)
+					length_counter += log_length
 				queue_free()
 				pass
 			
@@ -165,6 +172,10 @@ func buildTreeRecursively(current_node, natural_tree, n, current_radius, current
 	# base case
 	# TODO (BUG): it seems like leaves don't have rings at the moment
 	if current_radius <= 0.0 || new_radius <= 0.0:
+		var new_tree_height = current_node.get_center_point().y - self.root.get_center_point().y
+		if new_tree_height > self.tree_height:
+			self.tree_height = new_tree_height
+		
 		current_node.set_is_leaf(true)
 		natural_tree.add_leaf(current_node)
 		

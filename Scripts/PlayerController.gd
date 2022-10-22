@@ -42,21 +42,21 @@ func get_input(delta):
 	velocity.y = vy
 	
 	if Input.is_action_just_pressed("chop"):
-		if tree_detected:
-			anim_player.queue("maul_windup_side")
-			tree_detected = false
-			chopping_tree = true
-		else:
-			anim_player.queue("maul_windup")
-			log_detected = false
-			chopping_log = true
+		#if tree_detected:
+		#	anim_player.queue("maul_windup_side")
+		#	tree_detected = false
+		#	chopping_tree = true
+		#else:
+		anim_player.queue("maul_windup")
+		#	log_detected = false
+		#	chopping_log = true
 	if Input.is_action_just_released("chop"):
-		if chopping_log:
-			anim_player.queue("maul_chop")
-			chopping_log = false
-		elif chopping_tree:
-			anim_player.queue("maul_chop_side")
-			chopping_tree = false
+		#if chopping_log:
+		anim_player.queue("maul_chop")
+			#chopping_log = false
+		#elif chopping_tree:
+		#	anim_player.queue("maul_chop_side")
+		#	chopping_tree = false
 			
 		splitting_maul.get_node("RigidBody").get_node("CollisionShape").disabled = false
 		# TODO deactivate collider when animation finishes or when collision occurs

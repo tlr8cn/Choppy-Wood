@@ -44,9 +44,12 @@ func _init(noise_seed, plane_width=64, plane_depth=64, height_factor=10, tree_li
 	self.rock_likelihood = rock_likelihood
 	self.grass_likelihood = grass_likelihood
 	
+	# TODO: delete hopefully
 	var grass_small = load("res://Scenes/GrassTuftSmall.tscn")
 	var grass_large = load("res://Scenes/GrassTuftLarge.tscn")
 	tuft_options = [grass_small, grass_large]
+	
+	var grass_blade_mesh = load("res://Assets/Models/Grass/blade-of-grass.obj")
 	
 	var original_tree_generator = load("res://Scenes/NaturalTree.tscn")
 	var magnolia_tree_generator = load("res://Scenes/NaturalTree_Magnolia.tscn")
@@ -78,6 +81,8 @@ func _init(noise_seed, plane_width=64, plane_depth=64, height_factor=10, tree_li
 	mdt.create_from_surface(array_plane, 0)
 	
 	draw_terrain(plane_width, plane_depth)
+	
+	place_grass(grass_blade_mesh)
 	pass
 
 func draw_terrain(plane_width, plane_depth):
@@ -136,7 +141,7 @@ func draw_terrain(plane_width, plane_depth):
 		#	spawn_house(shack, vertex)
 	
 	add_tree_to_scene(array_plane)
-pass
+	pass
 
 func roll_to_add_rock(rock_location):
 	var roll = rng.randi_range(0, 2500)
@@ -253,6 +258,37 @@ func add_tree_to_scene(array_plane):
 		meshInstance.create_trimesh_collision()
 		add_child(meshInstance)
 	pass
+
+func place_grass(grass_blade_mesh):
+	rng.randomize()
+	var multimesh = MultiMesh.new()
+	multimesh.transform_format = MultiMesh.TRANSFORM_3D
+	multimesh.instance_count = mdt.get_vertex_count()
+	multimesh.set_mesh(grass_blade_mesh)
+	
+	for i in multimesh.instance_count:
+		var mdt_vertex = mdt.get_vertex(i)
+		
+		var grass_transform = Transform.IDENTITY
+		var random_offset_x = rng.randf_range(-0.0125, 0.0125)
+		var random_offset_z = rng.randf_range(-0.0125, 0.0125)
+		grass_transform.origin = Vector3(mdt_vertex.x + random_offset_x, mdt_vertex.y, mdt_vertex.z + random_offset_z)
+		
+		# can be anything
+		var random_rotation_y = rng.randf_range(0, 2*PI)
+		grass_transform.basis = grass_transform.basis.rotated(Vector3(0, 1, 0), random_rotation_y)
+		
+		# can be small (represents tilt)
+		var random_rotation_x = rng.randf_range(-PI/16, PI/16)
+		var random_rotation_z = rng.randf_range(-PI/16, PI/16)
+		grass_transform.basis = grass_transform.basis.rotated(Vector3(1, 0, 0), random_rotation_x)
+		grass_transform.basis = grass_transform.basis.rotated(Vector3(0, 0, 1), random_rotation_z)
+		multimesh.set_instance_transform(i, grass_transform)
+	
+	# TODO: assign vertex and visual shader to multimesh instance
+	var multimesh_instance = MultiMeshInstance.new()
+	multimesh_instance.multimesh = multimesh
+	add_child(multimesh_instance)
 
 func spawn_house(house, location):
 	var new_house = house.instance()

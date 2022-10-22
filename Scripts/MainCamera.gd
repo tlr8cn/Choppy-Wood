@@ -83,7 +83,7 @@ func _physics_process(delta):
 		if intersection_map:
 			print("ray cast hit:")
 			print(intersection_map["collider"])
-			if "Log" in intersection_map["collider"].name:
+			if "Log" in intersection_map["collider"].name && !("Big" in intersection_map["collider"].name):
 				intersection_map["collider"].axis_lock_angular_x = false
 				intersection_map["collider"].axis_lock_angular_y = false
 				intersection_map["collider"].axis_lock_angular_z = false
@@ -91,6 +91,8 @@ func _physics_process(delta):
 				intersection_map["collider"].axis_lock_angular_x = true
 				intersection_map["collider"].axis_lock_angular_y = true
 				intersection_map["collider"].axis_lock_angular_z = true
+				player.add_log_to_chop(intersection_map["collider"])
+			elif "Big" in intersection_map["collider"].name:
 				player.add_log_to_chop(intersection_map["collider"])
 			elif "Tree" in intersection_map["collider"].name:
 				print("chopping a tree")

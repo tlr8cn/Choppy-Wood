@@ -9,6 +9,7 @@ var st:SurfaceTool
 var plane_mesh:PlaneMesh
 
 var dirt_material:ShaderMaterial
+var grass_material:ShaderMaterial
 var shack 
 var rock1 
 var tuft_options = []
@@ -49,7 +50,7 @@ func _init(noise_seed, plane_width=64, plane_depth=64, height_factor=10, tree_li
 	var grass_large = load("res://Scenes/GrassTuftLarge.tscn")
 	tuft_options = [grass_small, grass_large]
 	
-	var grass_blade_mesh = load("res://Assets/Models/Grass/blade-of-grass.obj")
+	var grass_blade_mesh = load("res://Assets/Models/Grass/flat-grass.obj")
 	
 	var original_tree_generator = load("res://Scenes/NaturalTree.tscn")
 	var magnolia_tree_generator = load("res://Scenes/NaturalTree_Magnolia.tscn")
@@ -60,6 +61,8 @@ func _init(noise_seed, plane_width=64, plane_depth=64, height_factor=10, tree_li
 	dirt_material = load("res://Assets/Materials/dirt_material.tres")
 	mushroom = load("res://Scenes/Mushroom.tscn")
 	mushroom_man = load("res://Scenes/MushroomMan.tscn")
+	
+	grass_material = load("res://Assets/Materials/grass_material.tres")
 	
 	noise = OpenSimplexNoise.new()
 	noise.seed = noise_seed
@@ -288,6 +291,7 @@ func place_grass(grass_blade_mesh):
 	# TODO: assign vertex and visual shader to multimesh instance
 	var multimesh_instance = MultiMeshInstance.new()
 	multimesh_instance.multimesh = multimesh
+	multimesh_instance.material_override = grass_material
 	add_child(multimesh_instance)
 
 func spawn_house(house, location):

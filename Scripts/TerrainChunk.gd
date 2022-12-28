@@ -273,8 +273,8 @@ func place_grass(grass_blade_mesh):
 		var mdt_vertex = mdt.get_vertex(i)
 		
 		var grass_transform = Transform.IDENTITY
-		var random_offset_x = rng.randf_range(-0.0125, 0.0125)
-		var random_offset_z = rng.randf_range(-0.0125, 0.0125)
+		var random_offset_x = rng.randf_range(-0.5, 0.5)
+		var random_offset_z = rng.randf_range(-0.5, 0.5)
 		grass_transform.origin = Vector3(mdt_vertex.x + random_offset_x, mdt_vertex.y, mdt_vertex.z + random_offset_z)
 		
 		# can be anything
@@ -286,6 +286,9 @@ func place_grass(grass_blade_mesh):
 		var random_rotation_z = rng.randf_range(-PI/16, PI/16)
 		grass_transform.basis = grass_transform.basis.rotated(Vector3(1, 0, 0), random_rotation_x)
 		grass_transform.basis = grass_transform.basis.rotated(Vector3(0, 0, 1), random_rotation_z)
+		
+		grass_transform.basis = grass_transform.basis.scaled(Vector3(0.375, 0.375, 0.375))
+		
 		multimesh.set_instance_transform(i, grass_transform)
 	
 	# TODO: assign vertex and visual shader to multimesh instance

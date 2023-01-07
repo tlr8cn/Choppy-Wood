@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://Assets/Models/quarter-log.glb" type="PackedScene" id=1]
+[ext_resource path="res://Assets/Models/QuarterLog/quarter-log.glb" type="PackedScene" id=1]
 [ext_resource path="res://Scenes/ChopEventReceiver.gd" type="Script" id=2]
 [ext_resource path="res://log_physics_material.tres" type="PhysicsMaterial" id=3]
 

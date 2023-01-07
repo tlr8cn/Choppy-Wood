@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://Assets/Models/small-log.glb" type="PackedScene" id=1]
+[ext_resource path="res://Assets/Models/SmallLog/small-log.glb" type="PackedScene" id=1]
 [ext_resource path="res://Scenes/ChopEventReceiver.gd" type="Script" id=2]
 [ext_resource path="res://log_physics_material.tres" type="PhysicsMaterial" id=3]
 
@@ -19,4 +19,4 @@ transform = Transform( 0.874983, 0, -0.484153, 0, 1.1328, 0, 0.484153, 0, 0.8749
 shape = SubResource( 1 )
 
 [node name="Small Log" parent="." instance=ExtResource( 1 )]
-transform = Transform( 0.361772, 0, 0.0726767, 0, 0.406668, 0, -0.0726767, 0, 0.361772, 0.0297141, 0.0717617, -0.0684588 )
+transform = Transform( 0.369, 0, 0, 0, 0.415, 0, 0, 0, 0.369, 0.0405163, 0.0768554, -0.00509982 )

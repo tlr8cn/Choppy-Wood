@@ -2,12 +2,12 @@
 
 importer="scene"
 type="PackedScene"
-path="res://.import/NewerLog.glb-3a05d4baabeca533dd59f943fbab3a31.scn"
+path="res://.import/log.glb-a366813b2653c928ac32a13d0a453f0b.scn"
 
 [deps]
 
-source_file="res://Assets/Models/Log/NewerLog.glb"
-dest_files=[ "res://.import/NewerLog.glb-3a05d4baabeca533dd59f943fbab3a31.scn" ]
+source_file="res://Assets/Models/Log/log.glb"
+dest_files=[ "res://.import/log.glb-a366813b2653c928ac32a13d0a453f0b.scn" ]
 
 [params]
 

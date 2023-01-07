@@ -1,4 +1,4 @@
-[gd_scene load_steps=51 format=2]
+[gd_scene load_steps=50 format=2]
 
 [ext_resource path="res://Scripts/PlayerController.gd" type="Script" id=1]
 [ext_resource path="res://Scripts/MainCamera.gd" type="Script" id=2]
@@ -7,7 +7,6 @@
 [ext_resource path="res://Assets/Environment.tres" type="Environment" id=5]
 [ext_resource path="res://Assets/Textures/smoke_frames.png" type="Texture" id=6]
 [ext_resource path="res://Assets/Materials/Fire.tres" type="Gradient" id=7]
-[ext_resource path="res://Scenes/Log.tscn" type="PackedScene" id=8]
 [ext_resource path="res://Assets/Textures/Spark.png" type="Texture" id=9]
 [ext_resource path="res://Assets/Materials/SmokeGradient.tres" type="Gradient" id=10]
 [ext_resource path="res://Assets/Materials/SparksGradient.tres" type="Gradient" id=11]
@@ -379,19 +378,6 @@ anims/maul_chop_side = SubResource( 4 )
 anims/maul_idle = SubResource( 5 )
 anims/maul_windup = SubResource( 6 )
 anims/maul_windup_side = SubResource( 7 )
-
-[node name="Log4" parent="." instance=ExtResource( 8 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 7.38185, 5.56635, -2.59782 )
-angular_damp = 2.0
-
-[node name="Log" parent="." instance=ExtResource( 8 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 7.52407, 5.56635, 1.21902 )
-
-[node name="Log3" parent="." instance=ExtResource( 8 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 7.52407, 5.56635, -0.767947 )
-
-[node name="Log2" parent="." instance=ExtResource( 8 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 7.52407, 5.56635, 2.96267 )
 
 [node name="TerrainOrchestrator" type="Spatial" parent="."]
 script = ExtResource( 4 )

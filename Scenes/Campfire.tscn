@@ -1,0 +1,183 @@
+[gd_scene load_steps=25 format=2]
+
+[ext_resource path="res://Assets/Textures/Spark.png" type="Texture" id=1]
+[ext_resource path="res://Assets/Textures/smoke_frames.png" type="Texture" id=2]
+[ext_resource path="res://Assets/Materials/SparksGradient.tres" type="Gradient" id=3]
+[ext_resource path="res://Assets/Materials/SmokeGradient.tres" type="Gradient" id=4]
+[ext_resource path="res://Assets/Materials/Fire.tres" type="Gradient" id=5]
+[ext_resource path="res://Assets/Models/Campfire Ring/campfire-ring.glb" type="PackedScene" id=6]
+
+[sub_resource type="GradientTexture" id=1]
+gradient = ExtResource( 5 )
+
+[sub_resource type="Curve" id=2]
+_data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 0.125, 1 ), 0.0, 0.0, 0, 0, Vector2( 1, 0 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="CurveTexture" id=3]
+curve = SubResource( 2 )
+
+[sub_resource type="ParticlesMaterial" id=4]
+render_priority = 1
+trail_divisor = 7
+emission_shape = 1
+emission_sphere_radius = 0.4
+direction = Vector3( 0, 1, 0 )
+spread = 0.0
+gravity = Vector3( 0, 0, 0 )
+initial_velocity = 5.0
+initial_velocity_random = 0.1
+angular_velocity = 40.0
+angular_velocity_random = 1.0
+linear_accel = 4.0
+linear_accel_random = 1.0
+angle = 360.0
+angle_random = 1.0
+scale = 0.8
+scale_curve = SubResource( 3 )
+color_ramp = SubResource( 1 )
+hue_variation = -0.01
+hue_variation_random = 1.0
+anim_speed = 1.0
+anim_offset = 1.0
+anim_offset_random = 1.0
+
+[sub_resource type="SpatialMaterial" id=5]
+flags_transparent = true
+flags_unshaded = true
+vertex_color_use_as_albedo = true
+params_blend_mode = 1
+params_billboard_mode = 3
+particles_anim_h_frames = 6
+particles_anim_v_frames = 5
+particles_anim_loop = true
+albedo_texture = ExtResource( 2 )
+
+[sub_resource type="QuadMesh" id=6]
+material = SubResource( 5 )
+
+[sub_resource type="GradientTexture" id=7]
+gradient = ExtResource( 4 )
+
+[sub_resource type="Curve" id=8]
+_data = [ Vector2( 0, 0.5125 ), 0.0, 0.0, 0, 0, Vector2( 1, 1 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="CurveTexture" id=9]
+curve = SubResource( 8 )
+
+[sub_resource type="ParticlesMaterial" id=10]
+render_priority = 1
+emission_shape = 1
+emission_sphere_radius = 0.3
+direction = Vector3( 0, 1, 0 )
+spread = 0.0
+gravity = Vector3( 0, 0, 0 )
+initial_velocity = 1.0
+initial_velocity_random = 0.5
+angular_velocity = 40.0
+angular_velocity_random = 1.0
+linear_accel = 2.0
+linear_accel_random = 1.0
+radial_accel = 0.2
+radial_accel_random = 1.0
+angle = 360.0
+angle_random = 1.0
+scale = 2.0
+scale_random = 1.0
+scale_curve = SubResource( 9 )
+color_ramp = SubResource( 7 )
+anim_speed = 1.0
+anim_offset = 1.0
+anim_offset_random = 1.0
+
+[sub_resource type="SpatialMaterial" id=11]
+flags_transparent = true
+flags_unshaded = true
+vertex_color_use_as_albedo = true
+params_billboard_mode = 3
+particles_anim_h_frames = 6
+particles_anim_v_frames = 5
+particles_anim_loop = true
+albedo_texture = ExtResource( 2 )
+
+[sub_resource type="QuadMesh" id=12]
+material = SubResource( 11 )
+
+[sub_resource type="GradientTexture" id=13]
+gradient = ExtResource( 3 )
+
+[sub_resource type="Curve" id=14]
+_data = [ Vector2( 0.00328947, 0.502273 ), 0.0, 0.0, 0, 0, Vector2( 0.5, 1 ), 0.0, 0.0, 0, 0, Vector2( 1, 0 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="CurveTexture" id=15]
+curve = SubResource( 14 )
+
+[sub_resource type="ParticlesMaterial" id=16]
+render_priority = 1
+trail_divisor = 5
+emission_shape = 1
+emission_sphere_radius = 0.6
+direction = Vector3( 0, 1, 0 )
+spread = 40.0
+flatness = 0.24
+gravity = Vector3( 0, 0, 0 )
+initial_velocity = 2.0
+initial_velocity_random = 1.0
+linear_accel = 5.0
+linear_accel_random = 1.0
+tangential_accel = 5.0
+tangential_accel_random = 1.0
+damping = 2.0
+damping_random = 1.0
+scale = 0.1
+scale_random = 0.3
+scale_curve = SubResource( 15 )
+color_ramp = SubResource( 13 )
+
+[sub_resource type="SpatialMaterial" id=17]
+flags_transparent = true
+flags_unshaded = true
+vertex_color_use_as_albedo = true
+params_blend_mode = 1
+params_billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+albedo_texture = ExtResource( 1 )
+
+[sub_resource type="QuadMesh" id=18]
+material = SubResource( 17 )
+size = Vector2( 0.2, 0.2 )
+
+[node name="Fire" type="Particles"]
+amount = 200
+lifetime = 0.5
+randomness = 1.0
+visibility_aabb = AABB( -2.2265, -2.22235, -2.25317, 4.45299, 4.4447, 4.50633 )
+local_coords = false
+draw_order = 2
+process_material = SubResource( 4 )
+draw_pass_1 = SubResource( 6 )
+
+[node name="Smoke" type="Particles" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.38238, 0 )
+amount = 50
+lifetime = 1.5
+randomness = 1.0
+visibility_aabb = AABB( -2.2265, -2.22235, -2.25317, 4.45299, 4.4447, 4.50633 )
+local_coords = false
+draw_order = 2
+process_material = SubResource( 10 )
+draw_pass_1 = SubResource( 12 )
+
+[node name="Sparks" type="Particles" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.47463, 0 )
+amount = 80
+lifetime = 0.5
+randomness = 1.0
+local_coords = false
+draw_order = 2
+process_material = SubResource( 16 )
+draw_pass_1 = SubResource( 18 )
+
+[node name="campfire-ring" parent="." instance=ExtResource( 6 )]
+transform = Transform( 1.40428, 0, 0, 0, 1.40428, 0, 0, 0, 1.40428, 0, 0, 0 )

@@ -15,6 +15,7 @@ var rock1
 var tuft_options = []
 var mushroom
 var mushroom_man
+var campfire
 
 var tree_likelihood
 var grass_likelihood
@@ -61,6 +62,7 @@ func _init(noise_seed, plane_width=64, plane_depth=64, height_factor=10, tree_li
 	dirt_material = load("res://Assets/Materials/dirt_material.tres")
 	mushroom = load("res://Scenes/Mushroom.tscn")
 	mushroom_man = load("res://Scenes/MushroomMan.tscn")
+	campfire =  load("res://Scenes/Campfire.tscn")
 	
 	grass_material = load("res://Assets/Materials/grass_material.tres")
 	
@@ -139,8 +141,13 @@ func draw_terrain(plane_width, plane_depth):
 		
 		roll_to_add_rock(vertex)
 		
+		# TODO: write a helper function to determine if the area around the selected vertex
+		# is flat; if so, spawn the campfire
+		if i == 32896:
+			add_campfire(vertex)
+		
 		# Check for house spawn
-		#if i == 1000:
+		#if i == 125:
 		#	spawn_house(shack, vertex)
 	
 	add_tree_to_scene(array_plane)
@@ -162,6 +169,12 @@ func roll_to_add_rock(rock_location):
 		random_rotation = rng.randf_range(0, 2*PI)
 		instance.transform.basis = instance.transform.basis.rotated(Vector3(0, 0, 1), transform.basis.get_euler().z + random_rotation)
 		add_child(instance)
+	pass
+
+func add_campfire(location):
+	var instance = campfire.instance()
+	instance.transform.origin = Vector3(location.x, location.y + 0.075, location.z)
+	add_child(instance)
 	pass
 
 func roll_to_add_grass(grass_location):

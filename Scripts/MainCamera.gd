@@ -8,6 +8,7 @@ const ray_length = 1000
 var cast_event:InputEvent
 
 onready var player = get_parent()
+onready var inventory = player.get_node("Inventory")
 #signal tree_detected
 
 func _ready():
@@ -61,6 +62,8 @@ func _input(event):
 	elif event is InputEventMouseButton and event.is_action_pressed("chop"):
 		cast_event = event
 		do_ray_cast = true
+	elif event is InputEventKey and event.is_action_pressed("throw"):
+		inventory.throw_active_item()
 
 func _enter_tree():
 	"""
@@ -83,7 +86,7 @@ func _physics_process(delta):
 		if intersection_map:
 			print("ray cast hit:")
 			print(intersection_map["collider"])
-			if "Log" in intersection_map["collider"].name && !("Big" in intersection_map["collider"].name):
+			if "Log" in intersection_map["collider"].name && !("Big" in intersection_map["collider"].name) && !("Small" in intersection_map["collider"].name):
 				intersection_map["collider"].axis_lock_angular_x = false
 				intersection_map["collider"].axis_lock_angular_y = false
 				intersection_map["collider"].axis_lock_angular_z = false
@@ -94,6 +97,9 @@ func _physics_process(delta):
 				player.add_log_to_chop(intersection_map["collider"])
 			elif "Big" in intersection_map["collider"].name:
 				player.add_log_to_chop(intersection_map["collider"])
+			elif "Small" in intersection_map["collider"].name:
+				inventory.add_item_to_inventory(inventory.FIREWOOD_KEY)
+				intersection_map["collider"].queue_free()
 			elif "Tree" in intersection_map["collider"].name:
 				print("chopping a tree")
 				player.add_tree_to_chop(intersection_map["collider"])

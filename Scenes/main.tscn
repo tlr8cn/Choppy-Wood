@@ -1,10 +1,11 @@
-[gd_scene load_steps=27 format=2]
+[gd_scene load_steps=28 format=2]
 
 [ext_resource path="res://Scripts/PlayerController.gd" type="Script" id=1]
 [ext_resource path="res://Scripts/MainCamera.gd" type="Script" id=2]
 [ext_resource path="res://Assets/Models/splitting-maul.glb" type="PackedScene" id=3]
 [ext_resource path="res://Scripts/TerrainOrchestrator.gd" type="Script" id=4]
 [ext_resource path="res://Assets/Environment.tres" type="Environment" id=5]
+[ext_resource path="res://Scripts/Inventory.gd" type="Script" id=6]
 [ext_resource path="res://Scripts/MaulCollisions.gd" type="Script" id=12]
 
 [sub_resource type="CylinderShape" id=1]
@@ -194,7 +195,6 @@ transitions = [ "maul_idle", "maul_windup", SubResource( 13 ), "maul_windup", "m
 [sub_resource type="AnimationNodeStateMachinePlayback" id=20]
 
 [node name="Spatial" type="Spatial"]
-transform = Transform( 1.22375, 0, 0, 0, 1.22375, 0, 0, 0, 1.22375, 0, 0, 0 )
 
 [node name="Player" type="KinematicBody" parent="."]
 transform = Transform( -0.0797292, 0, -0.996817, 0, 0.75, 0, 0.996817, 0, -0.0797292, -3.02048, 4.20761, 0 )
@@ -224,6 +224,10 @@ script = ExtResource( 12 )
 transform = Transform( 1, 7.45058e-09, -8.9407e-08, 2.01166e-07, 1, 9.73232e-08, -7.07805e-08, -1.87429e-07, 1, -0.00576079, 2.15492, 0.440961 )
 shape = SubResource( 2 )
 disabled = true
+
+[node name="Inventory" type="Spatial" parent="Player"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9407e-08, 2.29577, -0.617232 )
+script = ExtResource( 6 )
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
 transform = Transform( 0.481736, 0.0467511, -0.875069, 0.875808, 0.00833493, 0.482588, 0.0298552, -0.998872, -0.0369298, -175.271, 68.115, 0.136545 )

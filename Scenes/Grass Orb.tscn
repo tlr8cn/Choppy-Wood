@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Assets/Models/Grass/Grass Orb/Material_001.material" type="Material" id=2]
+
+[sub_resource type="CapsuleMesh" id=1]
+
+[node name="Grass Orb" type="Spatial"]
+
+[node name="grass-orb" type="MeshInstance" parent="."]
+transform = Transform( 0.665237, 0, 0, 0, -1.14328e-07, 1.37865, 0, -2.61553, -6.02628e-08, 0, 1.54808, -6.76685e-08 )
+mesh = SubResource( 1 )
+material/0 = ExtResource( 2 )

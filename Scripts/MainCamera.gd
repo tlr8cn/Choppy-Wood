@@ -84,8 +84,8 @@ func _physics_process(delta):
 		var to = from + self.project_ray_normal(cast_event.position) * ray_length
 		var intersection_map = space_state.intersect_ray(from, to)
 		if intersection_map:
-			print("ray cast hit:")
-			print(intersection_map["collider"])
+			#print("ray cast hit:")
+			#print(intersection_map["collider"])
 			if "Log" in intersection_map["collider"].name && !("Big" in intersection_map["collider"].name) && !("Small" in intersection_map["collider"].name):
 				intersection_map["collider"].axis_lock_angular_x = false
 				intersection_map["collider"].axis_lock_angular_y = false
@@ -98,8 +98,9 @@ func _physics_process(delta):
 			elif "Big" in intersection_map["collider"].name:
 				player.add_log_to_chop(intersection_map["collider"])
 			elif "Small" in intersection_map["collider"].name:
-				inventory.add_item_to_inventory(inventory.FIREWOOD_KEY)
-				intersection_map["collider"].queue_free()
+				var item_added_successfully = inventory.add_item_to_inventory(inventory.FIREWOOD_KEY)
+				if item_added_successfully:
+					intersection_map["collider"].queue_free()
 			elif "Tree" in intersection_map["collider"].name:
 				print("chopping a tree")
 				player.add_tree_to_chop(intersection_map["collider"])

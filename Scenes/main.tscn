@@ -208,7 +208,7 @@ shape = SubResource( 1 )
 [node name="MainCamera" type="Camera" parent="Player"]
 transform = Transform( 1, 0, 3.72529e-08, 0, 1.33333, 0, -3.72529e-08, 0, 1, 0, 2.31895, 0 )
 fov = 50.0
-far = 115.0
+far = 150.0
 script = ExtResource( 2 )
 
 [node name="SplittingMaul" parent="Player/MainCamera" instance=ExtResource( 3 )]

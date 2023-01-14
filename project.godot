@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Particles",
+"class": "FireSimulation",
+"language": "GDScript",
+"path": "res://Scenes/Campfire.gd"
+}, {
 "base": "Spatial",
 "class": "Inventory",
 "language": "GDScript",
@@ -40,6 +45,7 @@ _global_script_classes=[ {
 "path": "res://Scripts/Vertex.gd"
 } ]
 _global_script_class_icons={
+"FireSimulation": "",
 "Inventory": "",
 "NaturalTree": "",
 "TerrainChunk": "",

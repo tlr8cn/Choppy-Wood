@@ -50,10 +50,10 @@ func remove_item_from_inventory(key):
 				print("instantiating " + key)
 				var instance_ref = item_instance_ref[key]
 				var item_instance = instance_ref.instance()
-				var pos = Vector3(player.transform.origin.x, player.transform.origin.y + 2.5, player.transform.origin.z)
+				var pos = Vector3(player.transform.origin.x, player.transform.origin.y + 2.0, player.transform.origin.z)
 				item_instance.global_translate(pos)
 				get_tree().get_root().add_child(item_instance)
-				item_instance.apply_central_impulse(Vector3(-500*player.transform.basis.z.x, -500*player.transform.basis.z.y, -500*player.transform.basis.z.z))
+				item_instance.apply_central_impulse(Vector3(-250*player.transform.basis.z.x, -250*player.transform.basis.z.y, -250*player.transform.basis.z.z))
 			return true
 	print("unknown inventory key: " + key)
 	return false

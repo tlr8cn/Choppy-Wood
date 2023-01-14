@@ -1,6 +1,6 @@
 [gd_resource type="VisualShader" load_steps=4 format=2]
 
-[ext_resource path="res://Assets/Textures/grass.png" type="Texture" id=1]
+[ext_resource path="res://Assets/Textures/canopy-texture.png" type="Texture" id=1]
 
 [sub_resource type="VisualShaderNodeVectorDecompose" id=1]
 output_port_for_preview = 2
@@ -39,7 +39,6 @@ void light() {
 
 }
 "
-graph_offset = Vector2( -436.565, -114.467 )
 modes/cull = 2
 modes/depth_draw = 3
 flags/unshaded = true

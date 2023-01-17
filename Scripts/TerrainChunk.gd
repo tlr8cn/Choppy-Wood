@@ -13,6 +13,7 @@ var dirt_material:ShaderMaterial
 var grass_material:ShaderMaterial
 var shack 
 var rock1
+var large_rock1
 var mushroom
 var mushroom_man
 var campfire
@@ -54,6 +55,7 @@ func _init(noise_seed, plane_width=64, plane_depth=64, height_factor=10, tree_li
 	
 	shack = load("res://Scenes/Shack.tscn")
 	rock1 = load("res://Scenes/Rock1.tscn")
+	large_rock1 = load("res://Scenes/LargeRock1.tscn")
 	dirt_material = load("res://Assets/Materials/dirt_material.tres")
 	mushroom = load("res://Scenes/Mushroom.tscn")
 	mushroom_man = load("res://Scenes/MushroomMan.tscn")
@@ -131,8 +133,15 @@ func draw_terrain(plane_width, plane_depth):
 		old_z = new_z
 	
 	# add features
+	var large_rock_counter = 0
 	for i in range(mdt.get_vertex_count()):
 		var vertex = mdt.get_vertex(i)
+		
+		if i % plane_width == 0:
+			large_rock_counter += 1
+			if large_rock_counter % 5 == 0:
+				add_large_rock(vertex)
+				large_rock_counter = 0
 		
 		# on every nth vertex, roll to create a tree
 		if i % 50 == 0:
@@ -150,6 +159,12 @@ func draw_terrain(plane_width, plane_depth):
 		#	spawn_house(shack, vertex)
 	
 	add_tree_to_scene(array_plane)
+	pass
+
+func add_large_rock(rock_location):
+	var instance = large_rock1.instance()
+	instance.transform.origin = rock_location
+	add_child(instance)
 	pass
 
 func roll_to_add_rock(rock_location):

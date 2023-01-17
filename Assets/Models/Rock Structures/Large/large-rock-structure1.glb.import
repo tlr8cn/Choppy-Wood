@@ -2,12 +2,12 @@
 
 importer="scene"
 type="PackedScene"
-path="res://.import/rock.glb-25f266204ad71af8a96109889c42e03b.scn"
+path="res://.import/large-rock-structure1.glb-38b447f1093c3446ffdcc8a4d01aa2ca.scn"
 
 [deps]
 
-source_file="res://Assets/Models/Rock/1/rock.glb"
-dest_files=[ "res://.import/rock.glb-25f266204ad71af8a96109889c42e03b.scn" ]
+source_file="res://Assets/Models/Rock Structures/Large/large-rock-structure1.glb"
+dest_files=[ "res://.import/large-rock-structure1.glb-38b447f1093c3446ffdcc8a4d01aa2ca.scn" ]
 
 [params]
 

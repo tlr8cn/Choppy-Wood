@@ -137,9 +137,9 @@ func draw_terrain(plane_width, plane_depth):
 	for i in range(mdt.get_vertex_count()):
 		var vertex = mdt.get_vertex(i)
 		
-		if i % plane_width == 0:
+		if i == 0 || (i-1) % plane_width == 0:
 			large_rock_counter += 1
-			if large_rock_counter % 5 == 0:
+			if large_rock_counter % 50 == 0:
 				add_large_rock(vertex)
 				large_rock_counter = 0
 		
@@ -163,7 +163,7 @@ func draw_terrain(plane_width, plane_depth):
 
 func add_large_rock(rock_location):
 	var instance = large_rock1.instance()
-	instance.transform.origin = rock_location
+	instance.transform.origin = Vector3(rock_location.x, rock_location.y - 2.5, rock_location.z)
 	add_child(instance)
 	pass
 

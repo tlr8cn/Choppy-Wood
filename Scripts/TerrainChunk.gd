@@ -144,6 +144,11 @@ func draw_terrain(plane_width, plane_depth):
 	for i in range(mdt.get_vertex_count()):
 		var vertex = mdt.get_vertex(i)
 		
+		# TODO: mountainous terrain
+		#    1. Slope the terrain up gradually on either side to create a valley, which will propel the player forward
+		#    2. When slope becomes extreme enough, the texture should change to rock or loose sliding soil
+		#    3. The extent of the slope should determine whether or not can climb the slope -- should be before reaching rock features
+		#    4. At the peaks, add rock features
 		if (i >= 0 && i < plane_width) || (i >= (mdt.get_vertex_count() - 1) - plane_width && i < mdt.get_vertex_count()):
 			large_rock_counter += 1
 			if large_rock_counter % 24 == 0:
@@ -154,6 +159,7 @@ func draw_terrain(plane_width, plane_depth):
 		if i % 50 == 0:
 			roll_to_add_tree(tree_generators, vertex, i, mdt)
 		
+		# TODO: rocks should be partial to terrain peaks. Meaning the highest y values on the mesh should have a higher concentration of rocks
 		roll_to_add_rock(vertex)
 		
 		# TODO: write a helper function to determine if the area around the selected vertex

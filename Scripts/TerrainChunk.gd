@@ -88,8 +88,15 @@ func _init(noise_seed, plane_width=64, plane_depth=64, height_factor=10, tree_li
 	
 	draw_terrain(plane_width, plane_depth)
 	
-	#place_grass(grass_blade_mesh)
+	place_grass(grass_blade_mesh)
 	pass
+
+
+# Plane Corners:
+#                 0 -------- (vertex_count - 1) - plane_widith
+#                 |          |
+#                 |          |
+# (plane_width - 1) -------- (vertex_count - 1)
 
 func draw_terrain(plane_width, plane_depth):
 	var uv_x = 0.0
@@ -137,9 +144,9 @@ func draw_terrain(plane_width, plane_depth):
 	for i in range(mdt.get_vertex_count()):
 		var vertex = mdt.get_vertex(i)
 		
-		if i == 0 || (i-1) % plane_width == 0:
+		if (i >= 0 && i < plane_width) || (i >= (mdt.get_vertex_count() - 1) - plane_width && i < mdt.get_vertex_count()):
 			large_rock_counter += 1
-			if large_rock_counter % 50 == 0:
+			if large_rock_counter % 24 == 0:
 				add_large_rock(vertex)
 				large_rock_counter = 0
 		
@@ -273,7 +280,7 @@ func place_grass(grass_blade_mesh):
 	rng.randomize()
 	var multimesh = MultiMesh.new()
 	multimesh.transform_format = MultiMesh.TRANSFORM_3D
-	multimesh.instance_count = mdt.get_vertex_count()
+	multimesh.instance_count = 1
 	multimesh.set_mesh(grass_blade_mesh)
 	
 	for i in multimesh.instance_count:

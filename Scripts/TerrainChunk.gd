@@ -11,6 +11,7 @@ var plane_mesh:PlaneMesh
 
 var dirt_material:ShaderMaterial
 var grass_material:ShaderMaterial
+
 var shack 
 var rock1
 var large_rock1
@@ -29,12 +30,17 @@ var plane_width
 
 var tree_generators = []
 
+var south_side = []
+var west_side = []
+var north_side = []
+var east_side = []
+
 # TODO: split a large plane into many chunks (which are connected)
 # As the player progresses, a large area surrounding the player will intersect
 # with colliders placed at certain vertices
 # When the player area intersects with the collider, add that chunk to a queue on the TerrainOrchestrator
 # Pull that chunk off the queue, and generate terrain for all vertices surrounding it
-func _init(noise_seed, plane_width=64, plane_depth=64, height_factor=10, tree_likelihood=18, grass_likelihood=40, rock_likelihood=5, noise_octaves=8.0, noise_period=55.0, noise_persistence=0.125):
+func _init(noise_seed, neighboring_sides_map, chunk_offset, plane_width=64, plane_depth=64, height_factor=10, tree_likelihood=18, grass_likelihood=40, rock_likelihood=5, noise_octaves=8.0, noise_period=55.0, noise_persistence=0.125):
 	rng = RandomNumberGenerator.new()
 	rng.randomize()
 	
@@ -77,8 +83,11 @@ func _init(noise_seed, plane_width=64, plane_depth=64, height_factor=10, tree_li
 	noiseb.persistence = noise_persistence
 	
 	self.plane_width = plane_width
-	plane_mesh.subdivide_width = plane_width
-	plane_mesh.subdivide_depth = plane_depth
+	# Subdivide actually represents how many subdivisions are made to the plane in a particular direction
+	# It is NOT to be confused with the vertex count. In order to map width to number of vertices, subtract 2
+	# from the subdivision width/depth
+	plane_mesh.subdivide_width = plane_width - 2
+	plane_mesh.subdivide_depth = plane_depth - 2
 	plane_mesh.size = Vector2(plane_mesh.subdivide_width, plane_mesh.subdivide_depth)
 	
 	st.create_from(plane_mesh, 0)
@@ -86,38 +95,62 @@ func _init(noise_seed, plane_width=64, plane_depth=64, height_factor=10, tree_li
 	array_plane = st.commit()
 	mdt.create_from_surface(array_plane, 0)
 	
-	draw_terrain(plane_width, plane_depth)
+	draw_terrain(plane_width, plane_depth, neighboring_sides_map, chunk_offset)
 	
 	place_grass(grass_blade_mesh)
 	pass
 
 
-# Plane Corners:
-#                 0 -------- (vertex_count - 1) - plane_widith
-#                 |          |
-#                 |          |
+# Plane:
+#              (i + 1) % plane_width == 0
+#                      \/
 # (plane_width - 1) -------- (vertex_count - 1)
-
-func draw_terrain(plane_width, plane_depth):
+#                  |          |
+#                  |    ^     |
+#                  0 -------- vertex_count - plane_width
+#                       ^
+#                  i % plane_width == 0
+func draw_terrain(plane_width, plane_depth, neighboring_sides_map, chunk_offset):
 	var uv_x = 0.0
 	var uv_y = 0.0
 	var uv_inc = 1.0/8.0
 	var old_z = mdt.get_vertex(0).z
 	# uvs should run from 0, 1/64, 2/64, .., 1
+	
+	var west_vertex_index = 0
+	var south_vertex_index = 0
 	for i in range(mdt.get_vertex_count()):
 		var vertex = mdt.get_vertex(i)
+		
+		if i >= mdt.get_vertex_count() - plane_width && i < mdt.get_vertex_count() && neighboring_sides_map["WEST"] != null:
+			var west_neighbor_side = neighboring_sides_map["WEST"]
+			var snap_vertex = west_neighbor_side[west_vertex_index]
+			vertex = snap_vertex
+			#add_rock(vertex)
+			west_vertex_index += 1
+			
+		elif (i + 1) % plane_width == 0 && neighboring_sides_map["SOUTH"] != null:
+			var south_neighbor_side = neighboring_sides_map["SOUTH"]
+			var snap_vertex = south_neighbor_side[south_vertex_index]
+			vertex = snap_vertex
+			#add_rock(vertex)
+			south_vertex_index += 1
+		else:
+			var noise_val = noise.get_noise_2d(float(vertex.x), float(vertex.z))
+			var noise_valb = noiseb.get_noise_2d(float(vertex.x), float(vertex.z))
+			var final_noise_val = (noise_val + noise_valb)/2
+			#if noise_val <= noise_valb:
+			#	final_noise_val = noise_val + noise_valb
+			#else:
+			#	final_noise_val = noise_val - noise_valb
+			vertex.y = self.height_factor*final_noise_val
+		
 		var new_z = vertex.z
-		var noise_val = noise.get_noise_2d(float(vertex.x), float(vertex.z))
-		var noise_valb = noiseb.get_noise_2d(float(vertex.x), float(vertex.z))
-		var final_noise_val = (noise_val + noise_valb)/2
-		#if noise_val <= noise_valb:
-		#	final_noise_val = noise_val + noise_valb
-		#else:
-		#	final_noise_val = noise_val - noise_valb
-		vertex.y = self.height_factor*final_noise_val
 		
 		mdt.set_vertex_uv(i, Vector2(uv_x, uv_y))
 		mdt.set_vertex(i, vertex)
+		
+		mark_chunk_sides(i, vertex, chunk_offset)
 		
 		# on every nth vertex, roll to create a tree
 		#if i % 75 == 0:
@@ -152,7 +185,7 @@ func draw_terrain(plane_width, plane_depth):
 		if (i >= 0 && i < plane_width) || (i >= (mdt.get_vertex_count() - 1) - plane_width && i < mdt.get_vertex_count()):
 			large_rock_counter += 1
 			if large_rock_counter % 24 == 0:
-				add_large_rock(vertex)
+			#	add_large_rock(vertex)
 				large_rock_counter = 0
 		
 		# on every nth vertex, roll to create a tree
@@ -160,7 +193,7 @@ func draw_terrain(plane_width, plane_depth):
 			roll_to_add_tree(tree_generators, vertex, i, mdt)
 		
 		# TODO: rocks should be partial to terrain peaks. Meaning the highest y values on the mesh should have a higher concentration of rocks
-		roll_to_add_rock(vertex)
+		#roll_to_add_rock(vertex)
 		
 		# TODO: write a helper function to determine if the area around the selected vertex
 		# is flat; if so, spawn the campfire
@@ -174,6 +207,32 @@ func draw_terrain(plane_width, plane_depth):
 	add_tree_to_scene(array_plane)
 	pass
 
+func mark_chunk_sides(i, vertex, chunk_offset):
+	vertex.x += chunk_offset.x
+	vertex.z += chunk_offset.y
+	
+	if i % plane_width == 0:
+		self.north_side.push_back(vertex)
+	if i >= 0 && i < plane_width:
+		self.east_side.push_back(vertex)
+	if (i + 1) % plane_width == 0:
+		self.south_side.push_back(vertex)
+	if i >= mdt.get_vertex_count() - plane_width && i < mdt.get_vertex_count():
+		self.west_side.push_back(vertex)
+	pass
+
+func get_south_side():
+	return south_side
+
+func get_west_side():
+	return west_side
+
+func get_north_side():
+	return north_side
+
+func get_east_side():
+	return east_side
+
 func add_large_rock(rock_location):
 	var instance = large_rock1.instance()
 	instance.transform.origin = Vector3(rock_location.x, rock_location.y - 2.5, rock_location.z)
@@ -183,19 +242,23 @@ func add_large_rock(rock_location):
 func roll_to_add_rock(rock_location):
 	var roll = rng.randi_range(0, 2500)
 	if roll <= self.rock_likelihood:
-		var instance = rock1.instance()
-		var minor_offset_x = rng.randf_range(-0.15, 0.15)
-		var minor_offset_z = rng.randf_range(-0.15, 0.15)
-		var pos = Vector3(rock_location.x + minor_offset_x, rock_location.y - 0.15, rock_location.z + minor_offset_z)
-		instance.transform.origin = pos
-		
-		var random_rotation = rng.randf_range(0, 2*PI)
-		instance.transform.basis = instance.transform.basis.rotated(Vector3(1, 0, 0), transform.basis.get_euler().x + random_rotation)
-		random_rotation = rng.randf_range(0, 2*PI)
-		instance.transform.basis = instance.transform.basis.rotated(Vector3(0, 1, 0), transform.basis.get_euler().y + random_rotation)
-		random_rotation = rng.randf_range(0, 2*PI)
-		instance.transform.basis = instance.transform.basis.rotated(Vector3(0, 0, 1), transform.basis.get_euler().z + random_rotation)
-		add_child(instance)
+		add_rock(rock_location)
+	pass
+
+func add_rock(rock_location):
+	var instance = rock1.instance()
+	var minor_offset_x = rng.randf_range(-0.15, 0.15)
+	var minor_offset_z = rng.randf_range(-0.15, 0.15)
+	var pos = Vector3(rock_location.x + minor_offset_x, rock_location.y - 0.15, rock_location.z + minor_offset_z)
+	instance.transform.origin = pos
+	
+	var random_rotation = rng.randf_range(0, 2*PI)
+	instance.transform.basis = instance.transform.basis.rotated(Vector3(1, 0, 0), transform.basis.get_euler().x + random_rotation)
+	random_rotation = rng.randf_range(0, 2*PI)
+	instance.transform.basis = instance.transform.basis.rotated(Vector3(0, 1, 0), transform.basis.get_euler().y + random_rotation)
+	random_rotation = rng.randf_range(0, 2*PI)
+	instance.transform.basis = instance.transform.basis.rotated(Vector3(0, 0, 1), transform.basis.get_euler().z + random_rotation)
+	add_child(instance)
 	pass
 
 func add_campfire(location):
@@ -270,7 +333,7 @@ func add_tree_to_scene(array_plane):
 		# TODO: this should be separated into chunks eventually
 		var meshInstance = MeshInstance.new()
 		meshInstance.set_mesh(st.commit())
-		meshInstance.global_transform.origin = Vector3(0, 0, 0)
+		#meshInstance.global_transform.origin = Vector3(0, 0, 0)
 		#var ttg = TerrainTextureGenerator.new(plane_mesh.subdivide_width*128, plane_mesh.subdivide_depth*128)
 		#var terrain_texture = ttg.get_terrain_texture()
 		

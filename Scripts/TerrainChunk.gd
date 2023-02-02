@@ -26,15 +26,18 @@ var height_factor
 var array_plane
 
 var plane_width
+var plane_depth
 
 var tree_generators = []
+
+var biome_settings_manager = BiomeSettingsManager.new()
 
 # TODO: split a large plane into many chunks (which are connected)
 # As the player progresses, a large area surrounding the player will intersect
 # with colliders placed at certain vertices
 # When the player area intersects with the collider, add that chunk to a queue on the TerrainOrchestrator
 # Pull that chunk off the queue, and generate terrain for all vertices surrounding it
-func _init(noise_seed, plane_width=64, plane_depth=64, height_factor=10, tree_likelihood=18, grass_likelihood=40, rock_likelihood=5, noise_octaves=8.0, noise_period=55.0, noise_persistence=0.125):
+func _init(noise_seed, biome_divisions, plane_width=64, plane_depth=64, height_factor=10, tree_likelihood=18, grass_likelihood=40, rock_likelihood=5, noise_octaves=8.0, noise_period=55.0, noise_persistence=0.125):
 	rng = RandomNumberGenerator.new()
 	rng.randomize()
 	
@@ -77,68 +80,123 @@ func _init(noise_seed, plane_width=64, plane_depth=64, height_factor=10, tree_li
 	noiseb.persistence = noise_persistence
 	
 	self.plane_width = plane_width
-	plane_mesh.subdivide_width = plane_width
-	plane_mesh.subdivide_depth = plane_depth
+	self.plane_depth = plane_depth
+	# Subdivide actually represents how many subdivisions are made to the plane in a particular direction
+	# It is NOT to be confused with the vertex count. In order to map width to number of vertices, subtract 2
+	# from the subdivision width/depth
+	plane_mesh.subdivide_width = plane_width - 2
+	plane_mesh.subdivide_depth = plane_depth - 2
 	plane_mesh.size = Vector2(plane_mesh.subdivide_width, plane_mesh.subdivide_depth)
 	
 	st.create_from(plane_mesh, 0)
 	# Returns a constructed ArrayMesh from current information passed in 
 	array_plane = st.commit()
 	mdt.create_from_surface(array_plane, 0)
-	
-	draw_terrain(plane_width, plane_depth)
+	print("what's going on")
+	var biomes = divide_terrain_into_biomes(biome_divisions)
+	# TODO: draw terrain given the biomes array
+	draw_terrain(plane_width, plane_depth, biomes)
 	
 	place_grass(grass_blade_mesh)
 	pass
 
+func divide_terrain_into_biomes(biome_divisions):
+	var xz_to_i = generate_xz_to_i()
+	
+	var biomes = []
+	var biome_height_factor
+	
+	var increment = plane_width/biome_divisions
+	var west_boundary = 0
+	var north_boundary = increment
+	var east_boundary = increment
+	var south_boundary = 0
+	var biome_i_array = []
+	
+	var expected_number_of_biomes = pow(biome_divisions, 2)
+	while biomes.size() < expected_number_of_biomes:
+		for x in range(west_boundary, east_boundary):
+			for z in range(south_boundary, north_boundary):
+				var i = xz_to_i[[x, z]]
+				biome_i_array.push_back(i)
+		
+		var biome_settings = load_biome_settings()
+		var biome = TerrainBiome.new(west_boundary, north_boundary, east_boundary, south_boundary, biome_settings, biome_i_array)
+		biomes.push_back(biome)
+		biome_i_array = []
+		
+		if north_boundary >= plane_depth - 1:
+			north_boundary = increment
+			south_boundary = 0
+			west_boundary += increment
+			east_boundary += increment
+			if east_boundary > plane_width - 1:
+				east_boundary = plane_width - 1
+		else:
+			north_boundary += increment
+			south_boundary += increment
+			if north_boundary > plane_depth - 1:
+				north_boundary = plane_depth - 1
+	return biomes
 
-# Plane Corners:
-#                 0 -------- (vertex_count - 1) - plane_widith
-#                 |          |
-#                 |          |
+# Plane:
+#              (i + 1) % plane_width == 0
+#                      \/
 # (plane_width - 1) -------- (vertex_count - 1)
-
-func draw_terrain(plane_width, plane_depth):
+#                  |          |
+#                  |    ^     |
+#                  0 -------- vertex_count - plane_width
+#                       ^
+#                  i % plane_width == 0
+func draw_terrain(plane_width, plane_depth, biomes):
+	print("number of biomes")
+	print(biomes.size())
 	var uv_x = 0.0
 	var uv_y = 0.0
 	var uv_inc = 1.0/8.0
 	var old_z = mdt.get_vertex(0).z
 	# uvs should run from 0, 1/64, 2/64, .., 1
-	for i in range(mdt.get_vertex_count()):
-		var vertex = mdt.get_vertex(i)
-		var new_z = vertex.z
-		var noise_val = noise.get_noise_2d(float(vertex.x), float(vertex.z))
-		var noise_valb = noiseb.get_noise_2d(float(vertex.x), float(vertex.z))
-		var final_noise_val = (noise_val + noise_valb)/2
-		#if noise_val <= noise_valb:
-		#	final_noise_val = noise_val + noise_valb
-		#else:
-		#	final_noise_val = noise_val - noise_valb
-		vertex.y = self.height_factor*final_noise_val
+	for biome_i in range(biomes.size()):
+		var biome = biomes[biome_i]
+		var biome_i_array = biome.get_i_array()
+		var biome_settings = biome.get_biome_settings()
+		var height_factor = biome_settings.get_height_factor()
+		for ii in range(biome_i_array.size()):
+			var i = biome_i_array[ii]
+			var vertex = mdt.get_vertex(i)
+			var new_z = vertex.z
+			var noise_val = noise.get_noise_2d(float(vertex.x), float(vertex.z))
+			var noise_valb = noiseb.get_noise_2d(float(vertex.x), float(vertex.z))
+			var final_noise_val = (noise_val + noise_valb)/2
+			#if noise_val <= noise_valb:
+			#	final_noise_val = noise_val + noise_valb
+			#else:
+			#	final_noise_val = noise_val - noise_valb
+			vertex.y = height_factor*final_noise_val
+			
+			mdt.set_vertex_uv(i, Vector2(uv_x, uv_y))
+			mdt.set_vertex(i, vertex)
+			
+			# on every nth vertex, roll to create a tree
+			#if i % 75 == 0:
+			#	roll_to_add_tree(tree_generator, vertex, i, mdt)
+			
+			#roll_to_add_rock(vertex)
+			
+			# Check for house spawn
+			#if i == 1000:
+			#	spawn_house(shack, vertex)
+			
+			uv_x += uv_inc
+			if uv_x < 0:
+				uv_x = 0.0
+			
+			if old_z != new_z:
+				uv_y += uv_inc
+				uv_x = 0.0
+			
+			old_z = new_z
 		
-		mdt.set_vertex_uv(i, Vector2(uv_x, uv_y))
-		mdt.set_vertex(i, vertex)
-		
-		# on every nth vertex, roll to create a tree
-		#if i % 75 == 0:
-		#	roll_to_add_tree(tree_generator, vertex, i, mdt)
-		
-		#roll_to_add_rock(vertex)
-		
-		# Check for house spawn
-		#if i == 1000:
-		#	spawn_house(shack, vertex)
-		
-		uv_x += uv_inc
-		if uv_x < 0:
-			uv_x = 0.0
-		
-		if old_z != new_z:
-			uv_y += uv_inc
-			uv_x = 0.0
-		
-		old_z = new_z
-	
 	# add features
 	var large_rock_counter = 0
 	for i in range(mdt.get_vertex_count()):
@@ -173,6 +231,28 @@ func draw_terrain(plane_width, plane_depth):
 	
 	add_tree_to_scene(array_plane)
 	pass
+
+func load_biome_settings():
+	var roll = rng.randi_range(0, 100)
+	if roll < 50:
+		return biome_settings_manager.get_default_biome_settings()
+	else:
+		return biome_settings_manager.get_mountain_biome_settings()
+
+func generate_xz_to_i():
+	print("generating xz to i")
+	var xz_to_i = {}
+	var x = 0
+	var z = 0
+	for i in range(mdt.get_vertex_count()):
+		xz_to_i[[x, z]] = i
+		
+		if (i + 1) % plane_depth == 0:
+			z = 0
+			x += 1
+		else:
+			z += 1
+	return xz_to_i
 
 func add_large_rock(rock_location):
 	var instance = large_rock1.instance()

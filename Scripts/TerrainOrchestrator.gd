@@ -12,6 +12,7 @@ onready var rng = RandomNumberGenerator.new()
 var num_chunks = 1
 var plane_width = 256
 var plane_depth = 256
+var biome_divisions = 2 # total biomes = biome_divisions^2
 #var chunk_size = 64
 
 var chunk_grid = []
@@ -27,7 +28,7 @@ func _ready():
 	for i in num_chunks:
 		chunk_grid.push_back([])
 		for j in num_chunks:
-			var this_chunk = TerrainChunk.new(noise_seed, plane_width, plane_depth)
+			var this_chunk = TerrainChunk.new(noise_seed, biome_divisions, plane_width, plane_depth)
 			this_chunk.transform.origin = Vector3(x_position, 0.0, z_position)
 			print(this_chunk.transform.origin)
 			chunk_grid[i].push_back(this_chunk)

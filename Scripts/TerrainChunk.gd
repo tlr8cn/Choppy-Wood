@@ -92,10 +92,10 @@ func _init(noise_seed, biome_divisions, plane_width=64, plane_depth=64, height_f
 	# Returns a constructed ArrayMesh from current information passed in 
 	array_plane = st.commit()
 	mdt.create_from_surface(array_plane, 0)
-	print("what's going on")
-	var biomes = divide_terrain_into_biomes(biome_divisions)
+
+	var biome_grid = divide_terrain_into_biomes(biome_divisions)
 	# TODO: draw terrain given the biomes array
-	draw_terrain(plane_width, plane_depth, biomes)
+	draw_terrain(plane_width, plane_depth, biome_grid)
 	
 	place_grass(grass_blade_mesh)
 	pass
@@ -103,7 +103,11 @@ func _init(noise_seed, biome_divisions, plane_width=64, plane_depth=64, height_f
 func divide_terrain_into_biomes(biome_divisions):
 	var xz_to_i = generate_xz_to_i()
 	
-	var biomes = []
+	var biome_grid = []
+	for i in range(biome_divisions):
+		biome_grid.push_back([])
+		for j in range(biome_divisions):
+			biome_grid[i].push_back(null)
 	var biome_height_factor
 	
 	var increment = plane_width/biome_divisions
@@ -113,19 +117,37 @@ func divide_terrain_into_biomes(biome_divisions):
 	var south_boundary = 0
 	var biome_i_array = []
 	
+	var division_x = 0
+	var division_z = 0
 	var expected_number_of_biomes = pow(biome_divisions, 2)
-	while biomes.size() < expected_number_of_biomes:
+	var biome_count = 0
+	while biome_count < expected_number_of_biomes:
+		var biome_i_to_xz = {}
 		for x in range(west_boundary, east_boundary):
 			for z in range(south_boundary, north_boundary):
 				var i = xz_to_i[[x, z]]
+				biome_i_to_xz[i] = [x, z]
 				biome_i_array.push_back(i)
 		
 		var biome_settings = load_biome_settings()
-		var biome = TerrainBiome.new(west_boundary, north_boundary, east_boundary, south_boundary, biome_settings, biome_i_array)
-		biomes.push_back(biome)
-		biome_i_array = []
+		var biome = TerrainBiome.new(west_boundary, north_boundary, east_boundary, south_boundary, biome_divisions, biome_settings, biome_i_array, biome_i_to_xz, division_x, division_z)
+		biome_grid[division_x][division_z] = biome
+		
+		# set neighbors
+		var south_neighbor = null
+		if division_z > 0:
+			south_neighbor = biome_grid[division_x][division_z - 1]
+			biome.set_south_neighbor(south_neighbor)
+			south_neighbor.set_north_neighbor(biome)
+		var west_neighbor = null
+		if division_x > 0:
+			west_neighbor = biome_grid[division_x - 1][division_z]
+			biome.set_west_neighbor(west_neighbor)
+			west_neighbor.set_east_neighbor(biome)
 		
 		if north_boundary >= plane_depth - 1:
+			division_z = 0
+			division_x += 1
 			north_boundary = increment
 			south_boundary = 0
 			west_boundary += increment
@@ -133,11 +155,14 @@ func divide_terrain_into_biomes(biome_divisions):
 			if east_boundary > plane_width - 1:
 				east_boundary = plane_width - 1
 		else:
+			division_z += 1
 			north_boundary += increment
 			south_boundary += increment
 			if north_boundary > plane_depth - 1:
 				north_boundary = plane_depth - 1
-	return biomes
+		biome_count += 1
+		biome_i_array = []
+	return biome_grid
 
 # Plane:
 #              (i + 1) % plane_width == 0
@@ -148,54 +173,56 @@ func divide_terrain_into_biomes(biome_divisions):
 #                  0 -------- vertex_count - plane_width
 #                       ^
 #                  i % plane_width == 0
-func draw_terrain(plane_width, plane_depth, biomes):
-	print("number of biomes")
-	print(biomes.size())
+func draw_terrain(plane_width, plane_depth, biome_grid):
 	var uv_x = 0.0
 	var uv_y = 0.0
 	var uv_inc = 1.0/8.0
 	var old_z = mdt.get_vertex(0).z
 	# uvs should run from 0, 1/64, 2/64, .., 1
-	for biome_i in range(biomes.size()):
-		var biome = biomes[biome_i]
-		var biome_i_array = biome.get_i_array()
-		var biome_settings = biome.get_biome_settings()
-		var height_factor = biome_settings.get_height_factor()
-		for ii in range(biome_i_array.size()):
-			var i = biome_i_array[ii]
-			var vertex = mdt.get_vertex(i)
-			var new_z = vertex.z
-			var noise_val = noise.get_noise_2d(float(vertex.x), float(vertex.z))
-			var noise_valb = noiseb.get_noise_2d(float(vertex.x), float(vertex.z))
-			var final_noise_val = (noise_val + noise_valb)/2
-			#if noise_val <= noise_valb:
-			#	final_noise_val = noise_val + noise_valb
-			#else:
-			#	final_noise_val = noise_val - noise_valb
-			vertex.y = height_factor*final_noise_val
-			
-			mdt.set_vertex_uv(i, Vector2(uv_x, uv_y))
-			mdt.set_vertex(i, vertex)
-			
-			# on every nth vertex, roll to create a tree
-			#if i % 75 == 0:
-			#	roll_to_add_tree(tree_generator, vertex, i, mdt)
-			
-			#roll_to_add_rock(vertex)
-			
-			# Check for house spawn
-			#if i == 1000:
-			#	spawn_house(shack, vertex)
-			
-			uv_x += uv_inc
-			if uv_x < 0:
-				uv_x = 0.0
-			
-			if old_z != new_z:
-				uv_y += uv_inc
-				uv_x = 0.0
-			
-			old_z = new_z
+	for biome_x in range(biome_grid.size()):
+		for biome_z in range(biome_grid[biome_x].size()):
+			var biome = biome_grid[biome_x][biome_z]
+			var biome_i_array = biome.get_i_array()
+			var biome_settings = biome.get_biome_settings()
+			var height_factor = biome_settings.get_height_factor()
+			for ii in range(biome_i_array.size()):
+				var i = biome_i_array[ii]
+				var vertex = mdt.get_vertex(i)
+				var new_z = vertex.z
+				var noise_val = noise.get_noise_2d(float(vertex.x), float(vertex.z))
+				var noise_valb = noiseb.get_noise_2d(float(vertex.x), float(vertex.z))
+				var final_noise_val = (noise_val + noise_valb)/2
+				#if noise_val <= noise_valb:
+				#	final_noise_val = noise_val + noise_valb
+				#else:
+				#	final_noise_val = noise_val - noise_valb
+				
+				height_factor = biome.apply_height_smoothing(i)
+				
+				vertex.y = height_factor*final_noise_val
+				
+				mdt.set_vertex_uv(i, Vector2(uv_x, uv_y))
+				mdt.set_vertex(i, vertex)
+				
+				# on every nth vertex, roll to create a tree
+				#if i % 75 == 0:
+				#	roll_to_add_tree(tree_generator, vertex, i, mdt)
+				
+				#roll_to_add_rock(vertex)
+				
+				# Check for house spawn
+				#if i == 1000:
+				#	spawn_house(shack, vertex)
+				
+				uv_x += uv_inc
+				if uv_x < 0:
+					uv_x = 0.0
+				
+				if old_z != new_z:
+					uv_y += uv_inc
+					uv_x = 0.0
+				
+				old_z = new_z
 		
 	# add features
 	var large_rock_counter = 0

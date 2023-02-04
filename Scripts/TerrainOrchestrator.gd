@@ -12,7 +12,7 @@ onready var rng = RandomNumberGenerator.new()
 var num_chunks = 1
 var plane_width = 256
 var plane_depth = 256
-var biome_divisions = 2 # total biomes = biome_divisions^2
+var biome_divisions = 4 # total biomes = biome_divisions^2
 #var chunk_size = 64
 
 var chunk_grid = []

@@ -119,9 +119,9 @@ func divide_terrain_into_biomes(biome_divisions):
 	
 	var division_x = 0
 	var division_z = 0
-	var expected_number_of_biomes = pow(biome_divisions, 2)
+	var number_of_biomes = pow(biome_divisions, 2)
 	var biome_count = 0
-	while biome_count < expected_number_of_biomes:
+	while biome_count < number_of_biomes:
 		var biome_i_to_xz = {}
 		for x in range(west_boundary, east_boundary):
 			for z in range(south_boundary, north_boundary):
@@ -129,7 +129,7 @@ func divide_terrain_into_biomes(biome_divisions):
 				biome_i_to_xz[i] = [x, z]
 				biome_i_array.push_back(i)
 		
-		var biome_settings = load_biome_settings()
+		var biome_settings = load_biome_settings(biome_grid, division_x, division_z)
 		var biome = TerrainBiome.new(west_boundary, north_boundary, east_boundary, south_boundary, biome_divisions, biome_settings, biome_i_array, biome_i_to_xz, division_x, division_z)
 		biome_grid[division_x][division_z] = biome
 		
@@ -184,20 +184,17 @@ func draw_terrain(plane_width, plane_depth, biome_grid):
 			var biome = biome_grid[biome_x][biome_z]
 			var biome_i_array = biome.get_i_array()
 			var biome_settings = biome.get_biome_settings()
-			var height_factor = biome_settings.get_height_factor()
+			var height_map = biome_settings.get_height_map()
 			for ii in range(biome_i_array.size()):
 				var i = biome_i_array[ii]
+				var height_factor = biome.get_height_factor_for_index(i)
 				var vertex = mdt.get_vertex(i)
 				var new_z = vertex.z
 				var noise_val = noise.get_noise_2d(float(vertex.x), float(vertex.z))
 				var noise_valb = noiseb.get_noise_2d(float(vertex.x), float(vertex.z))
 				var final_noise_val = (noise_val + noise_valb)/2
-				#if noise_val <= noise_valb:
-				#	final_noise_val = noise_val + noise_valb
-				#else:
-				#	final_noise_val = noise_val - noise_valb
 				
-				height_factor = biome.apply_height_smoothing(i)
+				#height_factor = biome.apply_height_smoothing(i)
 				
 				vertex.y = height_factor*final_noise_val
 				
@@ -259,13 +256,18 @@ func draw_terrain(plane_width, plane_depth, biome_grid):
 	add_tree_to_scene(array_plane)
 	pass
 
-func load_biome_settings():
-	var roll = rng.randi_range(0, 100)
-	if roll < 50:
-		return biome_settings_manager.get_default_biome_settings()
-	else:
+func load_biome_settings(biome_grid, division_x, division_z):
+	var grid_width = biome_grid.size() - 1
+	
+	# TODO: eventually the arrangement should be random but with foothills surrounding mountains
+	if division_x == grid_width && division_z == grid_width:
+		print("mountain biome")
 		return biome_settings_manager.get_mountain_biome_settings()
-
+	elif (division_x == grid_width - 1 && division_z == grid_width) || (division_x == grid_width && division_z == grid_width - 1) || (division_x == grid_width - 1 && division_z == grid_width - 1):
+		print("foothills biome")
+		return biome_settings_manager.get_foothills_biome_settings()
+	print("default biome")
+	return biome_settings_manager.get_default_biome_settings()
 func generate_xz_to_i():
 	print("generating xz to i")
 	var xz_to_i = {}

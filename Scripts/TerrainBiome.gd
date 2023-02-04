@@ -30,6 +30,9 @@ var biome_divisions
 var division_x
 var division_z
 
+var width
+var height
+
 # Called when the node enters the scene tree for the first time.
 func _init(west_boundary, north_boundary, east_boundary, south_boundary, biome_divisions, biome_settings, i_array, i_to_xz, division_x, division_z):
 	self.west_boundary = west_boundary
@@ -54,6 +57,9 @@ func _init(west_boundary, north_boundary, east_boundary, south_boundary, biome_d
 			self.north_edge.push_back(i)
 		elif z >= south_boundary && z <= south_boundary + 5:
 			self.south_edge.push_back(i)
+	
+	self.width = east_boundary - west_boundary
+	self.height = north_boundary - south_boundary
 	
 	self.division_x = division_x
 	self.division_z = division_z
@@ -81,6 +87,25 @@ func apply_height_smoothing(i):
 	
 	return new_height_factor
 
+func get_height_factor_for_index(i):
+	var biome_settings = get_biome_settings()
+	var height_range = biome_settings.get_height_range()
+	var height_map = biome_settings.get_height_map()
+	var xz = i_to_xz[i]
+	var x = reduce(xz[0], width)
+	var z = reduce(xz[1], height)
+	var height_x = floor((float(x) / (float(width) / float(height_map.size()))))
+	var height_z = floor((float(z) / (float(height) / float(height_map.size()))))
+	var height_map_val = height_map[height_x][height_z]
+	var height_factor
+	if height_map_val == 1:
+		height_factor = height_range.x
+	elif height_map_val == 2:
+		height_factor = (height_range.y - height_range.x)/2.0
+	elif height_map_val == 3:
+		height_factor = height_range.y
+	return height_factor
+
 func get_west_boundary():
 	return west_boundary
 
@@ -92,6 +117,12 @@ func get_east_boundary():
 
 func get_south_boundary():
 	return south_boundary
+
+func get_width():
+	return width
+
+func get_height():
+	return height
 
 func get_i_array():
 	return i_array
@@ -134,3 +165,9 @@ func set_east_neighbor(east_neighbor):
 
 func set_south_neighbor(south_neighbor):
 	self.south_neighbor = south_neighbor
+
+func reduce(index, upper_bound):
+	var new_index = index
+	while new_index >= upper_bound:
+		new_index -= upper_bound
+	return new_index

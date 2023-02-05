@@ -97,18 +97,19 @@ func _init(noise_seed, biome_divisions, plane_width=64, plane_depth=64, height_f
 	# TODO: draw terrain given the biomes array
 	draw_terrain(plane_width, plane_depth, biome_grid)
 	
-	place_grass(grass_blade_mesh)
+	#place_grass(grass_blade_mesh)
 	pass
+
 
 func divide_terrain_into_biomes(biome_divisions):
 	var xz_to_i = generate_xz_to_i()
 	
 	var biome_grid = []
-	for i in range(biome_divisions):
+	for x in range(biome_divisions):
 		biome_grid.push_back([])
-		for j in range(biome_divisions):
-			biome_grid[i].push_back(null)
-	var biome_height_factor
+		for z in range(biome_divisions):
+			biome_grid[x].push_back(null)
+	
 	
 	var increment = plane_width/biome_divisions
 	var west_boundary = 0
@@ -152,14 +153,10 @@ func divide_terrain_into_biomes(biome_divisions):
 			south_boundary = 0
 			west_boundary += increment
 			east_boundary += increment
-			if east_boundary > plane_width - 1:
-				east_boundary = plane_width - 1
 		else:
 			division_z += 1
 			north_boundary += increment
 			south_boundary += increment
-			if north_boundary > plane_depth - 1:
-				north_boundary = plane_depth - 1
 		biome_count += 1
 		biome_i_array = []
 	return biome_grid
@@ -178,7 +175,7 @@ func draw_terrain(plane_width, plane_depth, biome_grid):
 	var uv_y = 0.0
 	var uv_inc = 1.0/8.0
 	var old_z = mdt.get_vertex(0).z
-	# uvs should run from 0, 1/64, 2/64, .., 1
+	
 	for biome_x in range(biome_grid.size()):
 		for biome_z in range(biome_grid[biome_x].size()):
 			var biome = biome_grid[biome_x][biome_z]
@@ -187,6 +184,7 @@ func draw_terrain(plane_width, plane_depth, biome_grid):
 			var height_map = biome_settings.get_height_map()
 			for ii in range(biome_i_array.size()):
 				var i = biome_i_array[ii]
+				
 				var height_factor = biome.get_height_factor_for_index(i)
 				var vertex = mdt.get_vertex(i)
 				var new_z = vertex.z
@@ -220,7 +218,7 @@ func draw_terrain(plane_width, plane_depth, biome_grid):
 					uv_x = 0.0
 				
 				old_z = new_z
-		
+	
 	# add features
 	var large_rock_counter = 0
 	for i in range(mdt.get_vertex_count()):
@@ -261,21 +259,17 @@ func load_biome_settings(biome_grid, division_x, division_z):
 	
 	# TODO: eventually the arrangement should be random but with foothills surrounding mountains
 	if division_x == grid_width && division_z == grid_width:
-		print("mountain biome")
 		return biome_settings_manager.get_mountain_biome_settings()
 	elif (division_x == grid_width - 1 && division_z == grid_width) || (division_x == grid_width && division_z == grid_width - 1) || (division_x == grid_width - 1 && division_z == grid_width - 1):
-		print("foothills biome")
 		return biome_settings_manager.get_foothills_biome_settings()
-	print("default biome")
 	return biome_settings_manager.get_default_biome_settings()
+
 func generate_xz_to_i():
-	print("generating xz to i")
 	var xz_to_i = {}
 	var x = 0
 	var z = 0
 	for i in range(mdt.get_vertex_count()):
 		xz_to_i[[x, z]] = i
-		
 		if (i + 1) % plane_depth == 0:
 			z = 0
 			x += 1

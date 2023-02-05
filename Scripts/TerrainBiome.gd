@@ -48,14 +48,13 @@ func _init(west_boundary, north_boundary, east_boundary, south_boundary, biome_d
 		var xz = i_to_xz[i]
 		var x = xz[0]
 		var z = xz [1]
-		# TODO: somehow make the height factor gradually increase throughout the margin
-		if x >= west_boundary && x <= west_boundary + 5:
+		if x >= west_boundary && x <= west_boundary:
 			self.west_edge.push_back(i)
-		elif x >= east_boundary - 5 && x <= east_boundary:
+		elif x >= east_boundary  && x <= east_boundary:
 			self.east_edge.push_back(i)
-		if z >= north_boundary - 5 && x <= north_boundary:
+		if z >= north_boundary && x <= north_boundary:
 			self.north_edge.push_back(i)
-		elif z >= south_boundary && z <= south_boundary + 5:
+		elif z >= south_boundary && z <= south_boundary:
 			self.south_edge.push_back(i)
 	
 	self.width = east_boundary - west_boundary

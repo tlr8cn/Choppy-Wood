@@ -10,9 +10,9 @@ onready var rng = RandomNumberGenerator.new()
 
 # TODO: try one big plane where sections are recalcalated based on proximity?
 var num_chunks = 1
-var cube_width = 128
-var cube_depth = 128
-var cube_height = 128
+var cube_width = 64
+var cube_depth = 64
+var cube_height = 64
 var biome_divisions = 2 # total biomes = biome_divisions^2
 #var chunk_size = 64
 

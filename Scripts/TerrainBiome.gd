@@ -100,9 +100,10 @@ func get_height_factor_for_index(i):
 	if height_map_val == 1:
 		height_factor = height_range.x
 	elif height_map_val == 2:
-		height_factor = (height_range.y - height_range.x)/2.0
+		height_factor = (height_range.y + height_range.x)/2.0
 	elif height_map_val == 3:
 		height_factor = height_range.y
+	print(height_factor)
 	return height_factor
 
 func get_west_boundary():

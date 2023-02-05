@@ -198,6 +198,7 @@ func draw_terrain(plane_width, plane_depth, cube_height, biome_grid):
 			var biome_i_array = biome.get_i_array()
 			var biome_settings = biome.get_biome_settings()
 			var height_map = biome_settings.get_height_map()
+			
 			for ii in range(biome_i_array.size()):
 				var i = biome_i_array[ii]
 				

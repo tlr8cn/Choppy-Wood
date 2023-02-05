@@ -7,7 +7,7 @@ var noiseb:OpenSimplexNoise
 var rng:RandomNumberGenerator
 var mdt:MeshDataTool
 var st:SurfaceTool
-var plane_mesh:PlaneMesh
+var cube_mesh:CubeMesh
 
 var dirt_material:ShaderMaterial
 var grass_material:ShaderMaterial
@@ -25,8 +25,19 @@ var height_factor
 
 var array_plane
 
-var plane_width
-var plane_depth
+var cube_width
+var cube_depth
+var cube_height
+
+var west_face = []
+var east_face = []
+var north_face = []
+var south_face = []
+var top_face = []
+var bottom_face = []
+
+# Only for the top face right now
+var xz_to_i = {}
 
 var tree_generators = []
 
@@ -37,11 +48,11 @@ var biome_settings_manager = BiomeSettingsManager.new()
 # with colliders placed at certain vertices
 # When the player area intersects with the collider, add that chunk to a queue on the TerrainOrchestrator
 # Pull that chunk off the queue, and generate terrain for all vertices surrounding it
-func _init(noise_seed, biome_divisions, plane_width=64, plane_depth=64, height_factor=10, tree_likelihood=18, grass_likelihood=40, rock_likelihood=5, noise_octaves=8.0, noise_period=55.0, noise_persistence=0.125):
+func _init(noise_seed, biome_divisions, cube_width=64, cube_depth=64, cube_height=64, height_factor=10, tree_likelihood=18, grass_likelihood=40, rock_likelihood=5, noise_octaves=8.0, noise_period=55.0, noise_persistence=0.125):
 	rng = RandomNumberGenerator.new()
 	rng.randomize()
 	
-	plane_mesh = PlaneMesh.new()
+	cube_mesh = CubeMesh.new()
 	mdt = MeshDataTool.new()
 	st = SurfaceTool.new()
 	
@@ -79,30 +90,35 @@ func _init(noise_seed, biome_divisions, plane_width=64, plane_depth=64, height_f
 	noise.persistence = noise_persistence
 	noiseb.persistence = noise_persistence
 	
-	self.plane_width = plane_width
-	self.plane_depth = plane_depth
+	self.cube_width = cube_width
+	self.cube_depth = cube_depth
+	self.cube_height = cube_height
 	# Subdivide actually represents how many subdivisions are made to the plane in a particular direction
 	# It is NOT to be confused with the vertex count. In order to map width to number of vertices, subtract 2
 	# from the subdivision width/depth
-	plane_mesh.subdivide_width = plane_width - 2
-	plane_mesh.subdivide_depth = plane_depth - 2
-	plane_mesh.size = Vector2(plane_mesh.subdivide_width, plane_mesh.subdivide_depth)
+	cube_mesh.subdivide_width = cube_width - 2
+	cube_mesh.subdivide_depth = cube_depth - 2
+	cube_mesh.subdivide_height = cube_height - 2
 	
-	st.create_from(plane_mesh, 0)
+	# TODO: try using the width, depth, and height members of this class
+	cube_mesh.size = Vector3(cube_mesh.subdivide_width, cube_mesh.subdivide_depth, cube_mesh.subdivide_height)
+	
+	st.create_from(cube_mesh, 0)
 	# Returns a constructed ArrayMesh from current information passed in 
 	array_plane = st.commit()
 	mdt.create_from_surface(array_plane, 0)
 
 	var biome_grid = divide_terrain_into_biomes(biome_divisions)
 	# TODO: draw terrain given the biomes array
-	draw_terrain(plane_width, plane_depth, biome_grid)
+	draw_terrain(cube_width, cube_depth, cube_height, biome_grid)
 	
 	#place_grass(grass_blade_mesh)
 	pass
 
 
+# TODO: only divide the top of the cube into biomes
 func divide_terrain_into_biomes(biome_divisions):
-	var xz_to_i = generate_xz_to_i()
+	generate_faces_and_xz_to_i()
 	
 	var biome_grid = []
 	for x in range(biome_divisions):
@@ -111,7 +127,7 @@ func divide_terrain_into_biomes(biome_divisions):
 			biome_grid[x].push_back(null)
 	
 	
-	var increment = plane_width/biome_divisions
+	var increment = cube_width/biome_divisions
 	var west_boundary = 0
 	var north_boundary = increment
 	var east_boundary = increment
@@ -146,7 +162,7 @@ func divide_terrain_into_biomes(biome_divisions):
 			biome.set_west_neighbor(west_neighbor)
 			west_neighbor.set_east_neighbor(biome)
 		
-		if north_boundary >= plane_depth - 1:
+		if north_boundary >= cube_depth - 1:
 			division_z = 0
 			division_x += 1
 			north_boundary = increment
@@ -170,7 +186,7 @@ func divide_terrain_into_biomes(biome_divisions):
 #                  0 -------- vertex_count - plane_width
 #                       ^
 #                  i % plane_width == 0
-func draw_terrain(plane_width, plane_depth, biome_grid):
+func draw_terrain(plane_width, plane_depth, cube_height, biome_grid):
 	var uv_x = 0.0
 	var uv_y = 0.0
 	var uv_inc = 1.0/8.0
@@ -200,14 +216,16 @@ func draw_terrain(plane_width, plane_depth, biome_grid):
 				mdt.set_vertex(i, vertex)
 				
 				# on every nth vertex, roll to create a tree
-				#if i % 75 == 0:
-				#	roll_to_add_tree(tree_generator, vertex, i, mdt)
+				if i % 50 == 0:
+					roll_to_add_tree(tree_generators, vertex, i)
 				
-				#roll_to_add_rock(vertex)
+				# TODO: rocks should be partial to terrain peaks. Meaning the highest y values on the mesh should have a higher concentration of rocks
+				roll_to_add_rock(vertex)
 				
-				# Check for house spawn
-				#if i == 1000:
-				#	spawn_house(shack, vertex)
+				# TODO: write a helper function to determine if the area around the selected vertex
+				# is flat; if so, spawn the campfire
+				if i == 32896:
+					add_campfire(vertex)
 				
 				uv_x += uv_inc
 				if uv_x < 0:
@@ -220,6 +238,11 @@ func draw_terrain(plane_width, plane_depth, biome_grid):
 				old_z = new_z
 	
 	# add features
+	#add_terrain_features()
+	add_tree_to_scene(array_plane)
+	pass
+
+func add_terrain_features(plane_width):
 	var large_rock_counter = 0
 	for i in range(mdt.get_vertex_count()):
 		var vertex = mdt.get_vertex(i)
@@ -235,23 +258,11 @@ func draw_terrain(plane_width, plane_depth, biome_grid):
 				add_large_rock(vertex)
 				large_rock_counter = 0
 		
-		# on every nth vertex, roll to create a tree
-		if i % 50 == 0:
-			roll_to_add_tree(tree_generators, vertex, i, mdt)
-		
-		# TODO: rocks should be partial to terrain peaks. Meaning the highest y values on the mesh should have a higher concentration of rocks
-		roll_to_add_rock(vertex)
-		
-		# TODO: write a helper function to determine if the area around the selected vertex
-		# is flat; if so, spawn the campfire
-		if i == 32896:
-			add_campfire(vertex)
+
 		
 		# Check for house spawn
 		#if i == 125:
 		#	spawn_house(shack, vertex)
-	
-	add_tree_to_scene(array_plane)
 	pass
 
 func load_biome_settings(biome_grid, division_x, division_z):
@@ -264,17 +275,31 @@ func load_biome_settings(biome_grid, division_x, division_z):
 		return biome_settings_manager.get_foothills_biome_settings()
 	return biome_settings_manager.get_default_biome_settings()
 
-func generate_xz_to_i():
-	var xz_to_i = {}
+func generate_faces_and_xz_to_i():
 	var x = 0
 	var z = 0
 	for i in range(mdt.get_vertex_count()):
-		xz_to_i[[x, z]] = i
-		if (i + 1) % plane_depth == 0:
-			z = 0
-			x += 1
-		else:
-			z += 1
+		if i < 2*(cube_depth * cube_height):
+			if i % 2 == 0:
+				west_face.push_back(i)
+			elif i % 2 == 1:
+				east_face.push_back(i)
+		elif i >= 2*(cube_width * cube_height) && i < 4*(cube_width * cube_height):
+			if i % 2 == 0:
+				south_face.push_back(i)
+			elif i % 2 == 1:
+				north_face.push_back(i)
+		elif i >= 4 * (cube_width * cube_depth) && i < 6 * (cube_width * cube_depth):
+			if i % 2 == 0:
+				top_face.push_back(i)
+				xz_to_i[[x, z]] = i
+				if z == cube_depth - 1:
+					z = 0
+					x += 1
+				else:
+					z += 1
+			elif i % 2 == 1:
+				bottom_face.push_back(i)
 	return xz_to_i
 
 func add_large_rock(rock_location):
@@ -286,19 +311,23 @@ func add_large_rock(rock_location):
 func roll_to_add_rock(rock_location):
 	var roll = rng.randi_range(0, 2500)
 	if roll <= self.rock_likelihood:
-		var instance = rock1.instance()
-		var minor_offset_x = rng.randf_range(-0.15, 0.15)
-		var minor_offset_z = rng.randf_range(-0.15, 0.15)
-		var pos = Vector3(rock_location.x + minor_offset_x, rock_location.y - 0.15, rock_location.z + minor_offset_z)
-		instance.transform.origin = pos
-		
-		var random_rotation = rng.randf_range(0, 2*PI)
-		instance.transform.basis = instance.transform.basis.rotated(Vector3(1, 0, 0), transform.basis.get_euler().x + random_rotation)
-		random_rotation = rng.randf_range(0, 2*PI)
-		instance.transform.basis = instance.transform.basis.rotated(Vector3(0, 1, 0), transform.basis.get_euler().y + random_rotation)
-		random_rotation = rng.randf_range(0, 2*PI)
-		instance.transform.basis = instance.transform.basis.rotated(Vector3(0, 0, 1), transform.basis.get_euler().z + random_rotation)
-		add_child(instance)
+		add_rock(rock_location)
+	pass
+
+func add_rock(rock_location):
+	var instance = rock1.instance()
+	var minor_offset_x = rng.randf_range(-0.15, 0.15)
+	var minor_offset_z = rng.randf_range(-0.15, 0.15)
+	var pos = Vector3(rock_location.x + minor_offset_x, rock_location.y - 0.15, rock_location.z + minor_offset_z)
+	instance.transform.origin = pos
+	
+	var random_rotation = rng.randf_range(0, 2*PI)
+	instance.transform.basis = instance.transform.basis.rotated(Vector3(1, 0, 0), transform.basis.get_euler().x + random_rotation)
+	random_rotation = rng.randf_range(0, 2*PI)
+	instance.transform.basis = instance.transform.basis.rotated(Vector3(0, 1, 0), transform.basis.get_euler().y + random_rotation)
+	random_rotation = rng.randf_range(0, 2*PI)
+	instance.transform.basis = instance.transform.basis.rotated(Vector3(0, 0, 1), transform.basis.get_euler().z + random_rotation)
+	add_child(instance)
 	pass
 
 func add_campfire(location):
@@ -307,7 +336,8 @@ func add_campfire(location):
 	add_child(instance)
 	pass
 
-func roll_to_add_tree(tree_generators, tree_location, vertex_index, mdt):
+func roll_to_add_tree(tree_generators, tree_location, vertex_index):
+	# TODO: roll for tree type after likelihood
 	var tree_type_roll = rng.randi_range(0, 100)
 	var tree_generator = null
 	if tree_type_roll >= 65:
@@ -331,10 +361,10 @@ func roll_to_add_tree(tree_generators, tree_location, vertex_index, mdt):
 					nearby_vertices.push_back(mdt.get_vertex(vertex_index - i))
 				if vertex_index + i <= mdt.get_vertex_count() - 1:
 					nearby_vertices.push_back(mdt.get_vertex(vertex_index + i))
-				if vertex_index + i*plane_width <= mdt.get_vertex_count() - 1:
-					nearby_vertices.push_back(mdt.get_vertex(vertex_index + i*plane_width))
-				if vertex_index - i*plane_width >= 0:
-					nearby_vertices.push_back(mdt.get_vertex(vertex_index - i*plane_width))
+				if vertex_index + i*cube_width <= mdt.get_vertex_count() - 1:
+					nearby_vertices.push_back(mdt.get_vertex(vertex_index + i*cube_width))
+				if vertex_index - i*cube_width >= 0:
+					nearby_vertices.push_back(mdt.get_vertex(vertex_index - i*cube_width))
 			
 			var num_mushrooms_cap = (nearby_vertices.size() - 1)/4
 			var num_mushrooms = rng.randi_range(0, num_mushrooms_cap)

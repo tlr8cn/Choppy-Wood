@@ -41,6 +41,7 @@ func _init(west_boundary, north_boundary, east_boundary, south_boundary, biome_d
 	self.south_boundary = south_boundary
 	self.biome_divisions = biome_divisions
 	self.biome_settings = biome_settings
+	
 	self.i_array = i_array
 	self.i_to_xz = i_to_xz
 	for ii in range(i_array.size()):
@@ -89,21 +90,18 @@ func apply_height_smoothing(i):
 func get_height_factor_for_index(i):
 	var biome_settings = get_biome_settings()
 	var height_range = biome_settings.get_height_range()
+	var height_range_diff = height_range.y - height_range.x
 	var height_map = biome_settings.get_height_map()
+	var num_height_increments = biome_settings.get_num_height_increments()
 	var xz = i_to_xz[i]
 	var x = reduce(xz[0], width)
 	var z = reduce(xz[1], height)
 	var height_x = floor((float(x) / (float(width) / float(height_map.size()))))
 	var height_z = floor((float(z) / (float(height) / float(height_map.size()))))
 	var height_map_val = height_map[height_x][height_z]
-	var height_factor
-	if height_map_val == 1:
-		height_factor = height_range.x
-	elif height_map_val == 2:
-		height_factor = (height_range.y + height_range.x)/2.0
-	elif height_map_val == 3:
-		height_factor = height_range.y
-	print(height_factor)
+	
+	# 1/5*diff - 5/5*diff
+	var height_factor = height_range.x + ((float(height_map_val)/float(num_height_increments)) * height_range_diff)
 	return height_factor
 
 func get_west_boundary():
@@ -171,3 +169,6 @@ func reduce(index, upper_bound):
 	while new_index >= upper_bound:
 		new_index -= upper_bound
 	return new_index
+
+func get_biome_xz_for_i(i):
+	return i_to_xz[i]

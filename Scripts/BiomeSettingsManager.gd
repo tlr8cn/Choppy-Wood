@@ -7,43 +7,9 @@ var foothills_biome_settings
 var mountain_biome_settings
 
 func _init():
-	
-	var default_height_map = [
-		[3, 3, 3, 3, 3, 3, 3, 3],
-		[3, 2, 2, 2, 2, 2, 2, 3],
-		[3, 2, 1, 1, 1, 1, 2, 3],
-		[3, 2, 1, 1, 1, 1, 2, 3],
-		[3, 2, 1, 1, 1, 1, 2, 3],
-		[3, 2, 1, 1, 1, 1, 2, 3],
-		[3, 2, 2, 2, 2, 2, 2, 3],
-		[3, 3, 3, 3, 3, 3, 3, 3]
-	]
-	self.default_biome_settings = BiomeSettings.new(default_height_map, Vector2(10.0, 15.0), 8.0)
-	
-	# TODO will likely need to write an algorithm to rotate a square array 90 degrees
-	var foothills_height_map = [
-		[1, 1, 1, 1, 1, 1, 1, 1],
-		[2, 2, 2, 2, 2, 2, 2, 1],
-		[3, 2, 2, 2, 2, 2, 2, 1],
-		[3, 3, 2, 2, 2, 2, 2, 1],
-		[3, 3, 3, 3, 2, 2, 2, 1],
-		[3, 3, 3, 3, 3, 2, 2, 1],
-		[3, 3, 3, 3, 3, 2, 2, 1],
-		[3, 3, 3, 3, 3, 3, 2, 1]
-	]
-	self.foothills_biome_settings = BiomeSettings.new(foothills_height_map, Vector2(20.0, 35.0), 11.0)
-	
-	var mountain_height_map = [
-		[1, 1, 1, 1, 1, 1, 1, 1],
-		[1, 2, 2, 2, 2, 2, 2, 1],
-		[1, 2, 3, 3, 3, 3, 2, 1],
-		[1, 2, 3, 3, 3, 3, 2, 1],
-		[1, 2, 3, 3, 3, 3, 2, 1],
-		[1, 2, 3, 3, 2, 3, 2, 1],
-		[1, 2, 2, 2, 2, 2, 2, 1],
-		[1, 1, 1, 1, 1, 1, 1, 1]
-	]
-	self.mountain_biome_settings = BiomeSettings.new(mountain_height_map, Vector2(40.0, 65.0), 15.0)
+	self.default_biome_settings = BiomeSettings.new("DEFAULT")
+	self.foothills_biome_settings = BiomeSettings.new("FOOTHILLS")
+	self.mountain_biome_settings = BiomeSettings.new("MOUNTAIN")
 	pass
 
 func get_default_biome_settings():

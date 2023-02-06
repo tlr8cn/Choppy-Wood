@@ -198,7 +198,7 @@ transitions = [ "maul_idle", "maul_windup", SubResource( 13 ), "maul_windup", "m
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2.03929, 0, 0 )
 
 [node name="Player" type="KinematicBody" parent="."]
-transform = Transform( -0.0083079, 0, 0.999966, 0, 0.75, 0, -0.999966, 0, -0.0083079, -1.10536, 127.106, 0 )
+transform = Transform( -0.0083079, 0, 0.999966, 0, 0.75, 0, -0.999966, 0, -0.0083079, -1.10536, 82.8795, 0 )
 script = ExtResource( 1 )
 speed = 6
 

@@ -112,9 +112,10 @@ func _init(noise_seed, biome_divisions, cube_width=64, cube_depth=64, cube_heigh
 	# TODO: draw terrain given the biomes array
 	draw_terrain(cube_width, cube_depth, cube_height, biome_grid)
 	
+	# TODO: add terrain smoothing function
+	
 	#place_grass(grass_blade_mesh)
 	pass
-
 
 # TODO: only divide the top of the cube into biomes
 func divide_terrain_into_biomes(biome_divisions):
@@ -126,7 +127,6 @@ func divide_terrain_into_biomes(biome_divisions):
 		for z in range(biome_divisions):
 			biome_grid[x].push_back(null)
 	
-	
 	var increment = cube_width/biome_divisions
 	var west_boundary = 0
 	var north_boundary = increment
@@ -134,10 +134,15 @@ func divide_terrain_into_biomes(biome_divisions):
 	var south_boundary = 0
 	var biome_i_array = []
 	
-	var division_x = 0
-	var division_z = 0
 	var number_of_biomes = pow(biome_divisions, 2)
 	var biome_count = 0
+	
+	# Place a single mountain randomly in the grid
+	var mountain_x = rng.randi_range(1, biome_grid.size()-2)
+	var mountain_z = rng.randi_range(1, biome_grid.size()-2)
+	
+	var division_x = 0
+	var division_z = 0
 	while biome_count < number_of_biomes:
 		var biome_i_to_xz = {}
 		for x in range(west_boundary, east_boundary):
@@ -146,7 +151,7 @@ func divide_terrain_into_biomes(biome_divisions):
 				biome_i_to_xz[i] = [x, z]
 				biome_i_array.push_back(i)
 		
-		var biome_settings = load_biome_settings(biome_grid, division_x, division_z)
+		var biome_settings = load_biome_settings(biome_grid, division_x, division_z, mountain_x, mountain_z)
 		var biome = TerrainBiome.new(west_boundary, north_boundary, east_boundary, south_boundary, biome_divisions, biome_settings, biome_i_array, biome_i_to_xz, division_x, division_z)
 		biome_grid[division_x][division_z] = biome
 		
@@ -249,7 +254,7 @@ func add_terrain_features(plane_width):
 		var vertex = mdt.get_vertex(i)
 		
 		# TODO: mountainous terrain
-		#    1. Slope the terrain up gradually on either side to create a valley, which will propel the player forward
+			#    1. Slope the terrain up gradually on either side to create a valley, which will propel the player forward
 		#    2. When slope becomes extreme enough, the texture should change to rock or loose sliding soil
 		#    3. The extent of the slope should determine whether or not can climb the slope -- should be before reaching rock features
 		#    4. At the peaks, add rock features
@@ -266,14 +271,29 @@ func add_terrain_features(plane_width):
 		#	spawn_house(shack, vertex)
 	pass
 
-func load_biome_settings(biome_grid, division_x, division_z):
+func load_biome_settings(biome_grid, division_x, division_z, mountain_x, mountain_z):
 	var grid_width = biome_grid.size() - 1
 	
-	# TODO: eventually the arrangement should be random but with foothills surrounding mountains
-	if division_x == grid_width && division_z == grid_width:
+	if division_x == mountain_x && division_z == mountain_z:
 		return biome_settings_manager.get_mountain_biome_settings()
-	elif (division_x == grid_width - 1 && division_z == grid_width) || (division_x == grid_width && division_z == grid_width - 1) || (division_x == grid_width - 1 && division_z == grid_width - 1):
-		return biome_settings_manager.get_foothills_biome_settings()
+	elif division_x == mountain_x && division_z + 1 == mountain_z:
+		return BiomeSettings.new("FOOTHILLS", 0)
+	elif division_x - 1 == mountain_x && division_z == mountain_z:
+		return BiomeSettings.new("FOOTHILLS", 90)
+	elif division_x == mountain_x && division_z - 1 == mountain_z:
+		return BiomeSettings.new("FOOTHILLS", 180)
+	elif division_x + 1 == mountain_x && division_z == mountain_z:
+		return BiomeSettings.new("FOOTHILLS", 270)
+	# CORNERS
+	elif division_x + 1 == mountain_x && division_z + 1 == mountain_z:
+		return BiomeSettings.new("FOOTHILLS_CORNER", 270)
+	elif division_x - 1 == mountain_x && division_z - 1 == mountain_z:
+		return BiomeSettings.new("FOOTHILLS_CORNER", 90)
+	elif division_x - 1 == mountain_x && division_z + 1 == mountain_z:
+		return BiomeSettings.new("FOOTHILLS_CORNER", 0)
+	elif division_x + 1 == mountain_x && division_z - 1 == mountain_z:
+		return BiomeSettings.new("FOOTHILLS_CORNER", 180)
+	
 	return biome_settings_manager.get_default_biome_settings()
 
 func generate_faces_and_xz_to_i():

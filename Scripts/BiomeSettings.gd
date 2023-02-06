@@ -55,7 +55,7 @@ var mountain_height_map = [
 	[0, 1, 1, 2, 2, 1, 1, 0],
 	[0, 0, 0, 0, 0, 0, 0, 0]
 ]
-var mountain_height_range = Vector2(30.0, 60.0)
+var mountain_height_range = Vector2(32.0, 64.0)
 
 # Called when the node enters the scene tree for the first time.
 func _init(type, height_map_rotation=0.0):

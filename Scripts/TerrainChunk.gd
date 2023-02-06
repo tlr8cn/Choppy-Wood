@@ -286,9 +286,9 @@ func load_biome_settings(biome_grid, division_x, division_z, mountain_x, mountai
 		return BiomeSettings.new("FOOTHILLS", 270)
 	# CORNERS
 	elif division_x + 1 == mountain_x && division_z + 1 == mountain_z:
-		return BiomeSettings.new("FOOTHILLS_CORNER", 270)
-	elif division_x - 1 == mountain_x && division_z - 1 == mountain_z:
 		return BiomeSettings.new("FOOTHILLS_CORNER", 90)
+	elif division_x - 1 == mountain_x && division_z - 1 == mountain_z:
+		return BiomeSettings.new("FOOTHILLS_CORNER", 270)
 	elif division_x - 1 == mountain_x && division_z + 1 == mountain_z:
 		return BiomeSettings.new("FOOTHILLS_CORNER", 0)
 	elif division_x + 1 == mountain_x && division_z - 1 == mountain_z:

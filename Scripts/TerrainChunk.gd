@@ -48,7 +48,7 @@ var biome_settings_manager = BiomeSettingsManager.new()
 # with colliders placed at certain vertices
 # When the player area intersects with the collider, add that chunk to a queue on the TerrainOrchestrator
 # Pull that chunk off the queue, and generate terrain for all vertices surrounding it
-func _init(noise_seed, biome_divisions, cube_width=64, cube_depth=64, cube_height=64, height_factor=10, tree_likelihood=18, grass_likelihood=40, rock_likelihood=5, noise_octaves=8.0, noise_period=55.0, noise_persistence=0.125):
+func _init(noise_seed, biome_divisions, cube_width=64, cube_depth=64, cube_height=64, tree_likelihood=18, grass_likelihood=40, rock_likelihood=5, noise_octaves=8.0, noise_period=55.0, noise_persistence=0.125):
 	rng = RandomNumberGenerator.new()
 	rng.randomize()
 	
@@ -192,6 +192,7 @@ func divide_terrain_into_biomes(biome_divisions):
 #                       ^
 #                  i % plane_width == 0
 func draw_terrain(plane_width, plane_depth, cube_height, biome_grid):
+	var edge_smoothing_height_allowance = 1.0
 	var uv_x = 0.0
 	var uv_y = 0.0
 	var uv_inc = 1.0/8.0
@@ -206,17 +207,19 @@ func draw_terrain(plane_width, plane_depth, cube_height, biome_grid):
 			
 			for ii in range(biome_i_array.size()):
 				var i = biome_i_array[ii]
+				var xz = biome.get_biome_xz_for_i(i)
+				var x = xz[0]
+				var z = xz[1]
 				
 				var height_factor = biome.get_height_factor_for_index(i)
 				var vertex = mdt.get_vertex(i)
 				var new_z = vertex.z
 				var noise_val = noise.get_noise_2d(float(vertex.x), float(vertex.z))
 				var noise_valb = noiseb.get_noise_2d(float(vertex.x), float(vertex.z))
-				var final_noise_val = (noise_val + noise_valb)/2
+				var final_noise_val = height_factor*((noise_val + noise_valb)/2)
 				
-				#height_factor = biome.apply_height_smoothing(i)
 				
-				vertex.y = height_factor*final_noise_val
+				vertex.y = final_noise_val
 				
 				mdt.set_vertex_uv(i, Vector2(uv_x, uv_y))
 				mdt.set_vertex(i, vertex)
@@ -242,6 +245,74 @@ func draw_terrain(plane_width, plane_depth, cube_height, biome_grid):
 					uv_x = 0.0
 				
 				old_z = new_z
+	
+	# NEW CODE
+	# smooth biomes that have already have height applied to vertices
+	# i.e western and southern biomes
+	for biome_x in range(biome_grid.size()):
+		for biome_z in range(biome_grid[biome_x].size()):
+			var biome = biome_grid[biome_x][biome_z]
+			var biome_i_array = biome.get_i_array()
+			for ii in range(biome_i_array.size()):
+				var i = biome_i_array[ii]
+				var xz = biome.get_biome_xz_for_i(i)
+				var x = xz[0]
+				var z = xz[1]
+				var smoothing_margin = 4
+				if biome_x > 0 && x == biome.get_west_boundary():
+					var height_range = Vector2()
+					var margin_vertices = []
+					var margin_indices = []
+					for x_offset in range(x-smoothing_margin, (x+smoothing_margin)+1):
+						var margin_index = xz_to_i[[x_offset, z]]
+						var margin_vertex = mdt.get_vertex(margin_index)
+						margin_vertices.push_back(margin_vertex)
+						margin_indices.push_back(margin_index)
+						
+						if x_offset == x-smoothing_margin:
+							height_range.x = margin_vertex.y
+						elif x_offset == x+smoothing_margin:
+							height_range.y = margin_vertex.y
+					
+					var height_diff = height_range.y - height_range.x
+					var height_counter = height_range.x
+					# positive height_diff means height increases along the margin
+					# negative height_diff means height decreases along the margin
+					var height_inc = height_diff/margin_vertices.size()
+					for k in range(margin_vertices.size()):
+						var margin_vertex = margin_vertices[k]
+						var margin_i = margin_indices[k]
+						margin_vertex.y = height_counter
+						mdt.set_vertex(margin_i, margin_vertex)
+						height_counter += height_inc
+					
+				if biome_z > 0 && z == biome.get_south_boundary():
+					var height_range = Vector2()
+					var margin_vertices = []
+					var margin_indices = []
+					for z_offset in range(z-smoothing_margin, (z+smoothing_margin)+1):
+						var margin_index = xz_to_i[[x, z_offset]]
+						var margin_vertex = mdt.get_vertex(margin_index)
+						margin_vertices.push_back(margin_vertex)
+						margin_indices.push_back(margin_index)
+						
+						if z_offset == z-smoothing_margin:
+							height_range.x = margin_vertex.y
+						elif z_offset == z+smoothing_margin:
+							height_range.y = margin_vertex.y
+					
+					var height_diff = height_range.y - height_range.x
+					var height_counter = height_range.x
+					# positive height_diff means height increases along the margin
+					# negative height_diff means height decreases along the margin
+					var height_inc = height_diff/margin_vertices.size()
+					for k in range(margin_vertices.size()):
+						var margin_vertex = margin_vertices[k]
+						var margin_i = margin_indices[k]
+						margin_vertex.y = height_counter
+						mdt.set_vertex(margin_i, margin_vertex)
+						height_counter += height_inc
+		
 	
 	# add features
 	#add_terrain_features()

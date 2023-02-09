@@ -63,10 +63,6 @@ func _init(noise_seed, biome_divisions, cube_width=64, cube_depth=64, cube_heigh
 	
 	var grass_blade_mesh = load("res://Assets/Models/Grass/flat-grass.obj")
 	
-	var original_tree_generator = load("res://Scenes/NaturalTree.tscn")
-	var magnolia_tree_generator = load("res://Scenes/NaturalTree_Magnolia.tscn")
-	tree_generators = [original_tree_generator, magnolia_tree_generator]
-	
 	shack = load("res://Scenes/Shack.tscn")
 	rock1 = load("res://Scenes/Rock1.tscn")
 	large_rock1 = load("res://Scenes/LargeRock1.tscn")
@@ -107,12 +103,10 @@ func _init(noise_seed, biome_divisions, cube_width=64, cube_depth=64, cube_heigh
 	# Returns a constructed ArrayMesh from current information passed in 
 	array_plane = st.commit()
 	mdt.create_from_surface(array_plane, 0)
-
-	var biome_grid = divide_terrain_into_biomes(biome_divisions)
-	# TODO: draw terrain given the biomes array
-	draw_terrain(cube_width, cube_depth, cube_height, biome_grid)
 	
-	# TODO: add terrain smoothing function
+	var biome_grid = divide_terrain_into_biomes(biome_divisions)
+	
+	draw_terrain(cube_width, cube_depth, cube_height, biome_grid)
 	
 	#place_grass(grass_blade_mesh)
 	pass
@@ -218,23 +212,10 @@ func draw_terrain(plane_width, plane_depth, cube_height, biome_grid):
 				var noise_valb = noiseb.get_noise_2d(float(vertex.x), float(vertex.z))
 				var final_noise_val = height_factor*((noise_val + noise_valb)/2)
 				
-				
 				vertex.y = final_noise_val
 				
 				mdt.set_vertex_uv(i, Vector2(uv_x, uv_y))
 				mdt.set_vertex(i, vertex)
-				
-				# on every nth vertex, roll to create a tree
-				if i % 50 == 0:
-					roll_to_add_tree(tree_generators, vertex, i)
-				
-				# TODO: rocks should be partial to terrain peaks. Meaning the highest y values on the mesh should have a higher concentration of rocks
-				roll_to_add_rock(vertex)
-				
-				# TODO: write a helper function to determine if the area around the selected vertex
-				# is flat; if so, spawn the campfire
-				if i == 32896:
-					add_campfire(vertex)
 				
 				uv_x += uv_inc
 				if uv_x < 0:
@@ -246,15 +227,45 @@ func draw_terrain(plane_width, plane_depth, cube_height, biome_grid):
 				
 				old_z = new_z
 	
-	# NEW CODE
-	# smooth biomes that have already have height applied to vertices
-	# i.e western and southern biomes
+	# smooth terrain
+	smooth_terrain_and_add_features(biome_grid)
+	
+	# add features
+	#add_terrain_features()
+	add_tree_to_scene(array_plane)
+	pass
+
+func add_terrain_features(plane_width):
+	var large_rock_counter = 0
+	for i in range(mdt.get_vertex_count()):
+		var vertex = mdt.get_vertex(i)
+		
+		# TODO: mountainous terrain
+			#    1. Slope the terrain up gradually on either side to create a valley, which will propel the player forward
+		#    2. When slope becomes extreme enough, the texture should change to rock or loose sliding soil
+		#    3. The extent of the slope should determine whether or not can climb the slope -- should be before reaching rock features
+		#    4. At the peaks, add rock features
+		if (i >= 0 && i < plane_width) || (i >= (mdt.get_vertex_count() - 1) - plane_width && i < mdt.get_vertex_count()):
+			large_rock_counter += 1
+			if large_rock_counter % 24 == 0:
+				add_large_rock(vertex)
+				large_rock_counter = 0
+		
+
+		
+		# Check for house spawn
+		#if i == 125:
+		#	spawn_house(shack, vertex)
+	pass
+
+func smooth_terrain_and_add_features(biome_grid):
 	for biome_x in range(biome_grid.size()):
 		for biome_z in range(biome_grid[biome_x].size()):
 			var biome = biome_grid[biome_x][biome_z]
 			var biome_i_array = biome.get_i_array()
 			for ii in range(biome_i_array.size()):
 				var i = biome_i_array[ii]
+				var vertex = mdt.get_vertex(i)
 				var xz = biome.get_biome_xz_for_i(i)
 				var x = xz[0]
 				var z = xz[1]
@@ -312,60 +323,64 @@ func draw_terrain(plane_width, plane_depth, cube_height, biome_grid):
 						margin_vertex.y = height_counter
 						mdt.set_vertex(margin_i, margin_vertex)
 						height_counter += height_inc
-		
-	
-	# add features
-	#add_terrain_features()
-	add_tree_to_scene(array_plane)
-	pass
-
-func add_terrain_features(plane_width):
-	var large_rock_counter = 0
-	for i in range(mdt.get_vertex_count()):
-		var vertex = mdt.get_vertex(i)
-		
-		# TODO: mountainous terrain
-			#    1. Slope the terrain up gradually on either side to create a valley, which will propel the player forward
-		#    2. When slope becomes extreme enough, the texture should change to rock or loose sliding soil
-		#    3. The extent of the slope should determine whether or not can climb the slope -- should be before reaching rock features
-		#    4. At the peaks, add rock features
-		if (i >= 0 && i < plane_width) || (i >= (mdt.get_vertex_count() - 1) - plane_width && i < mdt.get_vertex_count()):
-			large_rock_counter += 1
-			if large_rock_counter % 24 == 0:
-				add_large_rock(vertex)
-				large_rock_counter = 0
-		
-
-		
-		# Check for house spawn
-		#if i == 125:
-		#	spawn_house(shack, vertex)
+					
+				# on every nth vertex, roll to create a tree
+				if i % 50 == 0:
+					roll_to_add_tree(biome.get_biome_settings().get_tree_generators(), vertex, i)
+				
+				# TODO: rocks should be partial to terrain peaks. Meaning the highest y values on the mesh should have a higher concentration of rocks
+				roll_to_add_rock(vertex)
+				
+				# TODO: write a helper function to determine if the area around the selected vertex
+				# is flat; if so, spawn the campfire
+				if i == 32896:
+					add_campfire(vertex)
 	pass
 
 func load_biome_settings(biome_grid, division_x, division_z, mountain_x, mountain_z):
 	var grid_width = biome_grid.size() - 1
+	var biome_type = ""
+	var biome_height_map_rotation = 0
 	
 	if division_x == mountain_x && division_z == mountain_z:
-		return biome_settings_manager.get_mountain_biome_settings()
+		biome_type = "MOUNTAIN"
 	elif division_x == mountain_x && division_z + 1 == mountain_z:
-		return BiomeSettings.new("FOOTHILLS", 0)
+		biome_type = "FOOTHILLS"
 	elif division_x - 1 == mountain_x && division_z == mountain_z:
-		return BiomeSettings.new("FOOTHILLS", 90)
+		biome_type = "FOOTHILLS"
+		biome_height_map_rotation = 90
 	elif division_x == mountain_x && division_z - 1 == mountain_z:
-		return BiomeSettings.new("FOOTHILLS", 180)
+		biome_type = "FOOTHILLS"
+		biome_height_map_rotation = 180
 	elif division_x + 1 == mountain_x && division_z == mountain_z:
-		return BiomeSettings.new("FOOTHILLS", 270)
-	# CORNERS
+		biome_type = "FOOTHILLS"
+		biome_height_map_rotation = 270
 	elif division_x + 1 == mountain_x && division_z + 1 == mountain_z:
-		return BiomeSettings.new("FOOTHILLS_CORNER", 90)
+		biome_type = "FOOTHILLS_CORNER"
+		biome_height_map_rotation = 90
 	elif division_x - 1 == mountain_x && division_z - 1 == mountain_z:
-		return BiomeSettings.new("FOOTHILLS_CORNER", 270)
+		biome_type = "FOOTHILLS_CORNER"
+		biome_height_map_rotation = 270
 	elif division_x - 1 == mountain_x && division_z + 1 == mountain_z:
-		return BiomeSettings.new("FOOTHILLS_CORNER", 0)
+		biome_type = "FOOTHILLS_CORNER"
 	elif division_x + 1 == mountain_x && division_z - 1 == mountain_z:
-		return BiomeSettings.new("FOOTHILLS_CORNER", 180)
+		biome_type = "FOOTHILLS_CORNER"
+		biome_height_map_rotation = 180
+		
+	var biome_settings = null
+	if biome_type == "MOUNTAIN":
+		biome_settings = biome_settings_manager.get_mountain_biome_settings()
+	elif biome_type == "FOOTHILLS":
+		biome_settings = biome_settings_manager.get_foothills_biome_settings()
+	elif biome_type == "FOOTHILLS_CORNER":
+		biome_settings = biome_settings_manager.get_foothills_corner_biome_settings()
+	else:
+		biome_settings = biome_settings_manager.get_default_biome_settings()
 	
-	return biome_settings_manager.get_default_biome_settings()
+	if biome_height_map_rotation > 0:
+		biome_settings.set_height_map_rotation(biome_height_map_rotation)
+	
+	return biome_settings
 
 func generate_faces_and_xz_to_i():
 	var x = 0
@@ -430,12 +445,9 @@ func add_campfire(location):
 
 func roll_to_add_tree(tree_generators, tree_location, vertex_index):
 	# TODO: roll for tree type after likelihood
-	var tree_type_roll = rng.randi_range(0, 100)
-	var tree_generator = null
-	if tree_type_roll >= 65:
-		tree_generator = tree_generators[0]
-	else:
-		tree_generator = tree_generators[1]
+	var num_trees = tree_generators.size()
+	var tree_type_roll = rng.randi_range(0, num_trees-1)
+	var tree_generator = tree_generators[tree_type_roll]
 	
 	var roll = rng.randi_range(0, 100)
 	if roll <= self.tree_likelihood:

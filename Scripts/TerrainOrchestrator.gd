@@ -8,7 +8,7 @@ onready var rng = RandomNumberGenerator.new()
 # TODO: might be able to delete this scene
 #onready var chunk = load("res://Scenes/TerrainChunk.tscn")
 var tree_likelihood = 10
-# TODO: try one big plane where sections are recalcalated based on proximity?
+
 var num_chunks = 1
 var cube_width = 256
 var cube_depth = 256

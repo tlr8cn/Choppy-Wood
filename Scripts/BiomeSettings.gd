@@ -8,70 +8,14 @@ var height_range
 var height_map # 2D array, not an actual map
 var height_map_rotation
 var num_height_increments = 5
-
-var default_height_map = [
-	[5, 5, 5, 5, 5, 5, 5, 5],
-	[5, 4, 4, 4, 4, 4, 4, 5],
-	[5, 4, 3, 3, 3, 3, 4, 5],
-	[5, 4, 3, 3, 3, 3, 4, 5],
-	[5, 4, 3, 3, 3, 3, 4, 5],
-	[5, 4, 3, 3, 3, 3, 4, 5],
-	[5, 4, 4, 4, 4, 4, 4, 5],
-	[5, 5, 5, 5, 5, 5, 5, 5]
-]
-var default_height_range = Vector2(8.0, 16.0)
-
-var foothills_height_map = [
-	[5, 5, 5, 5, 5, 5, 5, 5],
-	[5, 5, 5, 5, 5, 5, 5, 5],
-	[4, 4, 4, 4, 4, 4, 4, 4],
-	[3, 3, 3, 3, 3, 3, 3, 3],
-	[2, 2, 2, 2, 2, 2, 2, 2],
-	[1, 1, 1, 1, 1, 1, 1, 1],
-	[0, 0, 0, 0, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0, 0, 0, 0],
-]
-var foothills_height_range = Vector2(16.0, 32.0)
-
-var foothills_corner_height_map = [
-	[5, 5, 5, 5, 5, 5, 5, 5],
-	[5, 4, 4, 4, 4, 4, 4, 4],
-	[5, 4, 3, 3, 3, 3, 3, 3],
-	[5, 4, 3, 2, 2, 2, 2, 2],
-	[5, 4, 3, 2, 1, 1, 1, 1],
-	[5, 4, 3, 2, 1, 0, 0, 0],
-	[5, 4, 3, 2, 1, 0, 0, 0],
-	[5, 4, 3, 2, 1, 0, 0, 0],
-]
-var foothills_corner_height_range = Vector2(16.0, 32.0)
-
-var mountain_height_map = [
-	[0, 0, 0, 0, 0, 0, 0, 0],
-	[0, 1, 1, 2, 2, 1, 1, 0],
-	[0, 1, 3, 4, 4, 3, 1, 0],
-	[0, 2, 4, 5, 5, 4, 2, 0],
-	[0, 2, 4, 5, 5, 4, 2, 0],
-	[0, 1, 3, 4, 4, 3, 1, 0],
-	[0, 1, 1, 2, 2, 1, 1, 0],
-	[0, 0, 0, 0, 0, 0, 0, 0]
-]
-var mountain_height_range = Vector2(32.0, 64.0)
+var tree_generators = []
 
 # Called when the node enters the scene tree for the first time.
-func _init(type, height_map_rotation=0.0):
+func _init(type, tree_generators, height_range, height_map, height_map_rotation=0.0):
 	self.type = type
-	if self.type == "DEFAULT":
-		self.height_range = default_height_range
-		self.height_map = default_height_map
-	elif self.type == "FOOTHILLS":
-		self.height_range = foothills_height_range
-		self.height_map = foothills_height_map
-	elif self.type == "MOUNTAIN":
-		self.height_range = mountain_height_range
-		self.height_map = mountain_height_map
-	elif self.type == "FOOTHILLS_CORNER":
-		self.height_range = foothills_corner_height_range
-		self.height_map = foothills_corner_height_map
+	self.tree_generators = tree_generators
+	self.height_range = height_range
+	self.height_map = height_map
 	
 	self.height_map_rotation = height_map_rotation
 	if height_map_rotation > 0:
@@ -89,6 +33,15 @@ func get_num_height_increments():
 
 func get_type():
 	return type
+
+func get_tree_generators():
+	return tree_generators
+
+func set_height_map_rotation(height_map_rotation):
+	self.height_map_rotation = height_map_rotation
+	if height_map_rotation > 0:
+		rotate_height_map(height_map_rotation)
+	pass
 
 # rotates height map 90 degrees counter clockwise
 # provided rotation must be a multiple of 90

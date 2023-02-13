@@ -195,7 +195,6 @@ transitions = [ "maul_idle", "maul_windup", SubResource( 13 ), "maul_windup", "m
 [sub_resource type="AnimationNodeStateMachinePlayback" id=20]
 
 [node name="Spatial" type="Spatial"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2.03929, 0, 0 )
 
 [node name="Player" type="KinematicBody" parent="."]
 transform = Transform( -0.0083079, 0, 0.999966, 0, 0.75, 0, -0.999966, 0, -0.0083079, -1.10536, 82.8795, 0 )
@@ -208,8 +207,9 @@ shape = SubResource( 1 )
 
 [node name="MainCamera" type="Camera" parent="Player"]
 transform = Transform( 1, 0, 3.72529e-08, 0, 1.33333, 0, -3.72529e-08, 0, 1, 0, 2.31895, 0 )
+environment = ExtResource( 5 )
 fov = 50.0
-far = 150.0
+far = 200.0
 script = ExtResource( 2 )
 
 [node name="SplittingMaul" parent="Player/MainCamera" instance=ExtResource( 3 )]

@@ -1,9 +1,15 @@
-[gd_resource type="VisualShader" load_steps=3 format=2]
+[gd_resource type="VisualShader" load_steps=4 format=2]
 
 [ext_resource path="res://Assets/Textures/dirt-texture.png" type="Texture" id=1]
 
 [sub_resource type="VisualShaderNodeTexture" id=1]
+output_port_for_preview = 0
 texture = ExtResource( 1 )
+
+[sub_resource type="VisualShaderNodeColorOp" id=2]
+output_port_for_preview = 0
+default_input_values = [ 0, Vector3( 0, 0, 0 ), 1, Vector3( 0.08, 0.075, 0.1 ) ]
+operator = 1
 
 [resource]
 code = "shader_type spatial;
@@ -24,8 +30,12 @@ void fragment() {
 	vec3 n_out2p0 = tex_frg_2_read.rgb;
 	float n_out2p1 = tex_frg_2_read.a;
 
+// ColorOp:5
+	vec3 n_in5p1 = vec3(0.08000, 0.07500, 0.10000);
+	vec3 n_out5p0 = abs(n_out2p0 - n_in5p1);
+
 // Output:0
-	ALBEDO = n_out2p0;
+	ALBEDO = n_out5p0;
 
 }
 
@@ -34,8 +44,10 @@ void light() {
 
 }
 "
-graph_offset = Vector2( 8.47827, 34.287 )
-nodes/fragment/0/position = Vector2( 700, 60 )
+graph_offset = Vector2( -326.974, 66.2261 )
+nodes/fragment/0/position = Vector2( 700, -40 )
 nodes/fragment/2/node = SubResource( 1 )
-nodes/fragment/2/position = Vector2( 40, 80 )
-nodes/fragment/connections = PoolIntArray( 2, 0, 0, 0 )
+nodes/fragment/2/position = Vector2( -40, 80 )
+nodes/fragment/5/node = SubResource( 2 )
+nodes/fragment/5/position = Vector2( 260, 80 )
+nodes/fragment/connections = PoolIntArray( 2, 0, 5, 0, 5, 0, 0, 0 )

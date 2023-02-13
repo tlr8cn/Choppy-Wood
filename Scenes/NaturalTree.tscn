@@ -5,4 +5,5 @@
 
 [node name="NaturalTreeGenerator" type="ImmediateGeometry"]
 script = ExtResource( 1 )
+initial_radius_range = Vector2( 0.35, 1.5 )
 bark_material = ExtResource( 2 )

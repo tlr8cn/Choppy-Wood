@@ -7,7 +7,7 @@
 script = ExtResource( 1 )
 height_inc = 0.475
 radius_dec = 0.012
-initial_radius = 0.175
+initial_radius_range = Vector2( 0.125, 0.35 )
 skew_min = 0.02
 skew_max = 0.2
 skew_widener = 0.004

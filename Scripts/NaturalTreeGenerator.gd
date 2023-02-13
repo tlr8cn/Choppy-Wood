@@ -7,7 +7,7 @@ export var height_inc = 0.5
 export var radius_dec = 0.025
 var radius_mod = 4 # amounts to the number of tree sections 
 var id = 1
-export var initial_radius = 0.5
+export var initial_radius_range = Vector2(0.5, 1.5)
 # stores precalculated radii for n circles packed evenly within a unit circle
 # array indexed by n_1(-1), ..., n_6(-1)
 # values pulled from website dedicated to circle packing http://www.packomania.com/
@@ -73,6 +73,8 @@ func _ready():
 	var radiusCounter = 0 
 
 	var numVertices = 6
+	
+	var initial_radius = rng.randf_range(initial_radius_range.x, initial_radius_range.y)
 	
 	# center_point for root is the outer center point; parent is null
 	root = TreeNode.new(1, centerPointOuter, initial_radius, null)

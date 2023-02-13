@@ -185,20 +185,24 @@ func divide_terrain_into_biomes(biome_divisions):
 #                  0 -------- vertex_count - plane_width
 #                       ^
 #                  i % plane_width == 0
-func draw_terrain(plane_width, plane_depth, cube_height, biome_grid):
+func draw_terrain(cube_width, cube_depth, cube_height, biome_grid):
 	var edge_smoothing_height_allowance = 1.0
-	var uv_x = 0.0
-	var uv_y = 0.0
 	var uv_inc = 1.0/8.0
-	var old_z = mdt.get_vertex(0).z
 	
 	for biome_x in range(biome_grid.size()):
 		for biome_z in range(biome_grid[biome_x].size()):
+			var uv_x = 0.0
+			var uv_z = 0.0
 			var biome = biome_grid[biome_x][biome_z]
 			var biome_i_array = biome.get_i_array()
 			var biome_settings = biome.get_biome_settings()
 			var height_map = biome_settings.get_height_map()
 			
+			# when loopin through this array, z increases faster than x i.e.
+			# [0, 0], [0, 1], [0, 2], etc 
+			var first_i = biome_i_array[0]
+			var first_xz = biome.get_biome_xz_for_i(first_i)
+			var old_x = first_xz[0]
 			for ii in range(biome_i_array.size()):
 				var i = biome_i_array[ii]
 				var xz = biome.get_biome_xz_for_i(i)
@@ -214,18 +218,19 @@ func draw_terrain(plane_width, plane_depth, cube_height, biome_grid):
 				
 				vertex.y = final_noise_val
 				
-				mdt.set_vertex_uv(i, Vector2(uv_x, uv_y))
+				mdt.set_vertex_uv(i, Vector2(uv_x, uv_z))
 				mdt.set_vertex(i, vertex)
 				
-				uv_x += uv_inc
-				if uv_x < 0:
-					uv_x = 0.0
+				if old_x != x:
+					uv_x += uv_inc
+					uv_z = 0.0
+				else:
+					uv_z += uv_inc
 				
-				if old_z != new_z:
-					uv_y += uv_inc
-					uv_x = 0.0
+				old_x = x
 				
-				old_z = new_z
+			
+		
 	
 	# smooth terrain
 	smooth_terrain_and_add_features(biome_grid)
@@ -453,7 +458,7 @@ func roll_to_add_tree(tree_generators, tree_location, vertex_index):
 	if roll <= self.tree_likelihood:
 		# Add tree
 		var new_tree = tree_generator.instance()
-		new_tree.translate(Vector3(tree_location.x, tree_location.y, tree_location.z))
+		new_tree.translate(Vector3(tree_location.x, tree_location.y - 0.25, tree_location.z))
 		add_child(new_tree)
 		
 		# Roll again for mushrooms

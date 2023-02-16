@@ -1,0 +1,109 @@
+[gd_scene load_steps=8 format=2]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type spatial;
+render_mode blend_mix, specular_phong;
+
+uniform float speed : hint_range(-1,1) = 0.0;
+
+//colors
+uniform sampler2D noise1;
+uniform sampler2D noise2;
+uniform sampler2D normalmap : hint_normal;
+uniform vec4 color : hint_color;
+uniform vec4 edge_color : hint_color;
+
+//foam
+uniform float edge_scale = 0.25;
+uniform float near = 0.1;
+uniform float far = 100f;
+
+//waves
+uniform vec2 wave_strengh = vec2(0.5, 0.25);
+uniform vec2 wave_frequency = vec2(12.0, 12.0);
+uniform vec2 time_factor = vec2(1.0, 2.0);
+
+float rim(float depth){
+	depth = 2f * depth - 1f;
+	return near * far / (far + depth * (near - far));
+}
+
+float waves(vec2 pos, float time){
+	return (wave_strengh.y * sin(pos.y * wave_frequency.y + time * time_factor.y)) + (wave_strengh.x * sin(pos.x * wave_frequency.x + time * time_factor.x));
+}
+
+void vertex(){
+	VERTEX.y += waves(VERTEX.xy, TIME);
+}
+
+void fragment(){
+	float time = TIME * speed;
+	vec3 n1 = texture(noise1, UV + time).rgb;
+	vec3 n2 = texture(noise2, UV - time * 0.2).rgb;
+	
+	vec2 uv_movement = UV * 4f;
+	uv_movement += TIME * speed * 4f;
+	
+	float sum = (n1.r + n2.r) - 1f;
+	
+	float z_depth = rim(texture(DEPTH_TEXTURE, SCREEN_UV).x);
+	float z_pos = rim(FRAGCOORD.z);
+	float diff = z_depth - z_pos;
+	
+	vec2 displacement = vec2(sum * 0.05);
+	diff += displacement.x * 50f;
+	
+	vec4 col = mix(edge_color, color, step(edge_scale, diff));
+	
+	vec4 alpha = vec4(1.0);
+	alpha = texture(SCREEN_TEXTURE, SCREEN_UV + displacement);
+	
+	float fin = 0.0;
+	if (sum > 0.0 && sum < 0.4) fin = 0.1;
+	if (sum > 0.4 && sum < 0.8) fin = 0.0;
+	if (sum > 0.8) fin = 1f;
+	
+	ALBEDO = vec3(fin) + mix(alpha.rgb, col.rgb, color.a);
+	
+	NORMALMAP = texture(normalmap, uv_movement).rgb;
+	ROUGHNESS = 0.1;
+	SPECULAR = 1f;
+}"
+
+[sub_resource type="OpenSimplexNoise" id=2]
+lacunarity = 4.0
+
+[sub_resource type="NoiseTexture" id=3]
+seamless = true
+noise = SubResource( 2 )
+
+[sub_resource type="OpenSimplexNoise" id=4]
+
+[sub_resource type="NoiseTexture" id=5]
+seamless = true
+noise = SubResource( 4 )
+
+[sub_resource type="ShaderMaterial" id=6]
+shader = SubResource( 1 )
+shader_param/speed = 0.02
+shader_param/color = Color( 0.270588, 0.521569, 0.862745, 0.490196 )
+shader_param/edge_color = Color( 1, 1, 1, 1 )
+shader_param/edge_scale = 0.25
+shader_param/near = 0.1
+shader_param/far = 100.0
+shader_param/wave_strengh = Vector2( 0.05, 0.1 )
+shader_param/wave_frequency = Vector2( 8, 8 )
+shader_param/time_factor = Vector2( 1, 2 )
+shader_param/noise1 = SubResource( 3 )
+shader_param/noise2 = SubResource( 5 )
+
+[sub_resource type="PlaneMesh" id=7]
+material = SubResource( 6 )
+size = Vector2( 512, 512 )
+subdivide_width = 512
+subdivide_depth = 512
+
+[node name="Water" type="MeshInstance"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5, 0 )
+mesh = SubResource( 7 )
+material/0 = null

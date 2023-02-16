@@ -7,7 +7,7 @@ extends Node
 onready var rng = RandomNumberGenerator.new()
 # TODO: might be able to delete this scene
 #onready var chunk = load("res://Scenes/TerrainChunk.tscn")
-var tree_likelihood = 10
+var tree_likelihood = 25
 
 var num_chunks = 1
 var cube_width = 256

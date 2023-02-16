@@ -8,9 +8,10 @@
 extents = Vector3( 0.188298, 0.369505, 0.187899 )
 
 [node name="Quarter Log" type="RigidBody"]
-mass = 75.0
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.172327 )
+mass = 100.0
 physics_material_override = ExtResource( 3 )
-gravity_scale = 1.25
+gravity_scale = 1.4
 script = ExtResource( 2 )
 
 [node name="CollisionShape" type="CollisionShape" parent="."]

@@ -136,7 +136,7 @@ func _process(delta):
 				print(self.tree_height)
 				while length_counter < self.tree_height:
 					var big_log_instance = big_log.instance()
-					big_log_instance.global_translate(Vector3(self.transform.origin.x, self.transform.origin.y + 0.35, self.transform.origin.z + length_counter + 2.75))
+					big_log_instance.global_translate(Vector3(self.transform.origin.x, self.transform.origin.y + 0.35, self.transform.origin.z + length_counter + 2.5))
 					big_log_instance.transform.basis = big_log_instance.transform.basis.rotated(Vector3(0, 1, 0), PI/2)
 					get_parent().add_child(big_log_instance)
 					length_counter += log_length

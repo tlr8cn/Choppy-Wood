@@ -43,6 +43,8 @@ var tree_generators = []
 
 var biome_settings_manager = BiomeSettingsManager.new()
 
+var water_plane
+
 # TODO: split a large plane into many chunks (which are connected)
 # As the player progresses, a large area surrounding the player will intersect
 # with colliders placed at certain vertices
@@ -72,6 +74,8 @@ func _init(noise_seed, biome_divisions, cube_width=64, cube_depth=64, cube_heigh
 	campfire =  load("res://Scenes/Campfire.tscn")
 	
 	grass_material = load("res://Assets/Materials/grass_material.tres")
+	
+	var water = load("res://Scenes/Water.tscn")
 	
 	noise = OpenSimplexNoise.new()
 	noiseb = OpenSimplexNoise.new()
@@ -103,6 +107,10 @@ func _init(noise_seed, biome_divisions, cube_width=64, cube_depth=64, cube_heigh
 	# Returns a constructed ArrayMesh from current information passed in 
 	array_plane = st.commit()
 	mdt.create_from_surface(array_plane, 0)
+	
+	water_plane = water.instance()
+	water_plane.transform.origin = Vector3(0.0, -5.0, 0.0)
+	add_child(water_plane)
 	
 	var biome_grid = divide_terrain_into_biomes(biome_divisions)
 	
@@ -256,7 +264,7 @@ func add_terrain_features(plane_width):
 				add_large_rock(vertex)
 				large_rock_counter = 0
 		
-
+		
 		
 		# Check for house spawn
 		#if i == 125:
@@ -330,7 +338,7 @@ func smooth_terrain_and_add_features(biome_grid):
 						height_counter += height_inc
 					
 				# on every nth vertex, roll to create a tree
-				if i % 50 == 0:
+				if i % 50 == 0 && vertex.y > water_plane.transform.origin.y:
 					roll_to_add_tree(biome.get_biome_settings().get_tree_generators(), vertex, i)
 				
 				# TODO: rocks should be partial to terrain peaks. Meaning the highest y values on the mesh should have a higher concentration of rocks
@@ -338,7 +346,7 @@ func smooth_terrain_and_add_features(biome_grid):
 				
 				# TODO: write a helper function to determine if the area around the selected vertex
 				# is flat; if so, spawn the campfire
-				if i == 32896:
+				if i == 32896 && vertex.y > water_plane.transform.origin.y:
 					add_campfire(vertex)
 	pass
 
@@ -454,7 +462,7 @@ func roll_to_add_tree(tree_generators, tree_location, vertex_index):
 	var tree_type_roll = rng.randi_range(0, num_trees-1)
 	var tree_generator = tree_generators[tree_type_roll]
 	
-	var roll = rng.randi_range(0, 100)
+	var roll = rng.randi_range(0, 1000)
 	if roll <= self.tree_likelihood:
 		# Add tree
 		var new_tree = tree_generator.instance()
@@ -466,6 +474,8 @@ func roll_to_add_tree(tree_generators, tree_location, vertex_index):
 		if roll <= 25:
 			var nearby_vertices = []
 			for i in 4:
+				if i == vertex_index:
+					continue
 				if vertex_index - i >= 0:
 					nearby_vertices.push_back(mdt.get_vertex(vertex_index - i))
 				if vertex_index + i <= mdt.get_vertex_count() - 1:

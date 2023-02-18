@@ -1,4 +1,4 @@
-extends Spatial
+extends Node3D
 
 var instance_y_offset = 0.85
 

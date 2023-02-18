@@ -1,15 +1,15 @@
-extends KinematicBody
+extends CharacterBody3D
 
-export var gravity = Vector3.DOWN * 9.8
-export var speed = 10
-export var rot_speed = 0.85
+@export var gravity = Vector3.DOWN * 9.8
+@export var speed = 10
+@export var rot_speed = 0.85
 
-var velocity = Vector3.ZERO
+#var velocity = Vector3.ZERO
 var maul_offset = 0.2
 
-onready var anim_player =  get_node("/root/Spatial/AnimationPlayer")
-onready var anim_tree =  get_node("/root/Spatial/AnimationTree")
-onready var splitting_maul = get_node("/root/Spatial/Player/MainCamera/SplittingMaul")
+@onready var anim_player =  get_node("/root/Node3D/AnimationPlayer")
+@onready var anim_tree =  get_node("/root/Node3D/AnimationTree")
+@onready var splitting_maul = get_node("/root/Node3D/Player/MainCamera/SplittingMaul")
 var original_maul_position = Vector3()
 # Called when the node enters the scene tree for the first time.
 
@@ -25,7 +25,11 @@ func _ready():
 func _physics_process(delta):
 	velocity += gravity * delta
 	get_input(delta)
-	velocity = move_and_slide(velocity, Vector3.UP, true)
+	set_velocity(velocity)
+	set_up_direction(Vector3.UP)
+	set_floor_stop_on_slope_enabled(true)
+	move_and_slide()
+	velocity = velocity
 
 # TODO: process input for standing logs upright
 func get_input(delta):
@@ -58,7 +62,7 @@ func get_input(delta):
 		#	anim_player.queue("maul_chop_side")
 		#	chopping_tree = false
 			
-		splitting_maul.get_node("RigidBody").get_node("CollisionShape").disabled = false
+		splitting_maul.get_node("RigidBody3D").get_node("CollisionShape3D").disabled = false
 		# TODO deactivate collider when animation finishes or when collision occurs
 		# TODO checking when animation finishes might require sending a signal from the maul script
 		# to be handled here

@@ -1,4 +1,4 @@
-extends Spatial
+extends Node3D
 
 class_name Inventory
 
@@ -49,7 +49,7 @@ func remove_item_from_inventory(key):
 				var player = get_parent()
 				print("instantiating " + key)
 				var instance_ref = item_instance_ref[key]
-				var item_instance = instance_ref.instance()
+				var item_instance = instance_ref.instantiate()
 				var pos = Vector3(player.transform.origin.x, player.transform.origin.y + 2.0, player.transform.origin.z)
 				item_instance.global_translate(pos)
 				get_tree().get_root().add_child(item_instance)

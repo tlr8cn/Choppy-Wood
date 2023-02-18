@@ -40,7 +40,7 @@ enum TileType {
 }
 
 # TODO: Create a mapping of TileTypes to tuples representing the index of the 
-# tile's top-left corner on the bitmap
+# tile's top-left corner checked the bitmap
 var type_map = {
 	TileType.GRASS_BLEED_UP: [3, 1],
 	TileType.DIRT_BLEED_DOWN: [3, 0],
@@ -65,7 +65,7 @@ var type_map = {
 	TileType.GRASS_SURROUNDED: [3, 3]
 }
 
-func _init(image_width, image_height):
+func _init(image_width,image_height):
 	rng.randomize()
 	terrain_texture = ImageTexture.new()
 	terrain_image = Image.new()
@@ -195,7 +195,7 @@ func _init(image_width, image_height):
 			tex_y += 128
 		tex_x += 128
 	
-	#terrain_image.unlock()
+	#false # terrain_image.unlock() # TODOConverter40, Image no longer requires locking, `false` helps to not break one line if/else, so it can freely be removed
 	#terrain_image.save_png("res://test_terrain.png")
 	
 	terrain_texture.create_from_image(terrain_image)
@@ -209,8 +209,8 @@ func _ready():
 func get_terrain_texture():
 	return self.terrain_texture
 
-# @param coord_x is an int representing x position on the grid
-# @param coord_y is an int representing y position on the grid
+# @param coord_x is an int representing x position checked the grid
+# @param coord_y is an int representing y position checked the grid
 # @param texture_map is the map of texture types
 # returns an array; 0 index = number of adjacent grass tiles; 1 index = adjacent dirt tiles
 func get_tile_neighbors(texture_map, coord_x, coord_y):

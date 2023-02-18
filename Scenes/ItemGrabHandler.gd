@@ -1,4 +1,4 @@
-extends CollisionShape
+extends CollisionShape3D
 
 
 # Declare member variables here. Examples:

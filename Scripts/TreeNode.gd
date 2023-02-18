@@ -19,20 +19,20 @@ var ring
 var visited
 # isLeaf quickly tells us whether or not this node is a leaf
 var is_leaf
-# the x offset on this particular branch from its parent
+# the x offset checked this particular branch from its parent
 var branch_skew_x
-# the z offset on this particular branch from its parent
+# the z offset checked this particular branch from its parent
 var branch_skew_z
-# the x offset on this particular branch from its parent
+# the x offset checked this particular branch from its parent
 var branch_spread_x
-# the z offset on this particular branch from its parent
+# the z offset checked this particular branch from its parent
 var branch_spread_z
 
 var packed_center_angle
 
 var radius
 
-func _init(id, center_point, radius, parent, packed_center_angle=0.0, branch_spread_x=0, branch_spread_z=0, branch_skew_x=0, branch_skew_z=0, ring=[], children=[]):
+func _init(id,center_point,radius,parent,packed_center_angle=0.0,branch_spread_x=0,branch_spread_z=0,branch_skew_x=0,branch_skew_z=0,ring=[],children=[]):
 	self.id = id
 	self.ring = ring
 #	if ring.size() < 2:
@@ -64,7 +64,7 @@ func get_center_point():
 func get_ring():
 	return self.ring
 
-func get_children():
+func get_node_children():
 	return self.children
 
 func get_parent():
@@ -85,7 +85,7 @@ func append_child(child):
 func set_is_leaf(is_leaf):
 	self.is_leaf = is_leaf
 
-func is_leaf():
+func get_is_leaf():
 	#print("set to leaf: ")
 	#print(self.get_id())
 	return self.is_leaf

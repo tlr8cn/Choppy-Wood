@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Assets/Models/shack.glb" type="PackedScene" id=1]
 
-[node name="Shack" type="Spatial"]
+[node name="Shack" type="Node3D"]
 
 [node name="shack" parent="." instance=ExtResource( 1 )]
-transform = Transform( -1.71726, 0, -0.0174743, 0, 1.74154, 0, 0.0177204, 0, -1.74145, 0, 0, 0 )
+transform = Transform3D( -1.71726, 0, -0.0174743, 0, 1.74154, 0, 0.0177204, 0, -1.74145, 0, 0, 0 )

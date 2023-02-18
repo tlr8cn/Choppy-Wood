@@ -4,7 +4,7 @@ extends Node
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
-onready var rng = RandomNumberGenerator.new()
+@onready var rng = RandomNumberGenerator.new()
 # TODO: might be able to delete this scene
 #onready var chunk = load("res://Scenes/TerrainChunk.tscn")
 var tree_likelihood = 25

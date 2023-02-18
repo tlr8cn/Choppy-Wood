@@ -1,13 +1,13 @@
-extends ImmediateGeometry
+extends MeshInstance3D
 
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
-export var height_inc = 0.5
-export var radius_dec = 0.025
+@export var height_inc = 0.5
+@export var radius_dec = 0.025
 var radius_mod = 4 # amounts to the number of tree sections 
 var id = 1
-export var initial_radius_range = Vector2(0.5, 1.5)
+@export var initial_radius_range = Vector2(0.5, 1.5)
 # stores precalculated radii for n circles packed evenly within a unit circle
 # array indexed by n_1(-1), ..., n_6(-1)
 # values pulled from website dedicated to circle packing http://www.packomania.com/
@@ -15,14 +15,14 @@ var packing_radii = [1.0, 0.5, 0.464101615138, 0.414213562373, 0.370191908159, 0
 
 var rng = RandomNumberGenerator.new()
 
-export var skew_min = 0.01 # should be closer to zero
-export var skew_max = 0.125 # should be further from zero
-export var skew_widener = 0.0015
+@export var skew_min = 0.01 # should be closer to zero
+@export var skew_max = 0.125 # should be further from zero
+@export var skew_widener = 0.0015
 
 # limits the number of branch splits per tree
-export var max_splits = 5
-export var spread_amount = 0.125
-export var initial_split_chance = 35
+@export var max_splits = 5
+@export var spread_amount = 0.125
+@export var initial_split_chance = 35
 
 #TODO: This can be compressed
 enum TriType {
@@ -32,18 +32,18 @@ enum TriType {
 	DELTA_LEFT,
 	DELTA_RIGHT,
 	PRE_NABLA_LEFT,
-	PRE_NABLA_RIGHT
+	PRE_NABLA_RIGHT,
 	NABLA_LEFT,
 }
 
 #onready var leaves_med = preload("res://Scenes/Leaf Bunch.tscn")
 #nready var leaves_trunk = preload("res://Scenes/Trunk Leaves.tscn")
 #onready var leaf = get_child(0)
-onready var canopy = preload("res://Scenes/Canopy.tscn")
-onready var canopy_material = preload("res://Assets/Materials/tree_material.tres")
-onready var big_log = preload("res://Scenes/BigLog.tscn")
+@onready var canopy = preload("res://Scenes/Canopy.tscn")
+@onready var canopy_material = preload("res://Assets/Materials/tree_material.tres")
+@onready var big_log = preload("res://Scenes/BigLog.tscn")
 
-export var bark_material:SpatialMaterial
+@export var bark_material:StandardMaterial3D
 
 var initial_fell_rotation = 0.0
 var fell_rotation_step = 0.0005
@@ -55,17 +55,22 @@ var leaf_collisions = []
 var root = null
 var tree_height=0.0
 
+var immediate_mesh:ImmediateMesh
+
 # Called when the node enters the scene tree for the firsst time.
 func _ready():
+	immediate_mesh = ImmediateMesh.new()
+	
+	# TODO: do I need this?
 	var Vertex = load("res://Scripts/Vertex.gd")
 	rng.randomize()
 	
-	self.begin(Mesh.PRIMITIVE_TRIANGLES, null) # Add vertices in counter clockwise order
+	mesh.begin(Mesh.PRIMITIVE_TRIANGLES, null) # Add vertices in counter clockwise order
 	var texture = load("res://Assets/Textures/bark.png")
-	#var material = SpatialMaterial.new()
+	#var material = StandardMaterial3D.new()
 	#material.albedo_texture = texture
 	#material.albedo_color = Color("#463A2E")
-	self.set_material_override(bark_material)
+	mesh.set_material_override(bark_material)
 
 	#var currentRadius = 1.0
 	var currentHeight = 0
@@ -80,9 +85,6 @@ func _ready():
 	root = TreeNode.new(1, centerPointOuter, initial_radius, null)
 	var natural_tree = NaturalTree.new(root)
 	
-	# TODO: tree needs a name
-	# TODO: tree needs a simple cylinder collider at the trunk
-	
 	buildTreeRecursively(root, natural_tree, 1, initial_radius, currentHeight, numVertices, centerPointOuter)
 	
 	# branches is a 2D array of nodes representing branches of the tree
@@ -92,34 +94,34 @@ func _ready():
 	var trunk_bottom = trunk[0].get_center_point()
 	var trunk_top = trunk[trunk.size()-1].get_center_point()
 	
-	var collision_object = StaticBody.new()
-	var shape = CylinderShape.new()
+	var collision_object = StaticBody3D.new()
+	var shape = CylinderShape3D.new()
 	shape.radius = initial_radius
 	shape.height = trunk_top.y - trunk_bottom.y
 	#collision_object.shape = shape
-	collision_object.create_shape_owner(self)
+	collision_object.create_shape_owner(immediate_mesh)
 	collision_object.set_ray_pickable(true)
 	collision_object.set_name("Tree")
 	
 	var owners = collision_object.get_shape_owners()
 	var this_owner = owners[0]
 	collision_object.shape_owner_add_shape(this_owner, shape)
-	add_child(collision_object)
+	self.add_child(collision_object)
 	
-	#var body = RigidBody.new()
+	#var body = RigidBody3D.new()
 	#body.add_child(TestCube.new())
-	#var shape = CylinderShape.new()
+	#var shape = CylinderShape3D.new()
 	#shape.radius = initial_radius
 	#shape.height = trunk_top.y - trunk_bottom.y
 	#body.add_shape(shape)
-	#body.set_translation(Vector3(0, shape.height/2.0, 0))
+	#body.set_position(Vector3(0, shape.height/2.0, 0))
 	#add_child(body)
 	
 	draw_tree(branches)
 	
 	draw_canopy(branches)
 	
-	self.end()
+	immediate_mesh.end()
 	pass # Replace with function body.
 
 func _process(delta):
@@ -127,7 +129,7 @@ func _process(delta):
 	
 	if !never_fall_again:
 		if is_falling:
-			if transform.basis.get_euler().x >= self.initial_fell_rotation.get_euler().x + 85*(PI/180):
+			if self.transform.basis.get_euler().x >= self.initial_fell_rotation.get_euler().x + 85*(PI/180):
 				self.is_falling = false
 				self.never_fall_again = true
 				
@@ -135,15 +137,15 @@ func _process(delta):
 				var length_counter = 0.0
 				print(self.tree_height)
 				while length_counter < self.tree_height:
-					var big_log_instance = big_log.instance()
+					var big_log_instance = big_log.instantiate()
 					big_log_instance.global_translate(Vector3(self.transform.origin.x, self.transform.origin.y + 0.35, self.transform.origin.z + length_counter + 2.5))
 					big_log_instance.transform.basis = big_log_instance.transform.basis.rotated(Vector3(0, 1, 0), PI/2)
-					get_parent().add_child(big_log_instance)
+					self.get_parent().add_child(big_log_instance)
 					length_counter += log_length
-				queue_free()
+				self.queue_free()
 				pass
 			
-			transform.basis = transform.basis.rotated(Vector3(1, 0, 0), self.fell_rotation_step)
+			self.transform.basis = self.transform.basis.rotated(Vector3(1, 0, 0), self.fell_rotation_step)
 			
 			if self.fell_counter >= 0.6125:
 				self.fell_rotation_step += 1.1*self.fell_rotation_step
@@ -154,7 +156,7 @@ func _process(delta):
 # buildTreeRecursively is a recursive helper function used to build a tree to be drawn later
 # @param current_node - the node we're building now
 # @param n - the number of existing branches in the tree
-# @param current_radius - the current radius of the branch you're on
+# @param current_radius - the current radius of the branch you're checked
 # @param current_height - the height you're currently at
 # @param num_vertices - the number of vertices per ring TODO: should decrease over time (less frequently than radius)
 # @param ring_counter - keeps track of how many rings we've laid
@@ -184,7 +186,7 @@ func buildTreeRecursively(current_node, natural_tree, n, current_radius, current
 		var roll = rng.randi_range(0, 500)
 		if roll <= 50:
 			var canopy_location = current_node.get_first_ring_vertex()
-			var instance1 = canopy.instance()
+			var instance1 = canopy.instantiate()
 			instance1.global_translate(canopy_location)
 			#add_child(instance1)
 		return
@@ -219,8 +221,8 @@ func buildTreeRecursively(current_node, natural_tree, n, current_radius, current
 		var new_node = TreeNode.new(new_id, packed_center_point, current_radius, current_node, packed_center_angle, branch_spread_x, branch_spread_z, new_skew_x, new_skew_z, current_ring)
 		current_node.append_child(new_node)
 	
-	# calculate new values before the recursive call on each of current_node's children
-	var children = current_node.get_children()
+	# calculate new values before the recursive call checked each of current_node's children
+	var children = current_node.get_node_children()
 	for i in range(children.size()):
 		var child = children[i]
 		var child_angle = child.get_packed_center_angle()
@@ -308,7 +310,7 @@ func addVerticesToRing(ring, num_vertices, packed_center_point, packed_center_an
 			
 		#	var roll2 = rng.randi_range(0, 500)
 		#	if roll2 <= 10:
-		#		var instance1 = leaves_trunk.instance()
+		#		var instance1 = leaves_trunk.instantiate()
 		#		instance1.global_translate(ring_coord_a)
 				#var relative_normal = instance1.transform.origin + ring_normal_a
 				#instance1.look_at(relative_normal, Vector3.UP)
@@ -376,8 +378,8 @@ func draw_tree(branches):
 				
 			
 		# restart drawing
-		self.end()
-		self.begin(Mesh.PRIMITIVE_TRIANGLES, null)
+		mesh.surface_end()
+		mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES, null)
 
 func drawTriangle(tArray): 
 	for i in 3:
@@ -388,12 +390,12 @@ func drawTriangle(tArray):
 		# UV x is the fraction of the total 360 rotation
 		# UV y should be a fraction of the height the texture occupies
 		var uv = vertex.get_uv() 
-		self.set_uv(uv)
-		self.add_vertex(Vector3(coord.x, coord.y, coord.z))
-		self.set_normal(Vector3(coord.x - centerPoint.x, coord.y - centerPoint.y, coord.z - centerPoint.z)) # normals pointing out
+		mesh.surface_add_uv(uv)
+		mesh.surface_add_vertex(Vector3(coord.x, coord.y, coord.z))
+		mesh.surface_add_normal(Vector3(coord.x - centerPoint.x, coord.y - centerPoint.y, coord.z - centerPoint.z)) # normals pointing out
 
 func calculateSkew(angle):
-	# sign of skew variables based on x,z quadrants
+	# sign of skew variables based checked x,z quadrants
 	var skew_x = 0
 	var skew_z = 0
 	if angle > 0 && angle <= PI/2: # +x, +z
@@ -422,9 +424,12 @@ func draw_canopy(branches):
 	#var normals = input[1]
 	#var uvs = input[2]
 	
-	var ig = ImmediateGeometry.new()
-	ig.begin(Mesh.PRIMITIVE_TRIANGLES, null) # Add vertices in counter clockwise order
-	ig.set_material_override(canopy_material)
+	var ig = ImmediateMesh.new()
+	var canopy_node = MeshInstance3D.new()
+	#ig.begin(Mesh.PRIMITIVE_TRIANGLES, null) # Add vertices in counter clockwise order
+	canopy_node.mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES) # Add vertices in counter clockwise order
+	#ig.set_material_override(canopy_material)
+	canopy_node.set_material_override(canopy_material)
 	var plane_height_increment = 0.0325
 	
 	var radius_threshold = 0.35
@@ -522,8 +527,8 @@ func draw_canopy(branches):
 				plane_height = plane_height + plane_height_increment
 				uv_horizontal = uv_horizontal + uv_horiz_separation
 		
-	ig.end()
-	add_child(ig)
+	canopy_node.mesh.surface_end()
+	self.add_child(canopy_node)
 
 func get_xz_signs_from_angle(angle):
 	var sign_x = 1
@@ -547,7 +552,7 @@ func get_xz_signs_from_angle(angle):
 func _on_chop(self_ref, split_dir):
 	if self_ref == self:
 		# WIP
-		self.initial_fell_rotation = transform.basis
+		self.initial_fell_rotation = self.transform.basis
 		self.is_falling = true
 		#transform.basis = transform.basis.rotated(Vector3(1, 0, 0), transform.basis.get_euler().x + PI/2)
 	return

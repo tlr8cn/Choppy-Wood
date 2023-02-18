@@ -1,50 +1,39 @@
-[gd_resource type="VisualShader" load_steps=4 format=2]
+[gd_resource type="VisualShader" load_steps=4 format=3 uid="uid://cf0l64emcmitf"]
 
-[ext_resource path="res://Assets/Textures/canopy-texture.png" type="Texture" id=1]
+[ext_resource type="Texture2D" uid="uid://llwbybl5vkuh" path="res://Assets/Textures/canopy-texture.png" id="1"]
 
-[sub_resource type="VisualShaderNodeVectorDecompose" id=1]
+[sub_resource type="VisualShaderNodeVectorDecompose" id="1"]
 output_port_for_preview = 2
 
-[sub_resource type="VisualShaderNodeTexture" id=2]
-texture = ExtResource( 1 )
+[sub_resource type="VisualShaderNodeTexture" id="2"]
+texture = ExtResource("1")
 texture_type = 1
 
 [resource]
 code = "shader_type spatial;
-render_mode depth_draw_alpha_prepass, cull_disabled, specular_schlick_ggx, unshaded;
+render_mode cull_disabled, unshaded;
 
-uniform sampler2D tex_frg_4 : hint_albedo;
+uniform sampler2D tex_frg_4 : source_color;
 
 
-
-void vertex() {
-// Output:0
-
-}
 
 void fragment() {
-// Texture:4
-	vec4 tex_frg_4_read = texture(tex_frg_4, UV.xy);
-	vec3 n_out4p0 = tex_frg_4_read.rgb;
-	float n_out4p1 = tex_frg_4_read.a;
+// Texture2D:4
+	vec4 n_out4p0 = texture(tex_frg_4, UV);
+
 
 // Output:0
-	ALBEDO = n_out4p0;
-	ALPHA = n_out4p1;
+	ALBEDO = vec3(n_out4p0.xyz);
 
-}
-
-void light() {
-// Output:0
 
 }
 "
-modes/cull = 2
 modes/depth_draw = 3
+modes/cull = 2
 flags/unshaded = true
-nodes/fragment/0/position = Vector2( 640, 60 )
-nodes/fragment/3/node = SubResource( 1 )
-nodes/fragment/3/position = Vector2( 320, -80 )
-nodes/fragment/4/node = SubResource( 2 )
-nodes/fragment/4/position = Vector2( 20, 80 )
-nodes/fragment/connections = PoolIntArray( 4, 1, 0, 1, 4, 0, 3, 0, 4, 0, 0, 0 )
+nodes/fragment/0/position = Vector2(640, 60)
+nodes/fragment/3/node = SubResource("1")
+nodes/fragment/3/position = Vector2(320, -80)
+nodes/fragment/4/node = SubResource("2")
+nodes/fragment/4/position = Vector2(20, 80)
+nodes/fragment/connections = PackedInt32Array(4, 0, 3, 0, 4, 0, 0, 0)

@@ -4,19 +4,19 @@
 [ext_resource path="res://Scenes/ChopEventReceiver.gd" type="Script" id=2]
 [ext_resource path="res://log_physics_material.tres" type="PhysicsMaterial" id=3]
 
-[sub_resource type="BoxShape" id=1]
+[sub_resource type="BoxShape3D" id=1]
 extents = Vector3( 0.188298, 0.369505, 0.187899 )
 
-[node name="Quarter Log" type="RigidBody"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.172327 )
+[node name="Quarter Log" type="RigidBody3D"]
+transform = Transform3D( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.172327 )
 mass = 100.0
 physics_material_override = ExtResource( 3 )
 gravity_scale = 1.4
 script = ExtResource( 2 )
 
-[node name="CollisionShape" type="CollisionShape" parent="."]
-transform = Transform( 0.670084, 0, 0, 0, 1, 0, 0, 0, 0.670084, -0.123035, 0.369338, 0.125595 )
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D( 0.670084, 0, 0, 0, 1, 0, 0, 0, 0.670084, -0.123035, 0.369338, 0.125595 )
 shape = SubResource( 1 )
 
 [node name="Quarter Log" parent="." instance=ExtResource( 1 )]
-transform = Transform( 0.369, 0, 0, 0, 0.369, 0, 0, 0, 0.369, 0, 0, 0 )
+transform = Transform3D( 0.369, 0, 0, 0, 0.369, 0, 0, 0, 0.369, 0, 0, 0 )

@@ -18,7 +18,7 @@ var east_neighbor = null
 var south_neighbor = null
 
 # TODO: also include the xz grid associated with the biome in this class
-# on init, use that create a xz_height_map which has a specific height mapping for each vertex.
+# checked init, use that create a xz_height_map which has a specific height mapping for each vertex.
 # For example, mountainous terrain could have a height map that has lower values around the edges 
 # but higher towards the middle. Arranging the height map correctly could help with smoothing the edges or
 # creating flat trails that wrap around a mountain
@@ -34,7 +34,7 @@ var width
 var height
 
 # Called when the node enters the scene tree for the first time.
-func _init(west_boundary, north_boundary, east_boundary, south_boundary, biome_divisions, biome_settings, i_array, i_to_xz, division_x, division_z):
+func _init(west_boundary,north_boundary,east_boundary,south_boundary,biome_divisions,biome_settings,i_array,i_to_xz,division_x,division_z):
 	self.west_boundary = west_boundary
 	self.north_boundary = north_boundary
 	self.east_boundary = east_boundary

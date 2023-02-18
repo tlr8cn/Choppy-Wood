@@ -4,11 +4,11 @@
 [ext_resource path="res://log_physics_material.tres" type="PhysicsMaterial" id=2]
 [ext_resource path="res://Scenes/BigLogChopEventReceiver.gd" type="Script" id=3]
 
-[sub_resource type="CylinderShape" id=1]
+[sub_resource type="CylinderShape3D" id=1]
 radius = 0.489898
 height = 5.42938
 
-[node name="BigLog" type="RigidBody"]
+[node name="BigLog" type="RigidBody3D"]
 mass = 300.0
 physics_material_override = ExtResource( 2 )
 gravity_scale = 2.0
@@ -19,8 +19,8 @@ angular_damp = 25.0
 script = ExtResource( 3 )
 
 [node name="big-log" parent="." instance=ExtResource( 1 )]
-transform = Transform( 0.45, 0, 0, 0, 0.45, 0, 0, 0, 0.45, 0, 0, 0 )
+transform = Transform3D( 0.45, 0, 0, 0, 0.45, 0, 0, 0, 0.45, 0, 0, 0 )
 
-[node name="CollisionShape" type="CollisionShape" parent="."]
-transform = Transform( -3.57964e-08, -0.982798, 0, 0.818927, -4.29595e-08, 0, 0, 0, 0.880219, -0.047177, 0.465702, 0 )
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D( -3.57964e-08, -0.982798, 0, 0.818927, -4.29595e-08, 0, 0, 0, 0.880219, -0.047177, 0.465702, 0 )
 shape = SubResource( 1 )

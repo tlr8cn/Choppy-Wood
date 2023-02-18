@@ -33,7 +33,7 @@ func search_recursively(id, node):
 		return node
 	
 	# recursive case: search the children
-	var children = node.get_children()
+	var children = node.get_node_children()
 	for i in range(children.size()):
 		return search_recursively(id, children[i])
 	
@@ -57,7 +57,7 @@ func get_closest_leaf_neighbors():
 	return self.closest_leaf_neighbors
 
 # dfs that returns 2d array of TreeNodes representing contiguous drawing routes
-# the caller will loop through the array - cutting off drawing at the end of each inner array
+# the caller will loop through the array - cutting unchecked drawing at the end of each inner array
 func dfs_for_branches():
 	var ret = [] # will be a 2d array of branches
 	ret.append([])
@@ -76,13 +76,13 @@ func dfs_for_branches():
 			# add to the return array
 			ret[ret_indx].append(el)
 			# if this is a leaf, we want to add a new branch to the return array
-			if el.is_leaf():
+			if el.get_is_leaf():
 				ret.append([])
 				ret_indx += 1
 			# After visiting, add to the array we'll return
 		
 		# the trick is to add nodes in reverse order
-		var children = el.get_children()
+		var children = el.get_node_children()
 		for i in range(children.size()-1, -1, -1):
 			var child = children[i]
 			if !child.get_visited():
@@ -108,7 +108,7 @@ func print(node):
 	print(node.id, "-")
 	
 	# print the children
-	var children = node.get_children()
+	var children = node.get_node_children()
 	for i in range(children.size()):
 		print(children[i])
 	

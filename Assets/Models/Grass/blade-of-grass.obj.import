@@ -1,19 +1,21 @@
 [remap]
 
 importer="wavefront_obj"
+importer_version=1
 type="Mesh"
-path="res://.import/blade-of-grass.obj-9174b3dd6ed173cf3c3e5b8b09ab346c.mesh"
+uid="uid://dsrm1r4jqpcs"
+path="res://.godot/imported/blade-of-grass.obj-9174b3dd6ed173cf3c3e5b8b09ab346c.mesh"
 
 [deps]
 
-files=[ "res://.import/blade-of-grass.obj-9174b3dd6ed173cf3c3e5b8b09ab346c.mesh" ]
+files=["res://.godot/imported/blade-of-grass.obj-9174b3dd6ed173cf3c3e5b8b09ab346c.mesh"]
 
 source_file="res://Assets/Models/Grass/blade-of-grass.obj"
-dest_files=[ "res://.import/blade-of-grass.obj-9174b3dd6ed173cf3c3e5b8b09ab346c.mesh", "res://.import/blade-of-grass.obj-9174b3dd6ed173cf3c3e5b8b09ab346c.mesh" ]
+dest_files=["res://.godot/imported/blade-of-grass.obj-9174b3dd6ed173cf3c3e5b8b09ab346c.mesh", "res://.godot/imported/blade-of-grass.obj-9174b3dd6ed173cf3c3e5b8b09ab346c.mesh"]
 
 [params]
 
 generate_tangents=true
-scale_mesh=Vector3( 1, 1, 1 )
-offset_mesh=Vector3( 0, 0, 0 )
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
 optimize_mesh=true

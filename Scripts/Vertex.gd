@@ -8,7 +8,7 @@ var normal = Vector3()
 var angle = 0.0 
 var centerPoint = Vector3()
 
-func _init(coord=Vector3(), normal=Vector3(), angle=0.0, centerPoint=Vector3()):
+func _init(coord=Vector3(),normal=Vector3(),angle=0.0,centerPoint=Vector3()):
 	self.coord = coord
 	self.normal = normal
 	self.angle = angle

@@ -1,13 +1,12 @@
-extends Spatial
+extends Node3D
 
 class_name TerrainChunk
 
-var noise:OpenSimplexNoise
-var noiseb:OpenSimplexNoise
+var noise:FastNoiseLite
 var rng:RandomNumberGenerator
 var mdt:MeshDataTool
 var st:SurfaceTool
-var cube_mesh:CubeMesh
+var cube_mesh:BoxMesh
 
 var dirt_material:ShaderMaterial
 var grass_material:ShaderMaterial
@@ -48,13 +47,13 @@ var water_plane
 # TODO: split a large plane into many chunks (which are connected)
 # As the player progresses, a large area surrounding the player will intersect
 # with colliders placed at certain vertices
-# When the player area intersects with the collider, add that chunk to a queue on the TerrainOrchestrator
-# Pull that chunk off the queue, and generate terrain for all vertices surrounding it
-func _init(noise_seed, biome_divisions, cube_width=64, cube_depth=64, cube_height=64, tree_likelihood=18, grass_likelihood=40, rock_likelihood=5, noise_octaves=8.0, noise_period=55.0, noise_persistence=0.125):
+# When the player area intersects with the collider, add that chunk to a queue checked the TerrainOrchestrator
+# Pull that chunk unchecked the queue, and generate terrain for all vertices surrounding it
+func _init(noise_seed,biome_divisions,cube_width=64,cube_depth=64,cube_height=64,tree_likelihood=18,grass_likelihood=40,rock_likelihood=5,noise_octaves=8.0,noise_period=55.0,noise_persistence=0.125):
 	rng = RandomNumberGenerator.new()
 	rng.randomize()
 	
-	cube_mesh = CubeMesh.new()
+	cube_mesh = BoxMesh.new()
 	mdt = MeshDataTool.new()
 	st = SurfaceTool.new()
 	
@@ -77,18 +76,12 @@ func _init(noise_seed, biome_divisions, cube_width=64, cube_depth=64, cube_heigh
 	
 	var water = load("res://Scenes/Water.tscn")
 	
-	noise = OpenSimplexNoise.new()
-	noiseb = OpenSimplexNoise.new()
+	noise = FastNoiseLite.new()
+	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
 	noise.seed = noise_seed
-	noiseb.seed = rng.randi()
-	noise.octaves = noise_octaves
-	noiseb.octaves = 5.0
-	# Period of the base octave. A lower period results in a higher-frequency noise (more value changes across the same distance).
-	noise.period = noise_period
-	noiseb.period = 25.0
-	# Contribution factor of the different octaves. A persistence value of 1 means all the octaves have the same contribution, a value of 0.5 means each octave contributes half as much as the previous one.
-	noise.persistence = noise_persistence
-	noiseb.persistence = noise_persistence
+	noise.fractal_octaves = noise_octaves
+	noise.frequency = 1.0/noise_period
+	noise.fractal_lacunarity = noise_persistence
 	
 	self.cube_width = cube_width
 	self.cube_depth = cube_depth
@@ -108,7 +101,7 @@ func _init(noise_seed, biome_divisions, cube_width=64, cube_depth=64, cube_heigh
 	array_plane = st.commit()
 	mdt.create_from_surface(array_plane, 0)
 	
-	water_plane = water.instance()
+	water_plane = water.instantiate()
 	water_plane.transform.origin = Vector3(0.0, -5.0, 0.0)
 	add_child(water_plane)
 	
@@ -220,9 +213,7 @@ func draw_terrain(cube_width, cube_depth, cube_height, biome_grid):
 				var height_factor = biome.get_height_factor_for_index(i)
 				var vertex = mdt.get_vertex(i)
 				var new_z = vertex.z
-				var noise_val = noise.get_noise_2d(float(vertex.x), float(vertex.z))
-				var noise_valb = noiseb.get_noise_2d(float(vertex.x), float(vertex.z))
-				var final_noise_val = height_factor*((noise_val + noise_valb)/2)
+				var final_noise_val = noise.get_noise_2d(float(vertex.x), float(vertex.z))
 				
 				vertex.y = final_noise_val
 				
@@ -254,7 +245,7 @@ func add_terrain_features(plane_width):
 		var vertex = mdt.get_vertex(i)
 		
 		# TODO: mountainous terrain
-			#    1. Slope the terrain up gradually on either side to create a valley, which will propel the player forward
+			#    1. Slope the terrain up gradually checked either side to create a valley, which will propel the player forward
 		#    2. When slope becomes extreme enough, the texture should change to rock or loose sliding soil
 		#    3. The extent of the slope should determine whether or not can climb the slope -- should be before reaching rock features
 		#    4. At the peaks, add rock features
@@ -337,11 +328,11 @@ func smooth_terrain_and_add_features(biome_grid):
 						mdt.set_vertex(margin_i, margin_vertex)
 						height_counter += height_inc
 					
-				# on every nth vertex, roll to create a tree
+				# checked every nth vertex, roll to create a tree
 				if i % 50 == 0 && vertex.y > water_plane.transform.origin.y:
 					roll_to_add_tree(biome.get_biome_settings().get_tree_generators(), vertex, i)
 				
-				# TODO: rocks should be partial to terrain peaks. Meaning the highest y values on the mesh should have a higher concentration of rocks
+				# TODO: rocks should be partial to terrain peaks. Meaning the highest y values checked the mesh should have a higher concentration of rocks
 				roll_to_add_rock(vertex)
 				
 				# TODO: write a helper function to determine if the area around the selected vertex
@@ -423,7 +414,7 @@ func generate_faces_and_xz_to_i():
 	return xz_to_i
 
 func add_large_rock(rock_location):
-	var instance = large_rock1.instance()
+	var instance = large_rock1.instantiate()
 	instance.transform.origin = Vector3(rock_location.x, rock_location.y - 2.5, rock_location.z)
 	add_child(instance)
 	pass
@@ -435,7 +426,7 @@ func roll_to_add_rock(rock_location):
 	pass
 
 func add_rock(rock_location):
-	var instance = rock1.instance()
+	var instance = rock1.instantiate()
 	var minor_offset_x = rng.randf_range(-0.15, 0.15)
 	var minor_offset_z = rng.randf_range(-0.15, 0.15)
 	var pos = Vector3(rock_location.x + minor_offset_x, rock_location.y - 0.15, rock_location.z + minor_offset_z)
@@ -451,7 +442,7 @@ func add_rock(rock_location):
 	pass
 
 func add_campfire(location):
-	var instance = campfire.instance()
+	var instance = campfire.instantiate()
 	instance.transform.origin = Vector3(location.x, location.y + 0.075, location.z)
 	add_child(instance)
 	pass
@@ -465,7 +456,7 @@ func roll_to_add_tree(tree_generators, tree_location, vertex_index):
 	var roll = rng.randi_range(0, 1000)
 	if roll <= self.tree_likelihood:
 		# Add tree
-		var new_tree = tree_generator.instance()
+		var new_tree = tree_generator.instantiate()
 		new_tree.translate(Vector3(tree_location.x, tree_location.y - 0.25, tree_location.z))
 		add_child(new_tree)
 		
@@ -505,10 +496,10 @@ func roll_to_add_tree(tree_generators, tree_location, vertex_index):
 				var now_dats_alota_mushrooms = num_mushrooms >= num_mushrooms_cap - 2 && num_mushrooms <= num_mushrooms_cap
 				if mushroom_man_roll < 60 && !mushroom_man_was_spawned && now_dats_alota_mushrooms:
 					mushroom_man_was_spawned = true
-					new_mushroom = mushroom_man.instance()
+					new_mushroom = mushroom_man.instantiate()
 					new_mushroom.transform.origin = Vector3(mushroom_location.x, mushroom_location.y - 0.75, mushroom_location.z)
 				else:
-					new_mushroom = mushroom.instance()
+					new_mushroom = mushroom.instantiate()
 					new_mushroom.translate(Vector3(mushroom_location.x, mushroom_location.y, mushroom_location.z))
 				add_child(new_mushroom)
 	pass
@@ -520,7 +511,7 @@ func add_tree_to_scene(array_plane):
 		st.create_from(array_plane, 0)
 		st.generate_normals()
 		# TODO: this should be separated into chunks eventually
-		var meshInstance = MeshInstance.new()
+		var meshInstance = MeshInstance3D.new()
 		meshInstance.set_mesh(st.commit())
 		meshInstance.global_transform.origin = Vector3(0, 0, 0)
 		#var ttg = TerrainTextureGenerator.new(plane_mesh.subdivide_width*128, plane_mesh.subdivide_depth*128)
@@ -544,7 +535,7 @@ func place_grass(grass_blade_mesh):
 	for i in multimesh.instance_count:
 		var mdt_vertex = mdt.get_vertex(i)
 		
-		var grass_transform = Transform.IDENTITY
+		var grass_transform = Transform3D.IDENTITY
 		var random_offset_x = rng.randf_range(-0.5, 0.5)
 		var random_offset_z = rng.randf_range(-0.5, 0.5)
 		grass_transform.origin = Vector3(mdt_vertex.x + random_offset_x, mdt_vertex.y, mdt_vertex.z + random_offset_z)
@@ -564,13 +555,13 @@ func place_grass(grass_blade_mesh):
 		multimesh.set_instance_transform(i, grass_transform)
 	
 	# TODO: assign vertex and visual shader to multimesh instance
-	var multimesh_instance = MultiMeshInstance.new()
+	var multimesh_instance = MultiMeshInstance3D.new()
 	multimesh_instance.multimesh = multimesh
 	multimesh_instance.material_override = grass_material
 	add_child(multimesh_instance)
 
 func spawn_house(house, location):
-	var new_house = house.instance()
+	var new_house = house.instantiate()
 	new_house.translate(Vector3(location.x, location.y + 0.1, location.z + 1.0))
 	add_child(new_house)
 	pass

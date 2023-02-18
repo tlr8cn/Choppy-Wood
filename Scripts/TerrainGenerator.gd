@@ -1,4 +1,4 @@
-extends Spatial
+extends Node3D
 
 
 var noise = OpenSimplexNoise.new()
@@ -19,7 +19,7 @@ var tree_likelihood = 25
 var grass_likelihood = 40
 var rock_likelihood = 12
 
-onready var rock1 = load("res://Scenes/Rock1.tscn")
+@onready var rock1 = load("res://Scenes/Rock1.tscn")
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -66,11 +66,11 @@ func _ready():
 		mdt.set_vertex_uv(i, Vector2(uv_x, uv_y))
 		mdt.set_vertex(i, vertex)
 		
-		# on every nth vertex, roll to create a tree
+		# checked every nth vertex, roll to create a tree
 		if i % 75 == 0:
 			roll_to_add_tree(tree_generator, vertex)
 		
-		# on every index, roll to create grass
+		# checked every index, roll to create grass
 		roll_to_add_grass(vertex)
 		
 		roll_to_add_rock(vertex)
@@ -100,7 +100,7 @@ func _ready():
 func roll_to_add_rock(rock_location):
 	var roll = rng.randi_range(0, 2500)
 	if roll <= rock_likelihood:
-		var instance = rock1.instance()
+		var instance = rock1.instantiate()
 		var minor_offset_x = rng.randf_range(-0.15, 0.15)
 		var minor_offset_z = rng.randf_range(-0.15, 0.15)
 		var pos = Vector3(rock_location.x + minor_offset_x, rock_location.y - 0.15, rock_location.z + minor_offset_z)
@@ -136,7 +136,7 @@ func roll_to_add_grass(grass_location):
 func roll_to_add_tree(tree_generator, tree_location):
 	var roll = rng.randi_range(0, 100)
 	if roll <= tree_likelihood:
-		var new_tree = tree_generator.instance()
+		var new_tree = tree_generator.instantiate()
 		new_tree.translate(Vector3(tree_location.x, tree_location.y, tree_location.z))
 		add_child(new_tree)
 
@@ -147,12 +147,12 @@ func add_tree_to_scene(array_plane):
 		st.create_from(array_plane, 0)
 		st.generate_normals()
 		# TODO: this should be separated into chunks eventually
-		var meshInstance = MeshInstance.new()
+		var meshInstance = MeshInstance3D.new()
 		meshInstance.set_mesh(st.commit())
 		meshInstance.global_transform.origin = Vector3(0, 0, 0)
 		#var ttg = TerrainTextureGenerator.new(plane_mesh.subdivide_width*128, plane_mesh.subdivide_depth*128)
 		#var terrain_texture = ttg.get_terrain_texture()
-		var material = SpatialMaterial.new()
+		var material = StandardMaterial3D.new()
 		#material.albedo_texture = terrain_texture
 		material.albedo_color = Color("#3A2218")
 		
@@ -161,6 +161,6 @@ func add_tree_to_scene(array_plane):
 		add_child(meshInstance)
 
 func spawn_house(house, location):
-	var new_house = house.instance()
+	var new_house = house.instantiate()
 	new_house.translate(Vector3(location.x, location.y + 0.1, location.z + 1.0))
 	add_child(new_house)

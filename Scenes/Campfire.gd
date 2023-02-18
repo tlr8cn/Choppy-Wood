@@ -1,4 +1,4 @@
-extends Particles
+extends GPUParticles3D
 
 class_name FireSimulation
 
@@ -10,11 +10,11 @@ var level_by_amount = [0, 1, 1, 2, 2, 2, 3, 3, 4]
 var decrease_timer = 15.0 # in seconds
 var decrease_counter = 0.0
 
-onready var fire_sim:ParticlesMaterial = self.process_material
-onready var smoke:Particles = get_node("Smoke")
-onready var smoke_sim:ParticlesMaterial = smoke.process_material
-onready var sparks:Particles = get_node("Sparks")
-onready var sparks_sim:ParticlesMaterial = sparks.process_material
+@onready var fire_sim:ParticleProcessMaterial = self.process_material
+@onready var smoke:GPUParticles3D = get_node("Smoke")
+@onready var smoke_sim:ParticleProcessMaterial = smoke.process_material
+@onready var sparks:GPUParticles3D = get_node("Sparks")
+@onready var sparks_sim:ParticleProcessMaterial = sparks.process_material
 
 # Called when the node enters the scene tree for the first time.
 func _ready():

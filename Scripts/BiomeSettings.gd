@@ -11,7 +11,7 @@ var num_height_increments = 5
 var tree_generators = []
 
 # Called when the node enters the scene tree for the first time.
-func _init(type, tree_generators, height_range, height_map, height_map_rotation=0.0):
+func _init(type,tree_generators,height_range,height_map,height_map_rotation=0.0):
 	self.type = type
 	self.tree_generators = tree_generators
 	self.height_range = height_range

@@ -1,9 +1,6 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://dkvxw4eia2b3n"]
 
-[ext_resource path="res://Scripts/NaturalTreeGenerator.gd" type="Script" id=1]
-[ext_resource path="res://Assets/Materials/original_bark.tres" type="Material" id=2]
+[ext_resource type="Script" path="res://Scripts/NaturalTreeGenerator.gd" id="1"]
 
-[node name="NaturalTreeGenerator" type="ImmediateGeometry"]
-script = ExtResource( 1 )
-initial_radius_range = Vector2( 0.35, 1.5 )
-bark_material = ExtResource( 2 )
+[node name="Node" type="MeshInstance3D"]
+script = ExtResource("1")

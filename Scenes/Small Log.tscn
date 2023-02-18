@@ -4,19 +4,19 @@
 [ext_resource path="res://Scenes/ChopEventReceiver.gd" type="Script" id=2]
 [ext_resource path="res://log_physics_material.tres" type="PhysicsMaterial" id=3]
 
-[sub_resource type="BoxShape" id=1]
+[sub_resource type="BoxShape3D" id=1]
 extents = Vector3( 0.0294896, 0.320725, 0.0800346 )
 
-[node name="Small Log" type="RigidBody"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0338503, 0, -0.142967 )
+[node name="Small Log" type="RigidBody3D"]
+transform = Transform3D( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0338503, 0, -0.142967 )
 mass = 100.0
 physics_material_override = ExtResource( 3 )
 gravity_scale = 1.4
 script = ExtResource( 2 )
 
-[node name="CollisionShape" type="CollisionShape" parent="."]
-transform = Transform( 0.874983, 0, -0.484153, 0, 1.1328, 0, 0.484153, 0, 0.874983, -0.0635263, 0.359206, 0.098602 )
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D( 0.874983, 0, -0.484153, 0, 1.1328, 0, 0.484153, 0, 0.874983, -0.0635263, 0.359206, 0.098602 )
 shape = SubResource( 1 )
 
 [node name="Small Log" parent="." instance=ExtResource( 1 )]
-transform = Transform( 0.369, 0, 0, 0, 0.415, 0, 0, 0, 0.369, 0.0405163, 0.0768554, -0.00509982 )
+transform = Transform3D( 0.369, 0, 0, 0, 0.415, 0, 0, 0, 0.369, 0.0405163, 0.0768554, -0.00509982 )

@@ -1,10 +1,10 @@
-extends Area
+extends Area3D
 
-onready var fire_simulation = get_parent().get_node("Fire")
+@onready var fire_simulation = get_parent().get_node("Fire")
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	connect("body_entered", self, "callback")
+	connect("body_entered",Callable(self,"callback"))
 	pass
 
 func callback(body):

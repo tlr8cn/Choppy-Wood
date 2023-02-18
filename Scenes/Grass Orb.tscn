@@ -4,9 +4,9 @@
 
 [sub_resource type="CapsuleMesh" id=1]
 
-[node name="Grass Orb" type="Spatial"]
+[node name="Grass Orb" type="Node3D"]
 
-[node name="grass-orb" type="MeshInstance" parent="."]
-transform = Transform( 0.665237, 0, 0, 0, -1.14328e-07, 1.37865, 0, -2.61553, -6.02628e-08, 0, 1.54808, -6.76685e-08 )
+[node name="grass-orb" type="MeshInstance3D" parent="."]
+transform = Transform3D( 0.665237, 0, 0, 0, -1.14328e-07, 1.37865, 0, -2.61553, -6.02628e-08, 0, 1.54808, -6.76685e-08 )
 mesh = SubResource( 1 )
 material/0 = ExtResource( 2 )

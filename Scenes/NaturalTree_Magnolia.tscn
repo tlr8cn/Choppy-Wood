@@ -3,7 +3,7 @@
 [ext_resource path="res://Scripts/NaturalTreeGenerator.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Materials/magnolia_bark.tres" type="Material" id=2]
 
-[node name="NaturalTreeGenerator" type="ImmediateGeometry"]
+[node name="NaturalTreeGenerator" type="ImmediateMesh"]
 script = ExtResource( 1 )
 height_inc = 0.475
 radius_dec = 0.012

@@ -1,4 +1,4 @@
-extends RigidBody
+extends RigidBody3D
 
 const BIG_LOG_LENGTH = 5.5
 
@@ -24,7 +24,7 @@ func _on_chop(body, split_dir):
 		var z_pos = -BIG_LOG_LENGTH/3 - BIG_LOG_LENGTH/6
 		var z_inc = BIG_LOG_LENGTH/6
 		for i in 6:
-			var instance = child_log.instance()
+			var instance = child_log.instantiate()
 			var pos = Vector3(self.transform.origin.x, self.transform.origin.y + 0.35, self.transform.origin.z + z_pos)
 			instance.global_translate(pos)
 			instance.transform.basis = instance.transform.basis.rotated(Vector3(1, 0, 0), PI/2)
@@ -33,7 +33,7 @@ func _on_chop(body, split_dir):
 			get_tree().get_root().add_child(instance)
 			z_pos = z_pos + z_inc
 		
-		#var instance2 = child_log.instance()
+		#var instance2 = child_log.instantiate()
 		#var pos2 = Vector3(self.transform.origin.x, self.transform.origin.y, self.transform.origin.z)
 		#instance2.global_translate(pos2)
 		# rotate around y axis

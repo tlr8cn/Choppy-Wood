@@ -1,18 +1,18 @@
-extends Camera
+extends Camera3D
 
-onready var Yaw = get_parent()
-onready var do_ray_cast = false
+@onready var Yaw = get_parent()
+@onready var do_ray_cast = false
 
 const ray_length = 1000
 
 var cast_event:InputEvent
 
-onready var player = get_parent()
-onready var inventory = player.get_node("Inventory")
+@onready var player = get_parent()
+@onready var inventory = player.get_node("Inventory")
 #signal tree_detected
 
 func _ready():
-	#connect("tree_detected", player, "_on_tree_detected")
+	#connect("tree_detected",Callable(player,"_on_tree_detected"))
 	## Tell Godot that we want to handle input
 	set_process_input(true)
 
@@ -79,10 +79,12 @@ func _leave_tree():
 
 func _physics_process(delta):
 	if do_ray_cast:
-		var space_state = get_world().direct_space_state
+		var space_state = get_world_3d().direct_space_state
 		var from = self.project_ray_origin(cast_event.position)
 		var to = from + self.project_ray_normal(cast_event.position) * ray_length
-		var intersection_map = space_state.intersect_ray(from, to)
+		
+		var raycast_query = PhysicsRayQueryParameters3D.create(from, to)
+		var intersection_map = space_state.intersect_ray(raycast_query)
 		if intersection_map:
 			#print("ray cast hit:")
 			#print(intersection_map["collider"])

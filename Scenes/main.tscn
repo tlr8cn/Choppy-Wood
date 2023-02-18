@@ -206,7 +206,7 @@ transitions = ["maul_idle", "maul_windup", SubResource("13"), "maul_windup", "ma
 [node name="Node3D" type="Node3D"]
 
 [node name="Player" type="CharacterBody3D" parent="."]
-transform = Transform3D(-0.0083079, 0, 0.999966, 0, 0.75, 0, -0.999966, 0, -0.0083079, -1.10536, 82.8795, 0)
+transform = Transform3D(-0.0083079, 0, 0.999966, 0, 0.75, 0, -0.999966, 0, -0.0083079, -1.10536, 115.316, 0)
 script = ExtResource("1")
 speed = 6
 
@@ -221,7 +221,7 @@ far = 300.0
 script = ExtResource("2")
 
 [node name="SplittingMaul" parent="Player/MainCamera" instance=ExtResource("3")]
-transform = Transform3D(-0.350002, -2.77314e-08, -1.29313e-08, 0, 0.147918, -0.317209, 3.05982e-08, -0.31721, -0.147917, 0.236, -0.309, -0.295)
+transform = Transform3D(-0.350002, -2.77314e-08, -1.29313e-08, 0, 0.147918, -0.317209, 3.05982e-08, -0.31721, -0.147917, -0.000702856, 0.301014, -0.276068)
 
 [node name="RigidBody3D" type="RigidBody3D" parent="Player/MainCamera/SplittingMaul"]
 transform = Transform3D(1, 0, 0, 2.98023e-08, 1, 1.16415e-09, 3.72529e-09, -1.60653e-08, 1, -0.00121927, 0.00917411, 0.0195608)
@@ -239,7 +239,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9407e-08, 2.29577, -0.61723
 script = ExtResource("6")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.481736, 0.0467511, -0.875069, 0.875808, 0.00833493, 0.482588, 0.0298552, -0.998872, -0.0369298, -175.271, 68.115, 0.136545)
+transform = Transform3D(0.99934, 0.0305938, -0.0196007, 0.0207084, -0.0363202, 0.999126, 0.0298552, -0.998872, -0.0369297, -1.14154, 146.763, -1.03604)
+light_color = Color(1, 1, 0.733333, 1)
+light_energy = 1.25
 shadow_enabled = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]

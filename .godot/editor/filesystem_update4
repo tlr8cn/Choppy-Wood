@@ -1,9 +1,8 @@
 res://Scenes/main.tscn
-res://Assets/Materials/tree_visualshader.tres
-res://Scripts/TerrainChunk.gd
 res://Scripts/NaturalTreeGenerator.gd
-res://Scripts/TreeNode.gd
-res://Scripts/NaturalTree.gd
 res://Assets/Materials/canopy_visualshader.tres
-res://Scripts/MushroomMan.gd
+res://Assets/Materials/tree_visualshader.tres
 res://Scenes/NaturalTree.tscn
+res://Scenes/NaturalTree_Magnolia.tscn
+res://Scripts/TerrainChunk.gd
+res://Assets/Environment.tres

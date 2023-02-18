@@ -236,7 +236,7 @@ func draw_terrain(cube_width, cube_depth, cube_height, biome_grid):
 	
 	# add features
 	#add_terrain_features()
-	add_tree_to_scene(array_plane)
+	add_terrain_to_scene(array_plane)
 	pass
 
 func add_terrain_features(plane_width):
@@ -504,9 +504,11 @@ func roll_to_add_tree(tree_generators, tree_location, vertex_index):
 				add_child(new_mushroom)
 	pass
 
-func add_tree_to_scene(array_plane):
+func add_terrain_to_scene(array_plane):
 	for s in range(array_plane.get_surface_count()):
-		array_plane.surface_remove(s)
+		# TODO: not sure if clearing surfaces is the correct thing to do here. In Godot 3.x, you could
+		# clear a single surface using array_plane.clear_surface(s) which I was doing here instead.
+		array_plane.clear_surfaces()
 		mdt.commit_to_surface(array_plane)
 		st.create_from(array_plane, 0)
 		st.generate_normals()

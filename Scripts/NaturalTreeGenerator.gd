@@ -55,22 +55,18 @@ var leaf_collisions = []
 var root = null
 var tree_height=0.0
 
-var immediate_mesh:ImmediateMesh
-
 # Called when the node enters the scene tree for the firsst time.
 func _ready():
-	immediate_mesh = ImmediateMesh.new()
-	
 	# TODO: do I need this?
 	var Vertex = load("res://Scripts/Vertex.gd")
 	rng.randomize()
 	
-	mesh.begin(Mesh.PRIMITIVE_TRIANGLES, null) # Add vertices in counter clockwise order
 	var texture = load("res://Assets/Textures/bark.png")
+	mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES, bark_material) # Add vertices in counter clockwise order
 	#var material = StandardMaterial3D.new()
 	#material.albedo_texture = texture
 	#material.albedo_color = Color("#463A2E")
-	mesh.set_material_override(bark_material)
+	#mesh.set_material_override(bark_material)
 
 	#var currentRadius = 1.0
 	var currentHeight = 0
@@ -99,7 +95,7 @@ func _ready():
 	shape.radius = initial_radius
 	shape.height = trunk_top.y - trunk_bottom.y
 	#collision_object.shape = shape
-	collision_object.create_shape_owner(immediate_mesh)
+	collision_object.create_shape_owner(mesh)
 	collision_object.set_ray_pickable(true)
 	collision_object.set_name("Tree")
 	
@@ -121,7 +117,7 @@ func _ready():
 	
 	draw_canopy(branches)
 	
-	immediate_mesh.end()
+	mesh.surface_end()
 	pass # Replace with function body.
 
 func _process(delta):
@@ -387,12 +383,12 @@ func drawTriangle(tArray):
 		var coord = vertex.get_coord()
 		var centerPoint = vertex.get_centerPoint()
 		
+		mesh.surface_add_vertex(Vector3(coord.x, coord.y, coord.z))
 		# UV x is the fraction of the total 360 rotation
 		# UV y should be a fraction of the height the texture occupies
 		var uv = vertex.get_uv() 
-		mesh.surface_add_uv(uv)
-		mesh.surface_add_vertex(Vector3(coord.x, coord.y, coord.z))
-		mesh.surface_add_normal(Vector3(coord.x - centerPoint.x, coord.y - centerPoint.y, coord.z - centerPoint.z)) # normals pointing out
+		mesh.surface_set_uv(uv)
+		mesh.surface_set_normal(Vector3(coord.x - centerPoint.x, coord.y - centerPoint.y, coord.z - centerPoint.z)) # normals pointing out
 
 func calculateSkew(angle):
 	# sign of skew variables based checked x,z quadrants
@@ -427,9 +423,9 @@ func draw_canopy(branches):
 	var ig = ImmediateMesh.new()
 	var canopy_node = MeshInstance3D.new()
 	#ig.begin(Mesh.PRIMITIVE_TRIANGLES, null) # Add vertices in counter clockwise order
-	canopy_node.mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES) # Add vertices in counter clockwise order
+	ig.surface_begin(Mesh.PRIMITIVE_TRIANGLES, canopy_material) # Add vertices in counter clockwise order
 	#ig.set_material_override(canopy_material)
-	canopy_node.set_material_override(canopy_material)
+	#canopy_node.set_material_override(canopy_material)
 	var plane_height_increment = 0.0325
 	
 	var radius_threshold = 0.35
@@ -496,15 +492,15 @@ func draw_canopy(branches):
 					var middle_t1 = [old_tv2, tv1, old_rv2]
 					var uvs_mid1 = [Vector2(uv_horizontal - uv_horiz_separation, 0.0), Vector2(uv_horizontal, 0.0), Vector2(uv_horizontal - uv_horiz_separation, 1.0)]
 					for k in middle_t1.size():
-						ig.set_uv(uvs_mid1[k])
-						ig.add_vertex(middle_t1[k])
-						ig.set_normal(Vector3(x_sign_lower, 0.0, z_sign_lower))
+						ig.surface_set_uv(uvs_mid1[k])
+						ig.surface_add_vertex(middle_t1[k])
+						ig.surface_set_normal(Vector3(x_sign_lower, 0.0, z_sign_lower))
 					var middle_t2 = [old_rv2, tv1, rv1]
 					var uvs_mid2 = [Vector2(uv_horizontal - uv_horiz_separation, 1.0), Vector2(uv_horizontal, 0.0), Vector2(uv_horizontal, 1.0)]
 					for k in middle_t2.size():
-						ig.set_uv(uvs_mid2[k])
-						ig.add_vertex(middle_t2[k])
-						ig.set_normal(Vector3(x_sign_upper, 0.0, z_sign_upper))
+						ig.surface_set_uv(uvs_mid2[k])
+						ig.surface_add_vertex(middle_t2[k])
+						ig.surface_set_normal(Vector3(x_sign_upper, 0.0, z_sign_upper))
 				
 				
 				t1 = [rv1, tv1, rv2]
@@ -513,21 +509,22 @@ func draw_canopy(branches):
 				var uvs2 = [Vector2(uv_horizontal + uv_horiz_separation, 1.0), Vector2(uv_horizontal, 0.0), Vector2(uv_horizontal + uv_horiz_separation, 0.0)]
 				
 				for k in t1.size():
-					ig.set_uv(uvs1[k])
-					ig.add_vertex(t1[k])
-					ig.set_normal(Vector3(x_sign_lower, 0.0, z_sign_lower))
+					ig.surface_set_uv(uvs1[k])
+					ig.surface_add_vertex(t1[k])
+					ig.surface_set_normal(Vector3(x_sign_lower, 0.0, z_sign_lower))
 				
 				for k in t2.size():
-					ig.set_uv(uvs2[k])
-					ig.add_vertex(t2[k])
-					ig.set_normal(Vector3(x_sign_upper, 0.0, z_sign_upper))
+					ig.surface_set_uv(uvs2[k])
+					ig.surface_add_vertex(t2[k])
+					ig.surface_set_normal(Vector3(x_sign_upper, 0.0, z_sign_upper))
 				
 				old_rv2 = rv2
 				old_tv2 = tv2
 				plane_height = plane_height + plane_height_increment
 				uv_horizontal = uv_horizontal + uv_horiz_separation
 		
-	canopy_node.mesh.surface_end()
+	ig.surface_end()
+	canopy_node.mesh = ig
 	self.add_child(canopy_node)
 
 func get_xz_signs_from_angle(angle):

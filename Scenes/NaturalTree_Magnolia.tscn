@@ -1,17 +1,20 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=3 uid="uid://dg4t42l83qx55"]
 
-[ext_resource path="res://Scripts/NaturalTreeGenerator.gd" type="Script" id=1]
-[ext_resource path="res://Assets/Materials/magnolia_bark.tres" type="Material" id=2]
+[ext_resource type="Script" path="res://Scripts/NaturalTreeGenerator.gd" id="1"]
+[ext_resource type="Material" path="res://Assets/Materials/magnolia_bark.tres" id="2"]
 
-[node name="NaturalTreeGenerator" type="ImmediateMesh"]
-script = ExtResource( 1 )
+[sub_resource type="ImmediateMesh" id="ImmediateMesh_0e42o"]
+
+[node name="NaturalTree" type="MeshInstance3D"]
+mesh = SubResource("ImmediateMesh_0e42o")
+script = ExtResource("1")
 height_inc = 0.475
 radius_dec = 0.012
-initial_radius_range = Vector2( 0.125, 0.35 )
+initial_radius_range = Vector2(0.125, 0.35)
 skew_min = 0.02
 skew_max = 0.2
 skew_widener = 0.004
 max_splits = 8
 spread_amount = 0.175
 initial_split_chance = 150
-bark_material = ExtResource( 2 )
+bark_material = ExtResource("2")

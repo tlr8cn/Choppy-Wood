@@ -1,8 +1,10 @@
 res://Scenes/main.tscn
+res://Assets/Environment.tres
 res://Scripts/NaturalTreeGenerator.gd
 res://Assets/Materials/canopy_visualshader.tres
 res://Assets/Materials/tree_visualshader.tres
 res://Scenes/NaturalTree.tscn
 res://Scenes/NaturalTree_Magnolia.tscn
 res://Scripts/TerrainChunk.gd
-res://Assets/Environment.tres
+res://Scenes/Water.tscn
+res://Assets/Materials/original_bark.tres

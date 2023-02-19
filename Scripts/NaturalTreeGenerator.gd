@@ -62,7 +62,6 @@ func _ready():
 	rng.randomize()
 	
 	var texture = load("res://Assets/Textures/bark.png")
-	mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES, bark_material) # Add vertices in counter clockwise order
 	#var material = StandardMaterial3D.new()
 	#material.albedo_texture = texture
 	#material.albedo_color = Color("#463A2E")
@@ -316,6 +315,7 @@ func addVerticesToRing(ring, num_vertices, packed_center_point, packed_center_an
 	return ring
 
 func draw_tree(branches):
+	mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES, bark_material) # Add vertices in counter clockwise order
 	var sectionHeight = 2
 	var sectionWidth = 2
 	for i in range(branches.size()):
@@ -325,7 +325,7 @@ func draw_tree(branches):
 			if next_uv_y == 0.0:
 				next_uv_y = 1.0
 			
-			var node = branches[i][j]
+			var node = branches[i][j]	
 			var parent = node.get_parent()
 			var ring = node.get_ring()
 			if ring.size() != 2:
@@ -375,7 +375,8 @@ func draw_tree(branches):
 			
 		# restart drawing
 		mesh.surface_end()
-		mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES, null)
+		mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES, bark_material)
+	mesh.surface_end()
 
 func drawTriangle(tArray): 
 	for i in 3:

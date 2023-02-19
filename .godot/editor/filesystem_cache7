@@ -1,10 +1,10 @@
 0b7126e0c6e86d3ec295a72f5aa6e0bd
-::res://::1676738373
+::res://::1676774291
 default_env.tres::Environment::-1::1676737377::0::1::::<><>::
 icon.png::CompressedTexture2D::4857276972940706945::1674742990::1676737377::1::::<><>::
 log_physics_material.tres::PhysicsMaterial::-1::1676679303::0::1::::<><>::
-::res://Assets/::1676737377
-Environment.tres::Environment::333097585415550698::1676737377::0::1::::<><>::
+::res://Assets/::1676741054
+Environment.tres::Environment::333097585415550698::1676741054::0::1::::<><>::
 ::res://Assets/Animations/::1676737377
 handle.material::StandardMaterial3D::-1::1674742986::0::1::::<><>::
 head.material::StandardMaterial3D::-1::1674742986::0::1::::<><>::
@@ -132,7 +132,7 @@ bark5.material::StandardMaterial3D::-1::1675039394::0::1::::<><>::
 log-inside5.material::StandardMaterial3D::-1::1675039394::0::1::::<><>::
 small-log.glb::PackedScene::4028961458092355527::1675039394::1676737377::1::::<><>::
 wood-x-section5.material::StandardMaterial3D::-1::1675039394::0::1::::<><>::
-::res://Assets/Textures/::1676737377
+::res://Assets/Textures/::1676740723
 bark.png::CompressedTexture2D::3216318641129367674::1675039394::1676737377::1::::<><>::
 canopy-flattened.png::CompressedTexture2D::3253843268895920393::1674742989::1676737377::1::::<><>::
 canopy-texture.png::CompressedTexture2D::796124257593706111::1674742989::1676737377::1::::<><>::
@@ -145,7 +145,7 @@ rust.png::CompressedTexture2D::4942160954667558325::1674742989::1676737377::1:::
 smoke_frames.png::CompressedTexture2D::6385292306427948775::1675039394::1676740723::1::::<><>::
 Spark.png::CompressedTexture2D::368474215587058961::1675039394::1676740721::1::::<><>::
 wood-x-section.png::CompressedTexture2D::1100174999310822300::1674742989::1676737377::1::::<><>::
-::res://Scenes/::1676740585
+::res://Scenes/::1676741664
 AngerAreaDetector.gd::GDScript::-1::1676737377::0::1::::<>Area3D<>::
 BigLog.tscn::PackedScene::-1::1676737377::0::1::::<><>::res://Assets/Models/BigLog/big-log.glb<>res://log_physics_material.tres<>res://Scenes/BigLogChopEventReceiver.gd
 BigLogChopEventReceiver.gd::GDScript::-1::1676737377::0::1::::<>RigidBody3D<>::
@@ -162,12 +162,12 @@ ItemGrabHandler.gd::GDScript::-1::1676737377::0::1::::<>CollisionShape3D<>::
 LargeRock1.tscn::PackedScene::-1::1676737377::0::1::::<><>::res://Assets/Models/Rock Structures/Large/large-rock-structure1.glb
 Leaf Bunch.tscn::PackedScene::-1::1676737377::0::1::::<><>::res://Assets/Models/Leaf/Bunch/Large/large-leaf-bunch.glb
 Log.tscn::PackedScene::-1::1676737377::0::1::::<><>::res://Assets/Models/Log/log.glb<>res://Scenes/ChopEventReceiver.gd<>res://log_physics_material.tres<>res://Scenes/ItemGrabHandler.gd
-main.tscn::PackedScene::6684133602835867578::1676740689::0::1::::<><>::res://Scripts/PlayerController.gd<>res://Scripts/MainCamera.gd<>uid://brokrlx8arfrv<>res://Scripts/TerrainOrchestrator.gd<>uid://e0mcli5ymwso<>res://Scripts/Inventory.gd<>res://Scripts/MaulCollisions.gd
+main.tscn::PackedScene::6684133602835867578::1676741664::0::1::::<><>::res://Scripts/PlayerController.gd<>res://Scripts/MainCamera.gd<>uid://brokrlx8arfrv<>res://Scripts/TerrainOrchestrator.gd<>uid://e0mcli5ymwso<>res://Scripts/Inventory.gd<>res://Scripts/MaulCollisions.gd
 Mushroom.tscn::PackedScene::-1::1676737377::0::1::::<><>::res://Assets/Models/Mushroom/mushroom.glb
 MushroomMan.tscn::PackedScene::-1::1676737377::0::1::::<><>::res://Assets/Models/Mushroom Man/mushroom-man.gltf<>res://Scripts/MushroomMan.gd<>res://Scenes/AngerAreaDetector.gd
 MushroomManHalf.tscn::PackedScene::-1::1676737377::0::1::::<><>::res://Assets/Models/Mushroom Man/Half/mushroom-man-half.glb<>res://Scripts/ApplyInitialTorque.gd<>res://log_physics_material.tres
-NaturalTree.tscn::PackedScene::7905939728315337249::1676740585::0::1::::<><>::res://Scripts/NaturalTreeGenerator.gd
-NaturalTree_Magnolia.tscn::PackedScene::7641468915321781142::1676740585::0::1::::<><>::res://Scripts/NaturalTreeGenerator.gd<>res://Assets/Materials/magnolia_bark.tres
+NaturalTree.tscn::PackedScene::7905939728315337249::1676741664::0::1::::<><>::res://Scripts/NaturalTreeGenerator.gd
+NaturalTree_Magnolia.tscn::PackedScene::7641468915321781142::1676741664::0::1::::<><>::res://Scripts/NaturalTreeGenerator.gd<>res://Assets/Materials/magnolia_bark.tres
 Quarter Log.tscn::PackedScene::-1::1676737377::0::1::::<><>::res://Assets/Models/QuarterLog/quarter-log.glb<>res://Scenes/ChopEventReceiver.gd<>res://log_physics_material.tres
 Rock1.tscn::PackedScene::-1::1676737377::0::1::::<><>::res://Assets/Models/Rock Structures/Medium/rock.glb
 Shack.tscn::PackedScene::-1::1676737377::0::1::::<><>::res://Assets/Models/shack.glb
@@ -176,7 +176,7 @@ TerrainChunk.tscn::PackedScene::-1::1676737377::0::1::::<><>::res://Scenes/Grass
 TreeCanopy.tscn::PackedScene::-1::1676737377::0::1::::<><>::res://Assets/Materials/tree_material.tres
 Trunk Leaves.tscn::PackedScene::-1::1676737377::0::1::::<><>::res://Assets/Models/Leaf/Bunch/Small/small-leaf-bunch.glb
 Water.tscn::PackedScene::-1::1676737377::0::1::::<><>::
-::res://Scripts/::1676740378
+::res://Scripts/::1676740975
 ApplyInitialTorque.gd::GDScript::-1::1676737377::0::1::::<>RigidBody3D<>::
 BiomeSettings.gd::GDScript::-1::1676737377::0::1::::BiomeSettings<>Node<>::
 BiomeSettingsManager.gd::GDScript::-1::1676679303::0::1::::BiomeSettingsManager<>Node<>::
@@ -189,7 +189,7 @@ NaturalTree.gd::GDScript::-1::1676737377::0::1::::NaturalTree<>Node<>::
 NaturalTreeGenerator.gd::GDScript::-1::1676740378::0::1::::<>MeshInstance3D<>::
 PlayerController.gd::GDScript::-1::1676737377::0::1::::<>CharacterBody3D<>::
 TerrainBiome.gd::GDScript::-1::1676737377::0::1::::TerrainBiome<>Node<>::
-TerrainChunk.gd::GDScript::-1::1676740689::0::1::::TerrainChunk<>Node3D<>::
+TerrainChunk.gd::GDScript::-1::1676740975::0::1::::TerrainChunk<>Node3D<>::
 TerrainGenerator.gd::GDScript::-1::1676737377::0::1::::<>Node3D<>::
 TerrainOrchestrator.gd::GDScript::-1::1676737377::0::1::::<>Node<>::
 TerrainTextureGenerator.gd::GDScript::-1::1676737377::0::1::::<><>::

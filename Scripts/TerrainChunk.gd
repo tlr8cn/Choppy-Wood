@@ -80,7 +80,7 @@ func _init(noise_seed,biome_divisions,cube_width=64,cube_depth=64,cube_height=64
 	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
 	noise.seed = noise_seed
 	noise.fractal_octaves = noise_octaves
-	noise.frequency = 1.0/noise_period
+	noise.frequency = 0.075
 	noise.fractal_lacunarity = noise_persistence
 	
 	self.cube_width = cube_width
@@ -505,26 +505,26 @@ func roll_to_add_tree(tree_generators, tree_location, vertex_index):
 	pass
 
 func add_terrain_to_scene(array_plane):
-	for s in range(array_plane.get_surface_count()):
-		# TODO: not sure if clearing surfaces is the correct thing to do here. In Godot 3.x, you could
-		# clear a single surface using array_plane.clear_surface(s) which I was doing here instead.
-		array_plane.clear_surfaces()
-		mdt.commit_to_surface(array_plane)
-		st.create_from(array_plane, 0)
-		st.generate_normals()
-		# TODO: this should be separated into chunks eventually
-		var meshInstance = MeshInstance3D.new()
-		meshInstance.set_mesh(st.commit())
-		meshInstance.global_transform.origin = Vector3(0, 0, 0)
-		#var ttg = TerrainTextureGenerator.new(plane_mesh.subdivide_width*128, plane_mesh.subdivide_depth*128)
-		#var terrain_texture = ttg.get_terrain_texture()
-		
-		#material.albedo_texture = terrain_texture
-		#material.albedo_color = Color("#3A2218")
-		
-		meshInstance.material_override = dirt_material
-		meshInstance.create_trimesh_collision()
-		add_child(meshInstance)
+	#for s in range(array_plane.get_surface_count()):
+	# TODO: not sure if clearing surfaces is the correct thing to do here. In Godot 3.x, you could
+	# clear a single surface using array_plane.clear_surface(s) which I was doing here instead.
+	array_plane.clear_surfaces()
+	mdt.commit_to_surface(array_plane)
+	st.create_from(array_plane, 0)
+	st.generate_normals()
+	# TODO: this should be separated into chunks eventually
+	var meshInstance = MeshInstance3D.new()
+	meshInstance.set_mesh(st.commit())
+	meshInstance.global_transform.origin = Vector3(0, 0, 0)
+	#var ttg = TerrainTextureGenerator.new(plane_mesh.subdivide_width*128, plane_mesh.subdivide_depth*128)
+	#var terrain_texture = ttg.get_terrain_texture()
+	
+	#material.albedo_texture = terrain_texture
+	#material.albedo_color = Color("#3A2218")
+	
+	meshInstance.material_override = dirt_material
+	meshInstance.create_trimesh_collision()
+	add_child(meshInstance)
 	pass
 
 func place_grass(grass_blade_mesh):

@@ -1,9 +1,11 @@
-[gd_scene load_steps=3 format=3 uid="uid://dkvxw4eia2b3n"]
+[gd_scene load_steps=4 format=3 uid="uid://dkvxw4eia2b3n"]
 
 [ext_resource type="Script" path="res://Scripts/NaturalTreeGenerator.gd" id="1"]
+[ext_resource type="Material" path="res://Assets/Materials/original_bark.tres" id="2_0qkbo"]
 
 [sub_resource type="ImmediateMesh" id="ImmediateMesh_2ds4v"]
 
 [node name="NaturalTree" type="MeshInstance3D"]
 mesh = SubResource("ImmediateMesh_2ds4v")
 script = ExtResource("1")
+bark_material = ExtResource("2_0qkbo")

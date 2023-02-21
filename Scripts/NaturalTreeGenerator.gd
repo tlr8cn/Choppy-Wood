@@ -96,7 +96,7 @@ func _ready():
 	var shape = CylinderShape.new()
 	shape.radius = initial_radius
 	shape.height = trunk_top.y - trunk_bottom.y
-	#collision_object.shape = shape
+	
 	collision_object.create_shape_owner(self)
 	collision_object.set_ray_pickable(true)
 	collision_object.set_name("Tree")
@@ -105,15 +105,6 @@ func _ready():
 	var this_owner = owners[0]
 	collision_object.shape_owner_add_shape(this_owner, shape)
 	add_child(collision_object)
-	
-	#var body = RigidBody.new()
-	#body.add_child(TestCube.new())
-	#var shape = CylinderShape.new()
-	#shape.radius = initial_radius
-	#shape.height = trunk_top.y - trunk_bottom.y
-	#body.add_shape(shape)
-	#body.set_translation(Vector3(0, shape.height/2.0, 0))
-	#add_child(body)
 	
 	draw_tree(branches)
 	
@@ -172,7 +163,6 @@ func buildTreeRecursively(current_node, natural_tree, n, current_radius, current
 		new_radius = new_radius - radius_dec
 	
 	# base case
-	# TODO (BUG): it seems like leaves don't have rings at the moment
 	if current_radius <= 0.0 || new_radius <= 0.0:
 		var new_tree_height = current_node.get_center_point().y - self.root.get_center_point().y
 		if new_tree_height > self.tree_height:

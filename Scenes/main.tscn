@@ -1,4 +1,4 @@
-[gd_scene load_steps=44 format=2]
+[gd_scene load_steps=42 format=2]
 
 [ext_resource path="res://Scripts/PlayerController.gd" type="Script" id=1]
 [ext_resource path="res://Scripts/MainCamera.gd" type="Script" id=2]
@@ -6,67 +6,63 @@
 [ext_resource path="res://Scripts/TerrainOrchestrator.gd" type="Script" id=4]
 [ext_resource path="res://Assets/Environment.tres" type="Environment" id=5]
 [ext_resource path="res://Scripts/Inventory.gd" type="Script" id=6]
-[ext_resource path="res://Scripts/MaulCollisions.gd" type="Script" id=12]
+[ext_resource path="res://Scripts/AxePickCollisions.gd" type="Script" id=7]
+[ext_resource path="res://Scripts/AxePickController.gd" type="Script" id=12]
 
 [sub_resource type="CylinderShape" id=1]
 radius = 0.176615
 height = 3.36326
 
 [sub_resource type="BoxShape" id=2]
-extents = Vector3( 0.0615791, 0.212795, 0.0719457 )
+extents = Vector3( 0.165606, 0.806776, 0.22579 )
 
-[sub_resource type="Animation" id=3]
-length = 0.3
+[sub_resource type="BoxShape" id=3]
+extents = Vector3( 0.208151, 0.267346, 0.123397 )
 
-[sub_resource type="Animation" id=4]
-resource_name = "maul_chop_side"
-length = 0.3
+[sub_resource type="AnimationNodeAnimation" id=4]
+animation = "AxeChop"
 
-[sub_resource type="Animation" id=5]
-resource_name = "maul_idle"
+[sub_resource type="AnimationNodeAnimation" id=5]
+animation = "AxeToSideTransition"
 
-[sub_resource type="Animation" id=6]
-length = 0.8
+[sub_resource type="AnimationNodeAnimation" id=6]
+animation = "AxeWindup"
 
-[sub_resource type="Animation" id=7]
-resource_name = "maul_windup_side"
-length = 0.8
+[sub_resource type="AnimationNodeAnimation" id=7]
+animation = "IdleAxe"
 
 [sub_resource type="AnimationNodeAnimation" id=8]
-animation = "Idle1"
+animation = "IdlePick"
 
 [sub_resource type="AnimationNodeAnimation" id=9]
-animation = "Idle2"
+animation = "IdleSide"
 
 [sub_resource type="AnimationNodeAnimation" id=10]
-animation = "Idle3"
-
-[sub_resource type="AnimationNodeAnimation" id=11]
-animation = "IdleTransition1"
-
-[sub_resource type="AnimationNodeAnimation" id=12]
-animation = "IdleTransition2"
-
-[sub_resource type="AnimationNodeAnimation" id=13]
 animation = "IdleTransitionReturn"
 
+[sub_resource type="AnimationNodeAnimation" id=11]
+animation = "PickChop"
+
+[sub_resource type="AnimationNodeAnimation" id=12]
+animation = "PickToAxeTransition"
+
+[sub_resource type="AnimationNodeAnimation" id=13]
+animation = "PickWindup"
+
 [sub_resource type="AnimationNodeAnimation" id=14]
-animation = "OverheadChop"
-
-[sub_resource type="AnimationNodeAnimation" id=15]
-animation = "OverheadChopWindup"
-
-[sub_resource type="AnimationNodeAnimation" id=16]
 animation = "SideChop"
 
-[sub_resource type="AnimationNodeAnimation" id=17]
+[sub_resource type="AnimationNodeAnimation" id=15]
+animation = "SideToPickTransition"
+
+[sub_resource type="AnimationNodeAnimation" id=16]
 animation = "SideWindup"
 
-[sub_resource type="AnimationNodeAnimation" id=18]
-animation = "SwitchOverheadChop"
+[sub_resource type="AnimationNodeStateMachineTransition" id=17]
 
-[sub_resource type="AnimationNodeAnimation" id=19]
-animation = "SwitchOverheadChopWindup"
+[sub_resource type="AnimationNodeStateMachineTransition" id=18]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=19]
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=20]
 
@@ -92,41 +88,38 @@ animation = "SwitchOverheadChopWindup"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=31]
 
-[sub_resource type="AnimationNodeStateMachineTransition" id=32]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id=33]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id=34]
-
-[sub_resource type="AnimationNodeStateMachine" id=35]
-states/Idle1/node = SubResource( 8 )
-states/Idle1/position = Vector2( 50, 221 )
-states/Idle2/node = SubResource( 9 )
-states/Idle2/position = Vector2( 399, 221 )
-states/Idle3/node = SubResource( 10 )
-states/Idle3/position = Vector2( 778.441, 221 )
-states/IdleTransition1/node = SubResource( 11 )
-states/IdleTransition1/position = Vector2( 225.441, 221 )
-states/IdleTransition2/node = SubResource( 12 )
-states/IdleTransition2/position = Vector2( 583.441, 221 )
-states/IdleTransitionReturn/node = SubResource( 13 )
+[sub_resource type="AnimationNodeStateMachine" id=32]
+states/AxeChop/node = SubResource( 4 )
+states/AxeChop/position = Vector2( -1094.31, 95.9949 )
+states/AxeToSideTransition/node = SubResource( 5 )
+states/AxeToSideTransition/position = Vector2( -779, 208.995 )
+states/AxeWindup/node = SubResource( 6 )
+states/AxeWindup/position = Vector2( -1094.31, 184.995 )
+states/IdleAxe/node = SubResource( 7 )
+states/IdleAxe/position = Vector2( -931, 127.995 )
+states/IdlePick/node = SubResource( 8 )
+states/IdlePick/position = Vector2( -298, 127.995 )
+states/IdleSide/node = SubResource( 9 )
+states/IdleSide/position = Vector2( -613, 294.995 )
+states/IdleTransitionReturn/node = SubResource( 10 )
 states/IdleTransitionReturn/position = Vector2( 745.98, 508 )
-states/OverheadChop/node = SubResource( 14 )
-states/OverheadChop/position = Vector2( 451.441, 113 )
-states/OverheadChopWindup/node = SubResource( 15 )
-states/OverheadChopWindup/position = Vector2( 207.441, 113 )
-states/SideChop/node = SubResource( 16 )
-states/SideChop/position = Vector2( 685.441, 320 )
-states/SideWindup/node = SubResource( 17 )
-states/SideWindup/position = Vector2( 482.441, 320 )
-states/SwitchOverheadChop/node = SubResource( 18 )
-states/SwitchOverheadChop/position = Vector2( 1159.44, 127 )
-states/SwitchOverheadChopWindup/node = SubResource( 19 )
-states/SwitchOverheadChopWindup/position = Vector2( 895.441, 127 )
-transitions = [ "Idle1", "IdleTransition1", SubResource( 20 ), "IdleTransition1", "Idle2", SubResource( 21 ), "Idle2", "IdleTransition2", SubResource( 22 ), "IdleTransition2", "Idle3", SubResource( 23 ), "Idle1", "OverheadChopWindup", SubResource( 24 ), "OverheadChopWindup", "OverheadChop", SubResource( 25 ), "Idle2", "SideWindup", SubResource( 26 ), "SideWindup", "SideChop", SubResource( 27 ), "Idle3", "SwitchOverheadChopWindup", SubResource( 28 ), "SwitchOverheadChopWindup", "SwitchOverheadChop", SubResource( 29 ), "Idle3", "IdleTransitionReturn", SubResource( 30 ), "IdleTransitionReturn", "Idle1", SubResource( 31 ), "SideChop", "Idle2", SubResource( 32 ), "OverheadChop", "Idle1", SubResource( 33 ), "SwitchOverheadChop", "Idle3", SubResource( 34 ) ]
-graph_offset = Vector2( -158.713, 15.9949 )
+states/PickChop/node = SubResource( 11 )
+states/PickChop/position = Vector2( -141.306, 73.9949 )
+states/PickToAxeTransition/node = SubResource( 12 )
+states/PickToAxeTransition/position = Vector2( -613, 127.995 )
+states/PickWindup/node = SubResource( 13 )
+states/PickWindup/position = Vector2( -141.306, 184.995 )
+states/SideChop/node = SubResource( 14 )
+states/SideChop/position = Vector2( -691.306, 363.995 )
+states/SideToPickTransition/node = SubResource( 15 )
+states/SideToPickTransition/position = Vector2( -434, 208.995 )
+states/SideWindup/node = SubResource( 16 )
+states/SideWindup/position = Vector2( -493.306, 363.995 )
+transitions = [ "IdleAxe", "AxeToSideTransition", SubResource( 17 ), "AxeToSideTransition", "IdleSide", SubResource( 18 ), "IdleSide", "SideToPickTransition", SubResource( 19 ), "IdlePick", "SideToPickTransition", SubResource( 20 ), "IdlePick", "PickToAxeTransition", SubResource( 21 ), "PickToAxeTransition", "IdleAxe", SubResource( 22 ), "IdleAxe", "AxeWindup", SubResource( 23 ), "AxeWindup", "AxeChop", SubResource( 24 ), "AxeChop", "IdleAxe", SubResource( 25 ), "IdleSide", "SideWindup", SubResource( 26 ), "SideWindup", "SideChop", SubResource( 27 ), "SideChop", "IdleSide", SubResource( 28 ), "IdlePick", "PickWindup", SubResource( 29 ), "PickWindup", "PickChop", SubResource( 30 ), "PickChop", "IdlePick", SubResource( 31 ) ]
+start_node = "IdleAxe"
+graph_offset = Vector2( -1219.64, -7.56509 )
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=36]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=33]
 
 [node name="Spatial" type="Spatial"]
 
@@ -146,21 +139,45 @@ far = 300.0
 script = ExtResource( 2 )
 
 [node name="AxePick" parent="Player/MainCamera" instance=ExtResource( 3 )]
-transform = Transform( -0.349967, 0, 0.00478905, 0, 0.35, 0, -0.00478905, 0, -0.349967, -0.129596, -0.422379, -0.978642 )
-
-[node name="Cube001" parent="Player/MainCamera/AxePick" index="0"]
-transform = Transform( 0.146726, 0, 0, 0, 0.0677712, -0.364724, 0, 0.105139, 0.235096, -1.05251, 1.442, 0.9164 )
-
-[node name="RigidBody" type="RigidBody" parent="Player/MainCamera/AxePick"]
-transform = Transform( 0.999912, 0.0124012, 0.00578275, 8.87023e-09, 0.422623, -0.906311, -0.0136831, 0.90623, 0.422581, -1.07218, 0.310104, -1.92218 )
-contacts_reported = 2
-contact_monitor = true
+transform = Transform( 0.0041539, 0, 0.499983, 0, 0.5, 0, -0.499983, 0, 0.0041539, -0.23179, -0.527, -0.38894 )
 script = ExtResource( 12 )
 
-[node name="CollisionShape" type="CollisionShape" parent="Player/MainCamera/AxePick/RigidBody"]
-transform = Transform( 1, 9.31323e-10, -9.35979e-08, 2.02097e-07, 0.999999, 9.12587e-08, -7.12462e-08, 1.51886e-07, 1, -0.0143537, 3.17317, 0.70433 )
+[node name="Armature" parent="Player/MainCamera/AxePick" index="0"]
+transform = Transform( 0, 0.527606, 0.20383, 0, 0.283723, -0.379037, -0.430367, 0, 0, 0, 0, 1.01339 )
+
+[node name="Skeleton" parent="Player/MainCamera/AxePick/Armature" index="0"]
+transform = Transform( 1, 1.42109e-14, 7.10543e-15, 7.10543e-15, 1, 5.77054e-15, 0, 1.11808e-14, 1, 0, 0, 0 )
+bones/5/bound_children = [ NodePath("PickTipAttachment") ]
+bones/7/bound_children = [ NodePath("AxeTipAttachment") ]
+
+[node name="AxeTipAttachment" type="BoneAttachment" parent="Player/MainCamera/AxePick/Armature/Skeleton" index="1"]
+transform = Transform( 0.876945, -0.0899026, -0.472107, -0.471684, 0.02724, -0.881347, 0.0920956, 0.995578, -0.0185177, -9.7001e-08, 3.63179, 1.10679 )
+bone_name = "AxeTip"
+
+[node name="AxeTip" type="Area" parent="Player/MainCamera/AxePick/Armature/Skeleton/AxeTipAttachment"]
+transform = Transform( 0.901775, 0.126443, -0.279432, -0.0948733, 0.989246, 0.111208, 0.202937, -0.0721467, 1.03501, 0.040947, -0.00457764, -0.0214539 )
+script = ExtResource( 7 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Player/MainCamera/AxePick/Armature/Skeleton/AxeTipAttachment/AxeTip"]
+transform = Transform( 1, 5.96046e-08, 5.96046e-08, -2.5332e-07, 1, -1.41561e-07, -2.38419e-07, 1.8999e-07, 1, -0.0712433, 0.175995, 0.00891876 )
 shape = SubResource( 2 )
-disabled = true
+
+[node name="PickTipAttachment" type="BoneAttachment" parent="Player/MainCamera/AxePick/Armature/Skeleton" index="2"]
+transform = Transform( 0.9999, 0.00987268, 0.0101262, -0.00610515, -0.344536, 0.938753, 0.0127569, -0.938721, -0.344442, -1.21811e-09, 3.46183, -1.15444 )
+bone_name = "PickTip"
+
+[node name="PickTip" type="Area" parent="Player/MainCamera/AxePick/Armature/Skeleton/PickTipAttachment"]
+script = ExtResource( 7 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Player/MainCamera/AxePick/Armature/Skeleton/PickTipAttachment/PickTip"]
+transform = Transform( 1, -9.31323e-10, 1.86265e-09, 0, 1, -4.30009e-08, 1.86265e-09, -1.42827e-08, 1, 0, 0, 0 )
+shape = SubResource( 3 )
+
+[node name="AnimationTree" type="AnimationTree" parent="Player/MainCamera/AxePick/AnimationPlayer" index="0"]
+tree_root = SubResource( 32 )
+anim_player = NodePath("..")
+active = true
+parameters/playback = SubResource( 33 )
 
 [node name="Inventory" type="Spatial" parent="Player"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9407e-08, 2.29577, -0.617232 )
@@ -171,22 +188,10 @@ transform = Transform( 0.481736, 0.0467511, -0.875069, 0.875808, 0.00833493, 0.4
 shadow_enabled = true
 shadow_color = Color( 0.00392157, 0.00784314, 0.117647, 1 )
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/maul_chop = SubResource( 3 )
-anims/maul_chop_side = SubResource( 4 )
-anims/maul_idle = SubResource( 5 )
-anims/maul_windup = SubResource( 6 )
-anims/maul_windup_side = SubResource( 7 )
-
 [node name="TerrainOrchestrator" type="Spatial" parent="."]
 script = ExtResource( 4 )
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource( 5 )
-
-[node name="AnimationTree" type="AnimationTree" parent="."]
-tree_root = SubResource( 35 )
-anim_player = NodePath("../Player/MainCamera/AxePick/AnimationPlayer")
-parameters/playback = SubResource( 36 )
 
 [editable path="Player/MainCamera/AxePick"]

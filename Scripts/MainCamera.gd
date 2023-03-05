@@ -52,18 +52,11 @@ func mouse(event):
 	self.set_rotation(look_updown_rotation(event.relative.y / -200))
 
 func _input(event):
-	##
-	## We'll only process mouse motion events
 	if event is InputEventMouseMotion:
 		return mouse(event)
 	elif event is InputEventMouseButton and event.is_action_pressed("grab"):
 		cast_event = event
 		do_ray_cast = true
-	elif event is InputEventMouseButton and event.is_action_pressed("chop"):
-		cast_event = event
-		do_ray_cast = true
-	elif event is InputEventKey and event.is_action_pressed("throw"):
-		inventory.throw_active_item()
 
 func _enter_tree():
 	"""

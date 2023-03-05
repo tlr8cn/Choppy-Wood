@@ -12,6 +12,8 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.172327 )
 mass = 100.0
 physics_material_override = ExtResource( 3 )
 gravity_scale = 1.4
+contacts_reported = 1
+contact_monitor = true
 script = ExtResource( 2 )
 
 [node name="CollisionShape" type="CollisionShape" parent="."]

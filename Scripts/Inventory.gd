@@ -3,11 +3,15 @@ extends Spatial
 class_name Inventory
 
 const FIREWOOD_KEY = 'FIREWOOD'
+const NANA_FRUIT_KEY = 'NANA_FRUIT'
 
 var max_stack_size = 3
 
+# TODO: separate registry vs actual inventory
+# TODO: give inventory an order so that we can switch between items
 var inventory = {
-	FIREWOOD_KEY: 0
+	FIREWOOD_KEY: 0,
+	NANA_FRUIT_KEY: 0,
 }
 
 var item_instance_ref = {}
@@ -17,6 +21,8 @@ var active_item = ''
 func _ready():
 	var firewood_instance_ref = load("res://Scenes/Small log.tscn")
 	register_item(FIREWOOD_KEY, firewood_instance_ref)
+	var nana_fruit_instance_ref = load("res://Scenes/NanaFruit.tscn")
+	register_item(NANA_FRUIT_KEY, nana_fruit_instance_ref)
 	pass # Replace with function body.
 
 func register_item(key, instance_ref):
@@ -61,4 +67,8 @@ func remove_item_from_inventory(key):
 func increase_max_stack_size():
 	max_stack_size += 1
 	pass
-	
+
+func set_active_item(key):
+	if key in inventory:
+		self.active_item = key
+	pass

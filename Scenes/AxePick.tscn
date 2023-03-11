@@ -1,0 +1,49 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://Scripts/AxePickController.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Models/AxePick/axepick.gltf" type="PackedScene" id=2]
+[ext_resource path="res://Scripts/AxePickCollisions.gd" type="Script" id=3]
+
+[sub_resource type="BoxShape" id=1]
+extents = Vector3( 0.165606, 0.806776, 0.22579 )
+
+[sub_resource type="BoxShape" id=2]
+extents = Vector3( 0.208151, 0.267346, 0.123397 )
+
+[node name="AxePick" type="Spatial"]
+
+[node name="AxePick" parent="." instance=ExtResource( 2 )]
+transform = Transform( 0.0041539, 0, 0.499983, 0, 0.5, 0, -0.499983, 0, 0.0041539, -0.23179, -0.527, -0.38894 )
+script = ExtResource( 1 )
+
+[node name="Armature" parent="AxePick" index="0"]
+transform = Transform( 0, 0.527606, 0.20383, 0, 0.283723, -0.379037, -0.430367, 0, 0, 0, 0, 1.01339 )
+
+[node name="Skeleton" parent="AxePick/Armature" index="0"]
+bones/5/bound_children = [ NodePath("PickTipAttachment") ]
+bones/7/bound_children = [ NodePath("AxeTipAttachment") ]
+
+[node name="AxeTipAttachment" type="BoneAttachment" parent="AxePick/Armature/Skeleton" index="1"]
+transform = Transform( 0.876945, -0.0899026, -0.472107, -0.471684, 0.02724, -0.881347, 0.0920956, 0.995578, -0.0185177, -9.7001e-08, 3.63179, 1.10679 )
+bone_name = "AxeTip"
+
+[node name="AxeTip" type="Area" parent="AxePick/Armature/Skeleton/AxeTipAttachment" index="0"]
+transform = Transform( 0.901775, 0.126443, -0.279432, -0.0948733, 0.989246, 0.111208, 0.202937, -0.0721467, 1.03501, 0.040947, -0.00457764, -0.0214539 )
+script = ExtResource( 3 )
+
+[node name="CollisionShape" type="CollisionShape" parent="AxePick/Armature/Skeleton/AxeTipAttachment/AxeTip" index="0"]
+transform = Transform( 1, 5.96046e-08, 5.96046e-08, -2.5332e-07, 1, -1.41561e-07, -2.38419e-07, 1.8999e-07, 1, -0.0712433, 0.175995, 0.00891876 )
+shape = SubResource( 1 )
+
+[node name="PickTipAttachment" type="BoneAttachment" parent="AxePick/Armature/Skeleton" index="2"]
+transform = Transform( 0.9999, 0.00987268, 0.0101262, -0.00610515, -0.344536, 0.938753, 0.0127569, -0.938721, -0.344442, -1.21811e-09, 3.46183, -1.15444 )
+bone_name = "PickTip"
+
+[node name="PickTip" type="Area" parent="AxePick/Armature/Skeleton/PickTipAttachment" index="0"]
+script = ExtResource( 3 )
+
+[node name="CollisionShape" type="CollisionShape" parent="AxePick/Armature/Skeleton/PickTipAttachment/PickTip" index="0"]
+transform = Transform( 1, -9.31323e-10, 1.86265e-09, 0, 1, -4.30009e-08, 1.86265e-09, -1.42827e-08, 1, 0, 0, 0 )
+shape = SubResource( 2 )
+
+[editable path="AxePick"]

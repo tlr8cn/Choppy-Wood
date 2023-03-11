@@ -46,6 +46,8 @@ func _process(delta):
 				# only toggle colliders when switching from axe to pick (side is technically still axe)
 			elif next_mode == "PICK":
 				state_machine.travel("IdlePick")
+			elif next_mode == "UTILITY":
+				state_machine.travel("IdleUtility")
 				
 			axe_pick_mode = next_mode
 			toggle_active_collider()
@@ -54,6 +56,7 @@ func _process(delta):
 	pass
 
 func toggle_active_collider():
+	# TODO: no collider when utility
 	if axe_pick_mode == "AXE" || axe_pick_mode == "SIDE":
 		active_collider = axe_collider
 	elif axe_pick_mode == "PICK":
@@ -68,6 +71,8 @@ func get_input():
 			state_machine.travel("SideWindup")
 		elif axe_pick_mode == "PICK":
 			state_machine.travel("PickWindup")
+		elif axe_pick_mode == "UTILITY":
+			state_machine.travel("UtilityAim")
 	elif Input.is_action_just_released("chop"):
 		active_collider.disabled = false
 		chopping = true
@@ -78,6 +83,8 @@ func get_input():
 			state_machine.travel("SideChop")
 		elif axe_pick_mode == "PICK":
 			state_machine.travel("PickChop")
+		elif axe_pick_mode == "UTILITY":
+			state_machine.travel("UtilityShoot")
 	elif Input.is_action_pressed("stance"):
 		if axe_pick_mode == "AXE":
 			state_machine.travel("AxeToSideTransition")
@@ -89,8 +96,12 @@ func get_input():
 			next_mode = "PICK"
 		elif axe_pick_mode == "PICK":
 			transitioning = true
+			next_mode = "UTILITY"
+			state_machine.travel("PickToUtilityTransition")
+		elif axe_pick_mode == "UTILITY":
+			transitioning = true
 			next_mode = "AXE"
-			state_machine.travel("PickToAxeTransition")
+			state_machine.travel("UtilityToAxeTransition")
 	elif Input.is_action_just_pressed("throw"):
 		inventory.throw_active_item()
 

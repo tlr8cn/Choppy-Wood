@@ -1,0 +1,19 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/nana.obj-8a3dc174833c9ad242e34c3170fddcd1.mesh"
+
+[deps]
+
+files=[ "res://.import/nana.obj-8a3dc174833c9ad242e34c3170fddcd1.mesh" ]
+
+source_file="res://Assets/Models/Fruit/Nana/nana.obj"
+dest_files=[ "res://.import/nana.obj-8a3dc174833c9ad242e34c3170fddcd1.mesh", "res://.import/nana.obj-8a3dc174833c9ad242e34c3170fddcd1.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+offset_mesh=Vector3( 0, 0, 0 )
+optimize_mesh=true

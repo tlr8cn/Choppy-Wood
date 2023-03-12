@@ -1,4 +1,4 @@
-[gd_scene load_steps=52 format=2]
+[gd_scene load_steps=53 format=2]
 
 [ext_resource path="res://Scripts/PlayerController.gd" type="Script" id=1]
 [ext_resource path="res://Scripts/MainCamera.gd" type="Script" id=2]
@@ -8,6 +8,7 @@
 [ext_resource path="res://Scripts/Inventory.gd" type="Script" id=6]
 [ext_resource path="res://Scripts/AxePickCollisions.gd" type="Script" id=7]
 [ext_resource path="res://Assets/Models/AxePick/Utilities/harpoon.glb" type="PackedScene" id=8]
+[ext_resource path="res://Scenes/NanaFruit.tscn" type="PackedScene" id=9]
 [ext_resource path="res://Scripts/AxePickController.gd" type="Script" id=12]
 
 [sub_resource type="CylinderShape" id=1]
@@ -176,11 +177,6 @@ script = ExtResource( 12 )
 [node name="Armature" parent="Player/MainCamera/AxePick" index="0"]
 transform = Transform( 0, 0.527606, 0.20383, 0, 0.283723, -0.379037, -0.430367, 0, 0, 0, 0, 1.01339 )
 
-[node name="Skeleton" parent="Player/MainCamera/AxePick/Armature" index="0"]
-bones/0/bound_children = [ NodePath("UtilityAttachment") ]
-bones/5/bound_children = [ NodePath("PickTipAttachment") ]
-bones/7/bound_children = [ NodePath("AxeTipAttachment") ]
-
 [node name="AxeTipAttachment" type="BoneAttachment" parent="Player/MainCamera/AxePick/Armature/Skeleton" index="1"]
 transform = Transform( 0.876945, -0.0899026, -0.472107, -0.471684, 0.02724, -0.881347, 0.0920956, 0.995578, -0.0185177, -9.7001e-08, 3.63179, 1.10679 )
 bone_name = "AxeTip"
@@ -207,7 +203,7 @@ shape = SubResource( 3 )
 [node name="UtilityAttachment" type="BoneAttachment" parent="Player/MainCamera/AxePick/Armature/Skeleton" index="3"]
 bone_name = "Shaft1"
 
-[node name="Harpoon" parent="Player/MainCamera/AxePick/Armature/Skeleton/UtilityAttachment" instance=ExtResource( 8 )]
+[node name="GrapplingHook" parent="Player/MainCamera/AxePick/Armature/Skeleton/UtilityAttachment" instance=ExtResource( 8 )]
 transform = Transform( 1.65556, 0.0346142, 0.468023, -0.0446768, 0.999569, 0.0877623, -0.464783, -0.0628726, 1.65076, -0.00326729, 0.134644, -0.068573 )
 
 [node name="AnimationTree" type="AnimationTree" parent="Player/MainCamera/AxePick/AnimationPlayer" index="0"]
@@ -217,6 +213,22 @@ active = true
 parameters/playback = SubResource( 42 )
 
 [node name="GrappleCast" type="RayCast" parent="Player/MainCamera"]
+enabled = true
+cast_to = Vector3( 0, 0, -50 )
+
+[node name="GUI" type="CenterContainer" parent="Player/MainCamera"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="Player/MainCamera/GUI"]
+margin_left = 509.0
+margin_top = 297.0
+margin_right = 514.0
+margin_bottom = 302.0
+rect_min_size = Vector2( 5, 5 )
 
 [node name="Inventory" type="Spatial" parent="Player"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9407e-08, 2.29577, -0.617232 )
@@ -229,6 +241,15 @@ shadow_color = Color( 0.00392157, 0.00784314, 0.117647, 1 )
 
 [node name="TerrainOrchestrator" type="Spatial" parent="."]
 script = ExtResource( 4 )
+
+[node name="NanaFruit3" parent="." instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -20.2414, 84.0834, 0 )
+
+[node name="NanaFruit2" parent="." instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10.1207, 83.3673, 0 )
+
+[node name="NanaFruit" parent="." instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -5.05188, 84.1658, -0.0060606 )
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource( 5 )

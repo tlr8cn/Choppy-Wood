@@ -15,37 +15,66 @@ var chopping_log = false
 var grappling = false
 # the location the grappling hook anchors to
 var hooked_node = null
+var send_out_hook = false
 var get_hooked_node = false
 
 onready var grapplecast = $MainCamera/GrappleCast
+var grappling_hook:Resource
+var grappling_hook_instance = null
+
+# the grappling hook attached to the axe shaft bone
+onready var axe_grappling_hook = $MainCamera/AxePick/Armature/Skeleton/UtilityAttachment/GrapplingHook
+
+func _ready():
+	connect("grapple_signal", self, "_catch_grapple_signal")
+	grappling_hook = load("res://Scenes/GrapplingHook.tscn")
+	pass # Replace with function body.
 
 func grapple():
 	if grappling:
 		#velocity.y = 0
-		if not get_hooked_node:
+
+		# 1st state, checked if raycast is intersecting a registered item
+		if hooked_node == null:
 			hooked_node = grapplecast.get_collider()
-			if "Fruit" in hooked_node.name:
+			if hooked_node != null and ("Fruit" in hooked_node.name or "Mushroom" in hooked_node.name):
 				print("getting fruit")
-				get_hooked_node = true
-			else:
-				print("hooked unknown node")
 				print(hooked_node.name)
+				send_out_hook = true
+				# instantiate grappling hook
+				grappling_hook_instance = grappling_hook.instance()
+				grappling_hook_instance.global_translate(axe_grappling_hook.transform.origin)
+				#grappling_hook_instance.transform.basis = axe_grappling_hook.transform.basis
+				get_tree().get_root().add_child(grappling_hook_instance)
+			else: # end early if we don't know how to handle this item
+				hooked_node = null
 				grappling = false
-		if hooked_node.transform.origin.distance_to(transform.origin) > 1:
-			if get_hooked_node:
-				hooked_node.transform.origin = lerp(transform.origin, hooked_node.transform.origin, 0.0005)
-		else:
-			grappling = false
-			get_hooked_node = false
-			# TODO: add fruit to inventory
+		# 2nd state, make the hook travel to the hooked item
+		elif send_out_hook:
+			if grappling_hook_instance.transform.origin.distance_to(hooked_node.transform.origin) > 0.75:
+				grappling_hook_instance.transform.origin = lerp(hooked_node.transform.origin, grappling_hook_instance.transform.origin, 0.75)
+			else:
+				grappling_hook_instance.transform.origin = hooked_node.transform.origin
+				get_tree().get_root().remove_child(grappling_hook_instance)
+				hooked_node.add_child(grappling_hook_instance)
+				send_out_hook = false
+				get_hooked_node = true
+		# 3rd state, make the hook and hooked item travel to player
+		elif get_hooked_node:
+			if hooked_node.transform.origin.distance_to(transform.origin) > 0.75:
+				hooked_node.transform.origin = lerp(transform.origin, hooked_node.transform.origin, 0.75)
+			else:
+				grappling = false
+				get_hooked_node = false
+				# TODO: add hooked item to inventory
+				hooked_node.remove_child(grappling_hook_instance)
+				hooked_node = null
+				# TODO: add fruit to inventory
 	#if bonker.is_colliding():
 	#	grappling = false
 	#	hooked_node = null
 	#	hookpoint_get = false
 	#	global_translate(Vector3(0, -1, 0))
-
-func _ready():
-	pass # Replace with function body.
 
 func _physics_process(delta):
 	velocity += gravity * delta
@@ -68,11 +97,13 @@ func get_input(delta):
 		velocity += -transform.basis.x * speed
 	velocity.y = vy
 	
-	if Input.is_action_just_pressed("ability"):
-		if grapplecast.is_colliding():
-			if not grappling:
-				print("grappling")
-				grappling = true
+	#if Input.is_action_just_pressed("ability"):
+	#	print("attempting to grapple")
+	#	if grapplecast.is_colliding():
+	#		if not grappling:
+	#			print("grappling")
+	#			grappling = true
+	#
 	# TODO: change active item based on order of inventory
 	#if Input.is_action_just_pressed("change-item"):
 	#	inventory.set_active_item(key)
@@ -85,4 +116,9 @@ func add_tree_to_chop(body):
 func add_log_to_chop(body):
 	print("log chop event received")
 	log_detected = true
+	pass
+
+func _catch_grapple_signal():
+	print("caught grapple signal")
+	grappling = true
 	pass

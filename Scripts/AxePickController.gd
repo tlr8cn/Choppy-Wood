@@ -20,6 +20,8 @@ var transition_timer = 0.0
 
 var active_collider
 
+signal grapple_signal
+
 func _ready():
 	connect("chop_end", self, "_on_chop_end")
 	set_process_input(true)
@@ -84,6 +86,9 @@ func get_input():
 		elif axe_pick_mode == "PICK":
 			state_machine.travel("PickChop")
 		elif axe_pick_mode == "UTILITY":
+			if !is_connected("grapple_signal", player, "_catch_grapple_signal"):
+				connect("grapple_signal", player, "_catch_grapple_signal")
+			emit_signal("grapple_signal")
 			state_machine.travel("UtilityShoot")
 	elif Input.is_action_pressed("stance"):
 		if axe_pick_mode == "AXE":

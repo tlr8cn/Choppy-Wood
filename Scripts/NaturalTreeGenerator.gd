@@ -45,6 +45,10 @@ onready var big_log = preload("res://Scenes/BigLog.tscn")
 
 export var bark_material:SpatialMaterial
 
+export(Array, Resource) var fruits
+# only one fruit per tree
+onready var fruit:Resource = null
+
 var initial_fell_rotation = 0.0
 var fell_rotation_step = 0.0005
 var is_falling = false
@@ -81,7 +85,10 @@ func _ready():
 	var natural_tree = NaturalTree.new(root)
 	
 	# TODO: tree needs a name
-	# TODO: tree needs a simple cylinder collider at the trunk
+	
+	if fruits.size() > 0:
+		var fruit_roll = rng.randi_range(0, fruits.size()-1)
+		fruit = fruits[fruit_roll]
 	
 	buildTreeRecursively(root, natural_tree, 1, initial_radius, currentHeight, numVertices, centerPointOuter)
 	
@@ -171,11 +178,18 @@ func buildTreeRecursively(current_node, natural_tree, n, current_radius, current
 		current_node.set_is_leaf(true)
 		natural_tree.add_leaf(current_node)
 		
-		var roll = rng.randi_range(0, 500)
-		if roll <= 50:
-			var canopy_location = current_node.get_first_ring_vertex()
-			var instance1 = canopy.instance()
-			instance1.global_translate(canopy_location)
+		if fruit != null:
+			var add_fruit_roll = rng.randi_range(0, 250)
+			if add_fruit_roll <= 50:
+				var fruit_instance = fruit.instance()
+				fruit_instance.global_translate(current_node.get_center_point())
+				add_child(fruit_instance)
+		
+		#var roll = rng.randi_range(0, 500)
+		#if roll <= 50:
+		#	var canopy_location = current_node.get_first_ring_vertex()
+		#	var instance1 = canopy.instance()
+		#	instance1.global_translate(canopy_location)
 			#add_child(instance1)
 		return
 	elif current_radius > 0.0 && current_radius <= 4*radius_dec:

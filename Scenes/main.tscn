@@ -1,4 +1,4 @@
-[gd_scene load_steps=53 format=2]
+[gd_scene load_steps=52 format=2]
 
 [ext_resource path="res://Scripts/PlayerController.gd" type="Script" id=1]
 [ext_resource path="res://Scripts/MainCamera.gd" type="Script" id=2]
@@ -8,7 +8,6 @@
 [ext_resource path="res://Scripts/Inventory.gd" type="Script" id=6]
 [ext_resource path="res://Scripts/AxePickCollisions.gd" type="Script" id=7]
 [ext_resource path="res://Assets/Models/AxePick/Utilities/harpoon.glb" type="PackedScene" id=8]
-[ext_resource path="res://Scenes/NanaFruit.tscn" type="PackedScene" id=9]
 [ext_resource path="res://Scripts/AxePickController.gd" type="Script" id=12]
 
 [sub_resource type="CylinderShape" id=1]
@@ -177,6 +176,11 @@ script = ExtResource( 12 )
 [node name="Armature" parent="Player/MainCamera/AxePick" index="0"]
 transform = Transform( 0, 0.527606, 0.20383, 0, 0.283723, -0.379037, -0.430367, 0, 0, 0, 0, 1.01339 )
 
+[node name="Skeleton" parent="Player/MainCamera/AxePick/Armature" index="0"]
+bones/0/bound_children = [ NodePath("UtilityAttachment") ]
+bones/5/bound_children = [ NodePath("PickTipAttachment") ]
+bones/7/bound_children = [ NodePath("AxeTipAttachment") ]
+
 [node name="AxeTipAttachment" type="BoneAttachment" parent="Player/MainCamera/AxePick/Armature/Skeleton" index="1"]
 transform = Transform( 0.876945, -0.0899026, -0.472107, -0.471684, 0.02724, -0.881347, 0.0920956, 0.995578, -0.0185177, -9.7001e-08, 3.63179, 1.10679 )
 bone_name = "AxeTip"
@@ -241,15 +245,6 @@ shadow_color = Color( 0.00392157, 0.00784314, 0.117647, 1 )
 
 [node name="TerrainOrchestrator" type="Spatial" parent="."]
 script = ExtResource( 4 )
-
-[node name="NanaFruit3" parent="." instance=ExtResource( 9 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -20.2414, 84.0834, 0 )
-
-[node name="NanaFruit2" parent="." instance=ExtResource( 9 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10.1207, 83.3673, 0 )
-
-[node name="NanaFruit" parent="." instance=ExtResource( 9 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -5.05188, 84.1658, -0.0060606 )
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource( 5 )

@@ -40,17 +40,24 @@ func grapple():
 			if hooked_node != null and ("Fruit" in hooked_node.name or "Mushroom" in hooked_node.name):
 				print("getting fruit")
 				print(hooked_node.name)
+				var root = get_tree().get_root()
 				send_out_hook = true
+				var hooked_parent = hooked_node.get_parent()
+				var hooked_node_location = hooked_node.transform.origin
+				hooked_parent.remove_child(hooked_node)
+				root.add_child(hooked_node)
+				
 				# instantiate grappling hook
 				grappling_hook_instance = grappling_hook.instance()
 				grappling_hook_instance.global_translate(axe_grappling_hook.transform.origin)
 				#grappling_hook_instance.transform.basis = axe_grappling_hook.transform.basis
-				get_tree().get_root().add_child(grappling_hook_instance)
+				root.add_child(grappling_hook_instance)
 			else: # end early if we don't know how to handle this item
 				hooked_node = null
 				grappling = false
 		# 2nd state, make the hook travel to the hooked item
 		elif send_out_hook:
+			# TODO: lerp manually
 			if grappling_hook_instance.transform.origin.distance_to(hooked_node.transform.origin) > 0.75:
 				grappling_hook_instance.transform.origin = lerp(hooked_node.transform.origin, grappling_hook_instance.transform.origin, 0.75)
 			else:

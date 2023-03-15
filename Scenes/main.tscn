@@ -227,7 +227,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ColorRect" type="ColorRect" parent="Player/MainCamera/GUI"]
+[node name="Cursor" type="ColorRect" parent="Player/MainCamera/GUI"]
 margin_left = 509.0
 margin_top = 297.0
 margin_right = 514.0

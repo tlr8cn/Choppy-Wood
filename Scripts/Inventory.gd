@@ -4,6 +4,7 @@ class_name Inventory
 
 const FIREWOOD_KEY = 'FIREWOOD'
 const NANA_FRUIT_KEY = 'NANA_FRUIT'
+const MUSHROOM_KEY = 'MUSHROOM'
 
 var max_stack_size = 3
 
@@ -11,7 +12,8 @@ var max_stack_size = 3
 # TODO: give inventory an order so that we can switch between items
 var inventory = {
 	FIREWOOD_KEY: 0,
-	NANA_FRUIT_KEY: 0,
+	NANA_FRUIT_KEY: 1,
+	MUSHROOM_KEY: 2,
 }
 
 var item_instance_ref = {}
@@ -23,6 +25,8 @@ func _ready():
 	register_item(FIREWOOD_KEY, firewood_instance_ref)
 	var nana_fruit_instance_ref = load("res://Scenes/NanaFruit.tscn")
 	register_item(NANA_FRUIT_KEY, nana_fruit_instance_ref)
+	var mushroom_instance_ref = load("res://Scenes/Mushroom.tscn")
+	register_item(MUSHROOM_KEY, mushroom_instance_ref)
 	pass # Replace with function body.
 
 func register_item(key, instance_ref):
@@ -32,6 +36,8 @@ func register_item(key, instance_ref):
 
 func add_item_to_inventory(key):
 	if inventory.has(key) && inventory[key] < max_stack_size:
+		print("adding item to inventory: ")
+		print(key)
 		inventory[key] += 1
 		if active_item == '':
 			active_item = key

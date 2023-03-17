@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Assets/Models/Fruit/Peach/peach.glb" type="PackedScene" id=1]
+
+[sub_resource type="SphereShape" id=1]
+radius = 0.442732
+
+[node name="PeachFruit" type="StaticBody"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 221.891, 131.409, -31.03 )
+
+[node name="peach" type="Spatial" parent="." instance=ExtResource( 1 )]
+transform = Transform( 0.225, 0, 0, 0, 0.225, 0, 0, 0, 0.225, 0, 0, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="."]
+shape = SubResource( 1 )

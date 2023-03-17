@@ -5,6 +5,7 @@ class_name Inventory
 const FIREWOOD_KEY = 'FIREWOOD'
 const NANA_FRUIT_KEY = 'NANA_FRUIT'
 const MUSHROOM_KEY = 'MUSHROOM'
+const PEACH_FRUIT_KEY = 'PEACH_FRUIT'
 
 var max_stack_size = 3
 
@@ -14,6 +15,7 @@ var inventory = {
 	FIREWOOD_KEY: 0,
 	NANA_FRUIT_KEY: 1,
 	MUSHROOM_KEY: 2,
+	PEACH_FRUIT_KEY: 3,
 }
 
 var item_instance_ref = {}
@@ -27,6 +29,8 @@ func _ready():
 	register_item(NANA_FRUIT_KEY, nana_fruit_instance_ref)
 	var mushroom_instance_ref = load("res://Scenes/Mushroom.tscn")
 	register_item(MUSHROOM_KEY, mushroom_instance_ref)
+	var peach_fruit_instance_ref = load("res://Scenes/PeachFruit.tscn")
+	register_item(PEACH_FRUIT_KEY, peach_fruit_instance_ref)
 	pass # Replace with function body.
 
 func register_item(key, instance_ref):

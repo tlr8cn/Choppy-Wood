@@ -96,6 +96,8 @@ func item_name_to_inventory_key(item_name):
 	var inventory_key = ""
 	if "Nana" in item_name:
 		inventory_key = inventory.NANA_FRUIT_KEY
+	if "Peach" in item_name:
+		inventory_key = inventory.PEACH_FRUIT_KEY
 	elif "Mushroom" in item_name:
 		inventory_key = inventory.MUSHROOM_KEY
 	return inventory_key

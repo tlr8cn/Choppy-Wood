@@ -1,11 +1,12 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Scripts/NaturalTreeGenerator.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Materials/original_bark.tres" type="Material" id=2]
 [ext_resource path="res://Scenes/NanaFruit.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Scenes/PeachFruit.tscn" type="PackedScene" id=4]
 
 [node name="NaturalTreeGenerator" type="ImmediateGeometry"]
 script = ExtResource( 1 )
 initial_radius_range = Vector2( 0.15, 1.15 )
 bark_material = ExtResource( 2 )
-fruits = [ ExtResource( 3 ) ]
+fruits = [ ExtResource( 3 ), ExtResource( 4 ) ]

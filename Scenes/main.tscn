@@ -176,11 +176,6 @@ script = ExtResource( 12 )
 [node name="Armature" parent="Player/MainCamera/AxePick" index="0"]
 transform = Transform( 0, 0.527606, 0.20383, 0, 0.283723, -0.379037, -0.430367, 0, 0, 0, 0, 1.01339 )
 
-[node name="Skeleton" parent="Player/MainCamera/AxePick/Armature" index="0"]
-bones/0/bound_children = [ NodePath("UtilityAttachment") ]
-bones/5/bound_children = [ NodePath("PickTipAttachment") ]
-bones/7/bound_children = [ NodePath("AxeTipAttachment") ]
-
 [node name="AxeTipAttachment" type="BoneAttachment" parent="Player/MainCamera/AxePick/Armature/Skeleton" index="1"]
 transform = Transform( 0.876945, -0.0899026, -0.472107, -0.471684, 0.02724, -0.881347, 0.0920956, 0.995578, -0.0185177, -9.7001e-08, 3.63179, 1.10679 )
 bone_name = "AxeTip"
